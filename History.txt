@@ -1,0 +1,50 @@
+SwanGBA revision history
+-=-=-=-=-=-=-=-=-=-=-=-
+
+
+V0.3.7 - 2022-03-16 (FluBBa)
+	Ported back to GBA devkitPro.
+
+V0.3.6 - 2022-03-15 (FluBBa)
+	Fixed sound DMA a bit.
+
+V0.3.5 - 2022-03-09 (FluBBa)
+	Added RTC emulation.
+	Added a border to emu screen.
+	Better mapping of input.
+	Optimized graphic redraw.
+	Optimized PC/IP handling in cpu core.
+
+V0.3.0 - 2022-02-09 (FluBBa)
+	Added banked SRAM emulation.
+	Fixed zip decompression buffer size.
+	Optimized cycle counting.
+	Optimized Program Counter.
+	Optimized memory access.
+	Optimized opcodes.
+
+V0.2.0 - 2022-01-19 (FluBBa)
+	Rewrote the whole cpu core in asm.
+
+V0.1.5 - 2022-01-09 (FluBBa)
+	Rewrote parts of the cpu core in asm.
+
+V0.1.2 - 2021-12-18 (FluBBa)
+	Backgrounds works.
+	Sprites works.
+	Mono mode works.
+	Fixed Interrupts and Timers.
+	Added EEPROM emulation.
+	Added loading of bootrom for both WS & WSC.
+	Added loading/saving of sram/eeprom.
+	Added sound.
+	Fixed interrupt routine in CPU.
+
+V0.1.1 - 2021-10-17 (FluBBa)
+	Started port to Nintendo DS & devkitPro.
+
+V0.1.0 - 2006-07-28 (FluBBa)
+	Initial release (SwanAdvance).
+
+V0.0.0 - 2006-07-23 (FluBBa)
+	Started coding.

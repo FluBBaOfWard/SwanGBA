@@ -1,0 +1,15 @@
+[submodule "source/ARMV30MZ"]
+	path = source/ARMV30MZ
+	url = https://github.com/FluBBaOfWard/ARMV30MZ.git
+[submodule "source/Sphinx"]
+	path = source/Sphinx
+	url = https://github.com/FluBBaOfWard/Sphinx.git
+[submodule "source/WSEEPROM"]
+	path = source/WSEEPROM
+	url = https://github.com/FluBBaOfWard/WSEEPROM.git
+[submodule "source/WSRTC"]
+	path = source/WSRTC
+	url = https://github.com/FluBBaOfWard/WSRTC.git
+[submodule "source/Shared"]
+	path = source/Shared
+	url = https://github.com/FluBBaOfWard/GBA_Shared.git
