@@ -54,9 +54,16 @@ int main(int argc, char **argv) {
 	setupGUI();
 	getInput();
 
-	if ( g_BIOSBASE_COLOR == NULL ) {
+//	if ( g_BIOSBASE_COLOR == NULL ) {
 //		installHleBios(biosSpace);
-	}
+//	}
+	memset(wsEepromMem, 0, sizeof(wsEepromMem));
+	initIntEeprom(wsEepromMem);
+	memset(wscEepromMem, 0, sizeof(wscEepromMem));
+	initIntEeprom(wscEepromMem);
+	memset(scEepromMem, 0, sizeof(scEepromMem));
+	initIntEeprom(scEepromMem);
+
 	machineInit();
 	loadCart();
 

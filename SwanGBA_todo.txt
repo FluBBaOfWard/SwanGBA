@@ -1,9 +1,9 @@
 SwanGBA Todo
 
+		Fix identification of BnW/Color roms.
 		Add UI for setting headphone on/off.
 		Fix better sound!
 		Graphics on menu screen?
-		Port to GBA.
 		Find speed hacks.
 		Better key mappings.
 		Add IO word access?

@@ -2,6 +2,9 @@ SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-
 
 
+V0.3.8 - 2022-03-18 (FluBBa)
+	Updated cpu core.
+
 V0.3.7 - 2022-03-16 (FluBBa)
 	Ported back to GBA devkitPro.
 

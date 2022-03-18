@@ -13,7 +13,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.3.6 2022-03-16"
+#define EMUVERSION "V0.3.8 2022-03-18"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -207,6 +207,12 @@ void debugIOUnmappedR(u8 port) {
 }
 void debugIOUnmappedW(u8 port, u8 val) {
 	debugIO(port, val, "Unmapped W port:");
+}
+void debugDivideError() {
+	debugOutput("Divide Error.");
+}
+void debugIllegalInstruction() {
+	debugOutput("Illegal Instruction.");
 }
 //---------------------------------------------------------------------------------
 /// Switch between Player 1 & Player 2 controls

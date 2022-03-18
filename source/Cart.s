@@ -83,9 +83,11 @@ ROM_Space:
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:
 WS_BIOS_INTERNAL:
+//	.incbin "wsroms/boot.rom"
 	.incbin "wsroms/ws_irom.bin"
 WSC_BIOS_INTERNAL:
 SC_BIOS_INTERNAL:
+//	.incbin "wsroms/boot1.rom"
 	.incbin "wsroms/wc_irom.bin"
 //	.incbin "wsroms/wsc_irom.bin"
 

@@ -1,4 +1,4 @@
-# SwanGBA V0.3.7
+# SwanGBA V0.3.8
 
 <img align="right" width="220" src="./logo.png" />
 
