@@ -1,6 +1,7 @@
 build
 include/wsroms
 SwanGBA.xcodeproj/project.xcworkspace/xcuserdata
+SwanGBA.xcodeproj/xcuserdata
 *.elf
 *.gba
 *.sav

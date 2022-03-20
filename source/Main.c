@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
 	initIntEeprom(scEepromMem);
 
 	machineInit();
+	gMachine = gMachineSet;
 	loadCart();
 
 	while (1) {

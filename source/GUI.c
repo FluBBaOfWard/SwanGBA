@@ -13,7 +13,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.3.8 2022-03-18"
+#define EMUVERSION "V0.3.8 2022-03-20"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -149,7 +149,7 @@ void uiDisplay() {
 static void uiMachine() {
 	setupSubMenu("Machine Settings");
 	drawSubItem("Language: ",langTxt[gLang]);
-	drawSubItem("Machine: ",machTxt[gMachine]);
+	drawSubItem("Machine: ",machTxt[gMachineSet]);
 	drawMenuItem(" Change Batteries");
 	drawSubItem("Cpu speed hacks: ",autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
 	drawSubItem("Half cpu speed: ",autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
@@ -176,6 +176,7 @@ void nullUIDebug(int key) {
 }
 
 void resetGame() {
+	gMachine = gMachineSet;
 	loadCart();
 }
 

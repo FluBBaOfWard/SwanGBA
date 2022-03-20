@@ -72,6 +72,7 @@
 ROM_Space:
 //	.incbin "wsroms/Anchorz Field (Japan).ws"
 //	.incbin "wsroms/Crazy Climber (J) [M][!].ws"
+//	.incbin "wsroms/Chaos Demo V2.1 by Charles Doty (PD).wsc"
 //	.incbin "wsroms/Guilty Gear Petit (J).wsc"
 //	.incbin "wsroms/GunPey (Japan).ws"
 //	.incbin "wsroms/Kaze no Klonoa - Moonlight Museum (Japan).ws"
@@ -79,6 +80,7 @@ ROM_Space:
 	.incbin "wsroms/Mr. Driller (J) [!].wsc"
 //	.incbin "wsroms/SD Gundam - Operation U.C. (Japan).wsc"
 //	.incbin "wsroms/Tetris (Japan).wsc"
+//	.incbin "wsroms/Tonpuusou (Japan).wsc"
 //	.incbin "wsroms/WONDERPR.WSC"
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:
@@ -303,8 +305,8 @@ BankSwitch1_W:					;@ 0x10000-0x1FFFF
 	strb r1,[spxptr,#wsvBnk1Slct]
 
 	ldr r0,sramSize
-	sub r0,r0,#1
-	mov r0,r0,lsr#16
+	movs r0,r0,lsr#16		;@ 64kB blocks.
+	subne r0,r0,#1
 	ldr r2,=wsSRAM-0x10000
 	and r3,r1,r0
 	add r3,r2,r3,lsl#16		;@ 64kB blocks.
@@ -485,7 +487,12 @@ eepromSize:
 wsRAM:
 	.space 0x10000
 wsSRAM:
-	.space 0x10000
+#ifdef GBA
+	.space 0x10000				;@ For the GBA
+#else
+	.space 0x40000
+#endif
+
 biosSpace:
 	.space 0x1000
 biosSpaceColor:
