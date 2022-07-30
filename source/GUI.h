@@ -29,12 +29,12 @@ void debugIOUnmappedW(u8 port, u8 val);
 void debugIOUnimplR(u8 port);
 void debugIOUnimplW(u8 port, u8 val);
 void debugDivideError(void);
-void debugIllegalInstruction(void);
+void debugUndefinedInstruction(void);
+void debugCrashInstruction(void);
 
 void controllerSet(void);
 void swapABSet(void);
 
-void scalingSet(void);
 void gammaSet(void);
 void fgrLayerSet(void);
 void bgrLayerSet(void);

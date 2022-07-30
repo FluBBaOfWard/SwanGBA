@@ -9,7 +9,6 @@ extern "C" {
 
 extern u8 gFlicker;
 extern u8 gTwitch;
-extern u8 gScaling;
 extern u8 gGfxMask;
 
 extern Sphinx sphinx0;
@@ -24,8 +23,8 @@ void monoPalInit(void);
 void paletteInit(u8 gammaVal);
 void paletteTxAll(void);
 void refreshGfx(void);
-u8 cpu_readport(u16 port);
-void cpu_writeport(u16 port, u8 value);
+u8 v30ReadPort(u16 port);
+void v30WritePort(u16 port, u8 value);
 
 #ifdef __cplusplus
 } // extern "C"

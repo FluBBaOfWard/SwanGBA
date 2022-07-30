@@ -13,7 +13,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.3.8 2022-03-20"
+#define EMUVERSION "V0.3.8 2022-07-30"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -36,7 +36,7 @@ const fptr fnList0[] = {uiDummy};
 const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, gbaSleep, resetGame};
 const fptr fnList2[] = {ui8, loadState, saveState, saveSettings, resetGame};
 const fptr fnList3[] = {autoBSet, autoASet, controllerSet, swapABSet};
-const fptr fnList4[] = {/*scalingSet, flickSet,*/ gammaSet, paletteChange, fgrLayerSet, bgrLayerSet, sprLayerSet};
+const fptr fnList4[] = {gammaSet, paletteChange, fgrLayerSet, bgrLayerSet, sprLayerSet};
 const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, debugTextSet, sleepSet};
 const fptr fnList6[] = {languageSet, machineSet, batteryChange, speedHackSet, cpuHalfSet};
 const fptr fnList7[] = {uiDummy};
@@ -141,8 +141,8 @@ void uiDisplay() {
 	setupSubMenu("Display Settings");
 	drawSubItem("Gamma: ", brighTxt[gGammaValue]);
 	drawSubItem("B&W Palette: ", palTxt[gPaletteBank]);
-	drawSubItem("Disable Foreground: ", autoTxt[gGfxMask&1]);
-	drawSubItem("Disable Background: ", autoTxt[(gGfxMask>>1)&1]);
+	drawSubItem("Disable Foreground: ", autoTxt[(gGfxMask>>1)&1]);
+	drawSubItem("Disable Background: ", autoTxt[gGfxMask&1]);
 	drawSubItem("Disable Sprites: ", autoTxt[(gGfxMask>>4)&1]);
 }
 
@@ -212,8 +212,11 @@ void debugIOUnmappedW(u8 port, u8 val) {
 void debugDivideError() {
 	debugOutput("Divide Error.");
 }
-void debugIllegalInstruction() {
-	debugOutput("Illegal Instruction.");
+void debugUndefinedInstruction() {
+	debugOutput("Undefined Instruction.");
+}
+void debugCrashInstruction() {
+	debugOutput("CPU Crash! (0xF1)");
 }
 //---------------------------------------------------------------------------------
 /// Switch between Player 1 & Player 2 controls
@@ -224,12 +227,6 @@ void controllerSet() {					// See io.s: refreshEMUjoypads
 /// Swap A & B buttons
 void swapABSet() {
 	joyCfg ^= 0x400;
-}
-
-/// Turn on/off scaling
-void scalingSet(){
-	gScaling ^= 0x01;
-	refreshGfx();
 }
 
 /// Change gamma (brightness)
@@ -243,11 +240,11 @@ void gammaSet() {
 
 /// Turn on/off rendering of foreground
 void fgrLayerSet() {
-	gGfxMask ^= 0x01;
+	gGfxMask ^= 0x02;
 }
 /// Turn on/off rendering of background
 void bgrLayerSet() {
-	gGfxMask ^= 0x02;
+	gGfxMask ^= 0x01;
 }
 /// Turn on/off rendering of sprites
 void sprLayerSet() {
