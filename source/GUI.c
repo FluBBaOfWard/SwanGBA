@@ -13,7 +13,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.3.8 2022-07-30"
+#define EMUVERSION "V0.3.8 2022-09-20"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -27,24 +27,26 @@ static void batteryChange(void);
 static void speedHackSet(void);
 static void cpuHalfSet(void);
 
+static void uiDebug(void);
 static void uiMachine(void);
 static void updateGameInfo(void);
 
-const fptr fnMain[] = {nullUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI};
+const fptr fnMain[] = {nullUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI};
 
 const fptr fnList0[] = {uiDummy};
-const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, gbaSleep, resetGame};
-const fptr fnList2[] = {ui8, loadState, saveState, saveSettings, resetGame};
-const fptr fnList3[] = {autoBSet, autoASet, controllerSet, swapABSet};
-const fptr fnList4[] = {gammaSet, paletteChange, fgrLayerSet, bgrLayerSet, sprLayerSet};
-const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, debugTextSet, sleepSet};
+const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, ui8, gbaSleep, resetGame};
+const fptr fnList2[] = {ui9, loadState, saveState, saveSettings, resetGame};
+const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
+const fptr fnList4[] = {gammaSet, paletteChange};
+const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, sleepSet};
 const fptr fnList6[] = {languageSet, machineSet, batteryChange, speedHackSet, cpuHalfSet};
-const fptr fnList7[] = {uiDummy};
-const fptr fnList8[] = {quickSelectGame, quickSelectGame, quickSelectGame, quickSelectGame, quickSelectGame, quickSelectGame};
-const fptr *const fnListX[] = {fnList0, fnList1, fnList2, fnList3, fnList4, fnList5, fnList6, fnList7, fnList8};
-const u8 menuXitems[] = {ARRSIZE(fnList0), ARRSIZE(fnList1), ARRSIZE(fnList2), ARRSIZE(fnList3), ARRSIZE(fnList4), ARRSIZE(fnList5), ARRSIZE(fnList6), ARRSIZE(fnList7), ARRSIZE(fnList8)};
-const fptr drawuiX[] = {uiNullNormal, uiMainMenu, uiFile, uiController, uiDisplay, uiSettings, uiMachine, uiAbout, uiLoadGame};
-const u8 menuXback[] = {0,0,1,1,1,1,1,1,2};
+const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, stepFrame};
+const fptr fnList8[] = {uiDummy};
+const fptr fnList9[] = {quickSelectGame, quickSelectGame, quickSelectGame, quickSelectGame, quickSelectGame, quickSelectGame};
+const fptr *const fnListX[] = {fnList0, fnList1, fnList2, fnList3, fnList4, fnList5, fnList6, fnList7, fnList8, fnList9};
+const u8 menuXItems[] = {ARRSIZE(fnList0), ARRSIZE(fnList1), ARRSIZE(fnList2), ARRSIZE(fnList3), ARRSIZE(fnList4), ARRSIZE(fnList5), ARRSIZE(fnList6), ARRSIZE(fnList7), ARRSIZE(fnList8), ARRSIZE(fnList9)};
+const fptr drawUIX[] = {uiNullNormal, uiMainMenu, uiFile, uiController, uiDisplay, uiSettings, uiMachine, uiDebug, uiAbout, uiLoadGame};
+const u8 menuXBack[] = {0,0,1,1,1,1,1,1,1,2};
 
 u8 gGammaValue = 0;
 char gameInfoString[32];
@@ -53,7 +55,6 @@ const char *const autoTxt[]  = {"Off","On","With R"};
 const char *const speedTxt[] = {"Normal","200%","Max","50%"};
 const char *const sleepTxt[] = {"5min","10min","30min","Off"};
 const char *const brighTxt[] = {"I","II","III","IIII","IIIII"};
-const char *const ctrlTxt[]  = {"1P","2P"};
 const char *const dispTxt[]  = {"Unscaled","Scaled"};
 const char *const flickTxt[] = {"No Flicker","Flicker"};
 const char *const bordTxt[]  = {"Black", "Border Color", "None"};
@@ -105,7 +106,8 @@ void uiMainMenu() {
 	drawMenuItem("Display->");
 	drawMenuItem("Settings->");
 	drawMenuItem("Machine->");
-	drawMenuItem("Help->");
+	drawMenuItem("Debug->");
+	drawMenuItem("About->");
 	drawMenuItem("Sleep");
 	drawMenuItem("Restart");
 	if (enableExit) {
@@ -114,7 +116,7 @@ void uiMainMenu() {
 }
 
 void uiAbout() {
-	setupSubMenu("Help");
+	setupSubMenu("About");
 	updateGameInfo();
 	drawText("Select:   Sound Button",3);
 	drawText("Start:    Start Button",4);
@@ -133,7 +135,6 @@ void uiController() {
 	setupSubMenu("Controller Settings");
 	drawSubItem("B Autofire: ", autoTxt[autoB]);
 	drawSubItem("A Autofire: ", autoTxt[autoA]);
-	drawSubItem("Controller: ", ctrlTxt[(joyCfg>>29)&1]);
 	drawSubItem("Swap A-B:   ", autoTxt[(joyCfg>>10)&1]);
 }
 
@@ -141,16 +142,13 @@ void uiDisplay() {
 	setupSubMenu("Display Settings");
 	drawSubItem("Gamma: ", brighTxt[gGammaValue]);
 	drawSubItem("B&W Palette: ", palTxt[gPaletteBank]);
-	drawSubItem("Disable Foreground: ", autoTxt[(gGfxMask>>1)&1]);
-	drawSubItem("Disable Background: ", autoTxt[gGfxMask&1]);
-	drawSubItem("Disable Sprites: ", autoTxt[(gGfxMask>>4)&1]);
 }
 
 static void uiMachine() {
 	setupSubMenu("Machine Settings");
 	drawSubItem("Language: ",langTxt[gLang]);
 	drawSubItem("Machine: ",machTxt[gMachineSet]);
-	drawMenuItem(" Change Batteries");
+	drawMenuItem("Change Batteries");
 	drawSubItem("Cpu speed hacks: ",autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
 	drawSubItem("Half cpu speed: ",autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
 }
@@ -158,11 +156,19 @@ static void uiMachine() {
 void uiSettings() {
 	setupSubMenu("Other Settings");
 	drawSubItem("Speed: ", speedTxt[(emuSettings>>6)&3]);
-	drawSubItem("Autoload State: ", autoTxt[(emuSettings>>1)&1]);
-	drawSubItem("Autosave Settings: ", autoTxt[(emuSettings>>4)&1]);
+	drawSubItem("Autoload State: ", autoTxt[(emuSettings>>2)&1]);
+	drawSubItem("Autosave Settings: ", autoTxt[(emuSettings>>1)&1]);
 	drawSubItem("Autopause Game: ", autoTxt[emuSettings&1]);
-	drawSubItem("Debug Output: ", autoTxt[g_debugSet&1]);
 	drawSubItem("Autosleep: ", sleepTxt[(emuSettings>>8)&3]);
+}
+
+void uiDebug() {
+	setupSubMenu("Debug");
+	drawSubItem("Debug Output: ", autoTxt[gDebugSet&1]);
+	drawSubItem("Disable Foreground: ", autoTxt[(gGfxMask>>1)&1]);
+	drawSubItem("Disable Background: ", autoTxt[gGfxMask&1]);
+	drawSubItem("Disable Sprites: ", autoTxt[(gGfxMask>>4)&1]);
+	drawSubItem("Step Frame ", NULL);
 }
 
 void uiLoadGame() {
@@ -219,11 +225,6 @@ void debugCrashInstruction() {
 	debugOutput("CPU Crash! (0xF1)");
 }
 //---------------------------------------------------------------------------------
-/// Switch between Player 1 & Player 2 controls
-void controllerSet() {					// See io.s: refreshEMUjoypads
-	joyCfg ^= 0x20000000;
-}
-
 /// Swap A & B buttons
 void swapABSet() {
 	joyCfg ^= 0x400;

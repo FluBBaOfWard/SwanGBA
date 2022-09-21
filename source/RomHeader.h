@@ -2,6 +2,7 @@
 #define SWANGBA_HEADER
 
 #define COUNTRY 2					// Japan
+#define BWSID 0x1A535742			// "BWS",0x1A - Bandai WonderSwan
 #define SMSID 0x1A534D53			// "SMS",0x1A
 
 typedef struct {

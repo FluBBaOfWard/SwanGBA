@@ -55,15 +55,15 @@ B to go back a step.
 		Autosave Settings: This will save settings when
 			leaving menu if any changes are made.
 		Autopause Game: Toggle if the game should pause when opening the menu.
-		Powersave 2nd Screen: If graphics/light should be turned off for the
-			GUI screen when menu is not active.
-		Emulator on Bottom: Select if top or bottom screen should be used for
-			emulator, when menu is active emulator screen is allways on top.
 		Debug Output: Show an FPS meter for now.
-		Autosleep: Doesn't work.
+		Autosleep: Change the autosleep time, also see Sleep.
 
 ### About:
 	Some info about the emulator and game...
+
+### Sleep:
+	Put the GBA into sleepmode.
+	START+SELECT wakes up from sleep mode (activated from this menu or from	5/10/30	minutes of inactivity).
 
 ## Controls:
 In horizontal games the d-pad is mapped to WS X1-X4. A & B buttons are mapped to WS A & B.
@@ -76,7 +76,9 @@ In vertical games the d-pad is mapped to WS Y1-Y4. A, B, X & Y are mapped to WS 
 Huge thanks to Loopy for the incredible PocketNES, without it this emu would
 probably never have been made.
 Thanks to:
-Flavor & Koyote for WonderSwan info.
+Ed Mandy (Flavor) for WonderSwan info & flashcart. https://www.flashmasta.com
+Koyote for WonderSwan info.
+Alex Marshall (trap15) for WonderSwan info. http://daifukkat.su/docs/wsman/
 Godzil for the boot rom stubs. https://github.com/Godzil/NewOswan
 lidnariq for RTC info.
 Dwedit for help and inspiration with a lot of things.

@@ -1,6 +1,5 @@
 #ifdef __arm__
 
-#include "Equates.h"
 #include "WSEEPROM/WSEEPROM.i"
 #include "WSRTC/WSRTC.i"
 #include "Sphinx/Sphinx.i"
@@ -39,7 +38,9 @@
 	.global g_BIOSBASE_COLOR
 	.global g_BIOSBASE_CRYSTAL
 	.global wsRAM
+	.global DIRTYTILES
 	.global wsSRAM
+	.global extEeprom
 	.global extEepromMem
 	.global sramSize
 	.global eepromSize
@@ -83,9 +84,12 @@ ROM_Space:
 //	.incbin "wsroms/Beat Mania (J) [M][!].ws"
 //	.incbin "wsroms/Crazy Climber (J) [M][!].ws"
 //	.incbin "wsroms/Chaos Demo V2.1 by Charles Doty (PD).wsc"
+//	.incbin "wsroms/Dicing Knight. (J).wsc"
 //	.incbin "wsroms/Guilty Gear Petit (J).wsc"
 //	.incbin "wsroms/GunPey (Japan).ws"
+//	.incbin "wsroms/Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan).wsc"
 	.incbin "wsroms/Kaze no Klonoa - Moonlight Museum (Japan).ws"
+//	.incbin "wsroms/Macross - True Love Song (Japan).ws"
 //	.incbin "wsroms/Magical Drop for WonderSwan (Japan).ws"
 //	.incbin "wsroms/Makaimura for WonderSwan (Japan).ws"
 //	.incbin "wsroms/Mr. Driller (J) [!].wsc"
@@ -458,7 +462,7 @@ romNum:
 	.long 0						;@ romnumber
 romInfo:						;@
 emuFlags:
-	.byte 0						;@ emuflags      (label this so UI.C can take a peek) see equates.h for bitfields
+	.byte 0						;@ emuflags      (label this so GUI.C can take a peek) see EmuSettings.h for bitfields
 //scaling:
 	.byte 0						;@ (display type)
 	.byte 0,0					;@ (sprite follow val)
@@ -515,6 +519,8 @@ eepromSize:
 	.align 2
 wsRAM:
 	.space 0x10000
+DIRTYTILES:
+	.space 0x800
 wsSRAM:
 #ifdef GBA
 	.space 0x10000				;@ For the GBA

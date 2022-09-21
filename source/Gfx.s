@@ -1,7 +1,6 @@
 #ifdef __arm__
 
 #include "Shared/gba_asm.h"
-#include "Equates.h"
 #include "Sphinx/Sphinx.i"
 
 	.global gfxInit
@@ -13,6 +12,7 @@
 	.global endFrameGfx
 	.global v30ReadPort
 	.global v30WritePort
+	.global setScreenRefresh
 	.global getInterruptVector
 	.global setInterruptExternal
 
@@ -30,7 +30,6 @@
 
 
 	.global sphinx0
-	.global DIRTYTILES
 
 
 	.syntax unified
@@ -306,6 +305,11 @@ bnwTxLoop:
 	ldmfd sp!,{r4-r8,lr}
 	bx lr
 ;@----------------------------------------------------------------------------
+setScreenRefresh:			;@ r0 in = WS scan line count.
+;@----------------------------------------------------------------------------
+	bx lr
+
+;@----------------------------------------------------------------------------
 	.section .iwram, "ax", %progbits	;@ For the GBA
 ;@----------------------------------------------------------------------------
 vblIrqHandler:
@@ -482,7 +486,11 @@ GFX_BG0CNT:
 GFX_BG1CNT:
 	.short 0
 
-	.section .sbss
+#ifdef GBA
+	.section .sbss				;@ For the GBA
+#else
+	.section .bss
+#endif
 	.align 2
 OAM_BUFFER1:
 	.space 0x400
@@ -496,8 +504,6 @@ MAPPED_RGB:
 	.space 0x2000				;@ 4096*2
 EMUPALBUFF:
 	.space 0x400
-DIRTYTILES:
-	.space 0x800
 
 ;@----------------------------------------------------------------------------
 	.end

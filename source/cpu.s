@@ -8,16 +8,13 @@
 #define CYCLE_PSL (256)
 
 	.global run
+	.global stepFrame
 	.global cpuInit
 	.global cpuReset
-	.global isConsoleRunning
-	.global isConsoleSleeping
 	.global tweakCpuSpeed
 	.global frameTotal
 	.global waitMaskIn
 	.global waitMaskOut
-	.global cpu1SetIRQ
-	.global tlcs_return
 
 	.syntax unified
 	.arm
@@ -29,7 +26,7 @@
 #endif
 	.align 2
 ;@----------------------------------------------------------------------------
-run:		;@ Return after 1 frame
+run:						;@ Return after X frame(s)
 	.type   run STT_FUNC
 ;@----------------------------------------------------------------------------
 	ldrh r0,waitCountIn
@@ -59,12 +56,11 @@ runStart:
 //	ldr v30ptr,=V30OpTable
 //	bl V30SetNMIPin
 
-	bl refreshEMUjoypads		;@ Z=1 if communication ok
+	bl refreshEMUjoypads
 
 	ldr v30ptr,=V30OpTable
-	ldr v30cyc,[v30ptr,#v30ICount]
-	ldr v30pc,[v30ptr,#v30IP]
-	ldr v30f,[v30ptr,#v30Flags]
+	add r1,v30ptr,#v30Flags
+	ldmia r1,{v30f-v30cyc}		;@ Restore V30MZ state
 ;@----------------------------------------------------------------------------
 wsFrameLoop:
 ;@----------------------------------------------------------------------------
@@ -76,9 +72,8 @@ wsFrameLoop:
 	bne wsFrameLoop
 
 ;@----------------------------------------------------------------------------
-	str v30cyc,[v30ptr,#v30ICount]
-	str v30pc,[v30ptr,#v30IP]
-	str v30f,[v30ptr,#v30Flags]
+	add r0,v30ptr,#v30Flags
+	stmia r0,{v30f-v30cyc}		;@ Save V30MZ state
 	ldr r1,=fpsValue
 	ldr r0,[r1]
 	add r0,r0,#1
@@ -99,12 +94,44 @@ wsFrameLoop:
 ;@----------------------------------------------------------------------------
 v30MZCyclesPerScanline:	.long 0
 joyClick:			.long 0
-frameTotal:			.long 0		;@ Let ui.c see frame count for savestates
+frameTotal:			.long 0		;@ Let GUI.c see frame count for savestates
 waitCountIn:		.byte 0
 waitMaskIn:			.byte 0
 waitCountOut:		.byte 0
 waitMaskOut:		.byte 0
 
+;@----------------------------------------------------------------------------
+stepFrame:		;@ Return after 1 frame
+	.type stepFrame STT_FUNC
+;@----------------------------------------------------------------------------
+	stmfd sp!,{r4-r11,lr}
+	ldr v30ptr,=V30OpTable
+	add r1,v30ptr,#v30Flags
+	ldmia r1,{v30f-v30cyc}		;@ Restore V30MZ state
+;@----------------------------------------------------------------------------
+wsStepLoop:
+;@----------------------------------------------------------------------------
+	mov r0,#CYCLE_PSL
+	bl V30RunXCycles
+	ldr spxptr,=sphinx0
+	bl wsvDoScanline
+	cmp r0,#0
+	bne wsStepLoop
+
+	mov r0,#CYCLE_PSL
+	bl V30RunXCycles
+	ldr spxptr,=sphinx0
+	bl wsvDoScanline
+;@----------------------------------------------------------------------------
+	add r0,v30ptr,#v30Flags
+	stmia r0,{v30f-v30cyc}		;@ Save V30MZ state
+
+	ldr r1,frameTotal
+	add r1,r1,#1
+	str r1,frameTotal
+
+	ldmfd sp!,{r4-r11,lr}
+	bx lr
 ;@----------------------------------------------------------------------------
 cpuInit:					;@ Called by machineInit
 ;@----------------------------------------------------------------------------

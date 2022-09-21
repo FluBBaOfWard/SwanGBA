@@ -9,9 +9,8 @@ extern u8 waitMaskIn;
 extern u8 waitMaskOut;
 
 void run(void);
+void stepFrame(void);
 void cpuReset(void);
-bool isConsoleRunning(void);
-bool isConsoleSleeping(void);
 
 /**
  * Change emulated cpu speed between normal or half for speedup on low power devices.
