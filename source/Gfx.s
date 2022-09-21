@@ -219,7 +219,7 @@ txLoop:
 	ldrh r3,[r4],#2
 	and r3,r2,r3,lsl#1
 	ldrh r3,[r1,r3]
-	cmp r5,#0x00
+	tst r5,#0x1E
 	strhne r3,[r0,r5]			;@ Background palette
 	cmp r5,#0x100
 	strhpl r3,[r6,r5]			;@ Sprite palette
@@ -236,7 +236,7 @@ col4TxLoop:
 	ldrh r3,[r4,r5]
 	and r3,r2,r3,lsl#1
 	ldrh r3,[r1,r3]
-	cmp r5,#0x00
+	tst r5,#0x1E
 	strhne r3,[r0]				;@ Background palette
 	strh r3,[r0,#0x8]			;@ Opaque tiles palette
 	cmp r5,#0x100
@@ -285,7 +285,7 @@ bnwTxLoop:
 	and r3,r2,r3,lsl#1
 	ldrh r3,[r1,r3]
 
-	cmp r5,#0x0
+	tst r5,#0x1E
 	strhne r3,[r0]				;@ Background palette
 	strh r3,[r0,#0x8]			;@ Opaque tiles palette
 	cmp r5,#0x100

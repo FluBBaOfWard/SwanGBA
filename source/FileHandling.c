@@ -11,14 +11,63 @@
 #include "Main.h"
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
+#include "RomHeader.h"
 #include "GUI.h"
 #include "Cart.h"
 #include "Gfx.h"
 #include "io.h"
 
-static int selectedGame = 0;
+static u32 headerId = SMSID;
+static const u8 *romData;
+static int romCount = 0;
+int selectedGame = 0;
 ConfigData cfg;
 
+// Set text_start (before moving the rom)
+extern u8 __rom_end__[];
+
+//---------------------------------------------------------------------------------
+const u8 *findRomHeader(const u8 *base, u32 headerId)
+{
+	// Look up to 256 bytes later for a ROM header
+	const u32 *p=(u32*)base;
+	
+	int i;
+	for (i=0; i<64; i++) {
+		if (*p == headerId) {
+			return ((u8*)p)-48;
+		}
+		else {
+			p++;
+		}
+	}
+	return NULL;
+}
+
+void initLocateRoms(u32 inHeaderId) {
+	romData = __rom_end__;
+	headerId = inHeaderId;
+	const u8 *p = romData;
+	romCount = 0;
+	while (p && *(u32*)(p+sizeof(romheader)) == headerId) {
+		// Count roms
+		p += *(u32*)(p+32)+sizeof(romheader);
+		p = findRomHeader(p, headerId);
+		romCount++;
+	}
+}
+
+// Return ptr to Nth ROM (including rominfo struct)
+const u8 *findrom(int n)
+{
+	const u8 *p = findRomHeader(romData, headerId);
+	while(p && n--)
+	{
+		p += *(u32*)(p+32)+sizeof(romheader);
+		p = findRomHeader(p, headerId);
+	}
+	return p;
+}
 //---------------------------------------------------------------------------------
 int loadSettings() {
 //	FILE *file;

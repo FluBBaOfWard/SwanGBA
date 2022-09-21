@@ -6,7 +6,7 @@
 #include "Shared/AsmExtra.h"
 #include "GUI.h"
 #include "EmuFont.h"
-#include "WSBorder.h"
+#include "WonderSwan.h"
 #include "Cart.h"
 #include "cpu.h"
 #include "Gfx.h"
@@ -57,13 +57,13 @@ int main(int argc, char **argv) {
 	memset(wsEepromMem, 0, sizeof(wsEepromMem));
 	initIntEeprom(wsEepromMem);
 	memset(wscEepromMem, 0, sizeof(wscEepromMem));
-	initIntEeprom(wscEepromMem);
+	initIntEepromColor(wscEepromMem);
 	memset(scEepromMem, 0, sizeof(scEepromMem));
-	initIntEeprom(scEepromMem);
+	initIntEepromColor(scEepromMem);
 
 	machineInit();
-	gMachine = gMachineSet;
 	loadCart();
+	setupEmuBackground();
 
 	while (1) {
 		waitVBlank();
@@ -152,14 +152,12 @@ static void setupGraphics() {
 	REG_BG3CNT = TEXTBG_SIZE_512x256 | BG_MAP_BASE(6) | BG_TILE_BASE(0) | BG_PRIORITY(0);
 	menuMap = MAP_BASE_ADR(6);
 
+	setupEmuBackground();
+
 	LZ77UnCompVram(EmuFontTiles, (void *)VRAM+0x2400);
 	setupMenuPalette();
 }
 
 void setupMenuPalette() {
 	convertPalette(&EMUPALBUFF[0xE0], guiPalette, 32, gGammaValue);
-}
-
-void setupBorderPalette() {
-	memcpy(EMUPALBUFF, WSBorderPal, WSBorderPalLen);
 }

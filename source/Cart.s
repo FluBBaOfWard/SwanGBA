@@ -140,25 +140,17 @@ loadCart: 		;@ Called from C:
 	stmfd sp!,{r4-r11,lr}
 	ldr v30ptr,=V30OpTable
 
-	ldr r0,romSize
-	movs r2,r0,lsr#16		;@ 64kB blocks.
-	subne r2,r2,#1
-	str r2,romMask			;@ romMask=romBlocks-1
+	bl fixRomSizeAndPtr
 
-	mov r1,#0xFF
-	bl BankSwitch4_F_W
-	mov r1,#0xFF
-	bl BankSwitch3_W
-	mov r1,#0xFF
-	bl BankSwitch2_W
-	mov r1,#0
-	bl BankSwitch1_W
+	bl resetCartridgeBanks
 
 	ldr r1,=wsRAM
 	str r1,[v30ptr,#v30MemTblInv-0x1*4]		;@ 0 RAM
 	ldr r6,[v30ptr,#v30MemTblInv-0x10*4]	;@ MemMap
 
-	ldr r4,=0xFFFF8			;@ Game ID
+	ldr r4,=0xFFFF7			;@ System
+	ldrb r2,[r6,r4]
+	add r4,r4,#1			;@ Game ID
 	ldrb r0,[r6,r4]
 	strb r0,gGameID
 	add r4,r4,#3			;@ NVRAM size
@@ -193,7 +185,14 @@ loadCart: 		;@ Called from C:
 	ldrb r0,[r6,r4]
 	strb r0,rtcPresent
 
-	ldrb r5,gMachine
+	ldrb r5,gMachineSet
+	cmp r5,#HW_AUTO
+	bne noHWCheck
+	tst r2,#1
+	moveq r5,#HW_WONDERSWAN
+	movne r5,#HW_WONDERSWANCOLOR
+noHWCheck:
+	strb r5,gMachine
 	cmp r5,#HW_WONDERSWAN
 	cmpne r5,#HW_POCKETCHALLENGEV2
 	moveq r0,#1				;@ Set boot rom overlay (size small)
@@ -242,48 +241,77 @@ clearDirtyTiles:
 	ldr r0,=DIRTYTILES			;@ Clear RAM
 	mov r1,#0x800/4
 	b memclr_
+
+;@----------------------------------------------------------------------------
+fixRomSizeAndPtr:
+;@----------------------------------------------------------------------------
+	ldr r0,romSize
+	sub r1,r0,#1
+	orr r1,r1,r1,lsr#1
+	orr r1,r1,r1,lsr#2
+	orr r1,r1,r1,lsr#4
+	orr r1,r1,r1,lsr#8
+	orr r1,r1,r1,lsr#16
+	add r1,r1,#1			;@ RomSize Power of 2
+
+	movs r2,r1,lsr#16		;@ 64kB blocks.
+	subne r2,r2,#1
+	str r2,romMask			;@ romMask=romBlocks-1
+
+	ldr r2,romSpacePtr
+	add r2,r2,r0
+	sub r2,r2,r1
+	str r2,romPtr
+
+	bx lr
+;@----------------------------------------------------------------------------
+resetCartridgeBanks:
+;@----------------------------------------------------------------------------
+	stmfd sp!,{lr}
+	ldr spxptr,=sphinx0
+	mov r1,#0xFF
+	bl BankSwitch4_F_W
+	mov r1,#0
+	bl BankSwitch1_W
+	mov r1,#0xFF
+	bl BankSwitch2_W
+	mov r1,#0xFF
+	bl BankSwitch3_W
+	ldmfd sp!,{pc}
 ;@----------------------------------------------------------------------------
 reBankSwitch4_F:					;@ 0x40000-0xFFFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	ldrb r1,[spxptr,#wsvBnk0SlctX]
 ;@----------------------------------------------------------------------------
 BankSwitch4_F_W:					;@ 0x40000-0xFFFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	strb r1,[spxptr,#wsvBnk0SlctX]
-	mov r1,r1,lsl#4
-	orr r1,r1,#4
+	orr r1,r1,#0x40000000
 
 	ldr r0,romMask
-	ldr r2,romSpacePtr
+	ldr r2,romPtr
 	sub r2,r2,#0x40000
-	add r12,v30ptr,#v30MemTblInv-4*4
+	and r0,r0,r1,ror#28
+	add r2,r2,r0,lsl#16		;@ 64kB blocks.
+	add r3,v30ptr,#v30MemTblInv-5*4
 tbLoop2:
-	and r3,r0,r1
-	add r3,r2,r3,lsl#16		;@ 64kB blocks.
-	sub r2,r2,#0x10000
-	str r3,[r12,#-4]!
-	add r1,r1,#1
-	ands r3,r1,#0xF
-	bne tbLoop2
+	str r2,[r3],#-4
+	adds r1,r1,#0x10000000
+	bcc tbLoop2
 
 	bx lr
 ;@----------------------------------------------------------------------------
 BankSwitch1_H_W:				;@ 0x10000-0x1FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	strb r1,[spxptr,#wsvBnk1SlctX+1]
 ;@----------------------------------------------------------------------------
 reBankSwitch1:					;@ 0x10000-0x1FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	ldrh r1,[spxptr,#wsvBnk1SlctX]
 ;@----------------------------------------------------------------------------
 BankSwitch1_W:					;@ 0x10000-0x1FFFF
 BankSwitch1_L_W:				;@ 0x10000-0x1FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	strb r1,[spxptr,#wsvBnk1SlctX]
 
 	ldr r0,sramSize
@@ -298,48 +326,41 @@ BankSwitch1_L_W:				;@ 0x10000-0x1FFFF
 ;@----------------------------------------------------------------------------
 BankSwitch2_H_W:				;@ 0x20000-0x2FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	strb r1,[spxptr,#wsvBnk2SlctX+1]
 ;@----------------------------------------------------------------------------
 reBankSwitch2:					;@ 0x20000-0x2FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	ldrb r1,[spxptr,#wsvBnk2SlctX]
 ;@----------------------------------------------------------------------------
 BankSwitch2_W:					;@ 0x20000-0x2FFFF
 BankSwitch2_L_W:				;@ 0x20000-0x2FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	strb r1,[spxptr,#wsvBnk2SlctX]
 
 	ldr r0,romMask
-	ldr r2,romSpacePtr
+	ldr r2,romPtr
 	sub r2,r2,#0x20000
 	and r3,r1,r0
 	add r3,r2,r3,lsl#16		;@ 64kB blocks.
 	str r3,[v30ptr,#v30MemTblInv-3*4]
 
 	bx lr
-
 ;@----------------------------------------------------------------------------
 BankSwitch3_H_W:				;@ 0x30000-0x3FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	strb r1,[spxptr,#wsvBnk3SlctX+1]
 ;@----------------------------------------------------------------------------
 reBankSwitch3:					;@ 0x30000-0x3FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	ldrh r1,[spxptr,#wsvBnk3SlctX]
 ;@----------------------------------------------------------------------------
 BankSwitch3_W:					;@ 0x30000-0x3FFFF
 BankSwitch3_L_W:				;@ 0x30000-0x3FFFF
 ;@----------------------------------------------------------------------------
-	ldr spxptr,=sphinx0
 	strb r1,[spxptr,#wsvBnk3SlctX]
 
 	ldr r0,romMask
-	ldr r2,romSpacePtr
+	ldr r2,romPtr
 	sub r2,r2,#0x30000
 	and r3,r1,r0
 	add r3,r2,r3,lsl#16		;@ 64kB blocks.
@@ -491,6 +512,8 @@ cartOrientation:
 wsHeader:
 romSpacePtr:
 	.long 0
+romPtr:
+	.long 0
 g_BIOSBASE_BNW:
 	.long 0
 g_BIOSBASE_COLOR:
@@ -527,7 +550,6 @@ wsSRAM:
 #else
 	.space 0x40000
 #endif
-
 biosSpace:
 	.space 0x1000
 biosSpaceColor:

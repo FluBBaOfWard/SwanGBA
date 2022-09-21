@@ -5,6 +5,7 @@
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
 #include "Main.h"
+#include "WonderSwan.h"
 #include "FileHandling.h"
 #include "Cart.h"
 #include "Gfx.h"
@@ -13,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.3.8 2022-09-20"
+#define EMUVERSION "V0.3.8 2022-09-21"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -51,12 +52,12 @@ const u8 menuXBack[] = {0,0,1,1,1,1,1,1,1,2};
 u8 gGammaValue = 0;
 char gameInfoString[32];
 
-const char *const autoTxt[]  = {"Off","On","With R"};
-const char *const speedTxt[] = {"Normal","200%","Max","50%"};
-const char *const sleepTxt[] = {"5min","10min","30min","Off"};
-const char *const brighTxt[] = {"I","II","III","IIII","IIIII"};
-const char *const dispTxt[]  = {"Unscaled","Scaled"};
-const char *const flickTxt[] = {"No Flicker","Flicker"};
+const char *const autoTxt[]  = {"Off", "On", "With R"};
+const char *const speedTxt[] = {"Normal", "200%", "Max", "50%"};
+const char *const sleepTxt[] = {"5min", "10min", "30min", "Off"};
+const char *const brighTxt[] = {"I", "II", "III", "IIII", "IIIII"};
+const char *const dispTxt[]  = {"Unscaled", "Scaled"};
+const char *const flickTxt[] = {"No Flicker", "Flicker"};
 const char *const bordTxt[]  = {"Black", "Border Color", "None"};
 const char *const palTxt[]   = {"Black & White", "Red", "Green", "Blue", "Classic"};
 const char *const langTxt[]  = {"Japanese", "English"};
@@ -182,8 +183,8 @@ void nullUIDebug(int key) {
 }
 
 void resetGame() {
-	gMachine = gMachineSet;
 	loadCart();
+	setupEmuBackground();
 }
 
 void updateGameInfo() {

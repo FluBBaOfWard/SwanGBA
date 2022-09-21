@@ -49,9 +49,6 @@ runStart:
 	tst r3,#0x04				;@ NDS Select?
 	blne wsvPushVolumeButton
 //	tsteq r3,#0x800				;@ NDS Y?
-//	ldrne r2,=systemMemory+0xB3
-//	ldrbne r2,[r2]
-//	tstne r2,#4					;@ Power button NMI enabled?
 //	and r0,r3,#0x04				;@ NDS Select?
 //	ldr v30ptr,=V30OpTable
 //	bl V30SetNMIPin
@@ -101,7 +98,7 @@ waitCountOut:		.byte 0
 waitMaskOut:		.byte 0
 
 ;@----------------------------------------------------------------------------
-stepFrame:		;@ Return after 1 frame
+stepFrame:					;@ Return after 1 frame
 	.type stepFrame STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
