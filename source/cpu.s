@@ -47,7 +47,7 @@ runStart:
 	str r0,joyClick
 
 	tst r3,#0x04				;@ NDS Select?
-	blne wsvPushVolumeButton
+	blne pushVolumeButton
 //	tsteq r3,#0x800				;@ NDS Y?
 //	and r0,r3,#0x04				;@ NDS Select?
 //	ldr v30ptr,=V30OpTable

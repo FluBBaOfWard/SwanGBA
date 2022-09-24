@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 #include "Emubase.h"
+#include "WonderSwan.h"
+#include "RomHeader.h"
 
 #define FILEEXTENSIONS ".ngp.ngc"
 
@@ -17,8 +19,9 @@ int loadNVRAM(void);
 void saveNVRAM(void);
 void loadState(void);
 void saveState(void);
-bool loadGame(void);
-bool loadRoms(int gamenr, bool doLoad);
+void selectGame(void);
+bool loadGame(const romheader *rh);
+void checkMachine(void);
 
 #ifdef __cplusplus
 } // extern "C"

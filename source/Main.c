@@ -3,10 +3,12 @@
 
 #include "Main.h"
 #include "Shared/EmuMenu.h"
+#include "Shared/FileHelper.h"
 #include "Shared/AsmExtra.h"
-#include "GUI.h"
+#include "Gui.h"
 #include "EmuFont.h"
 #include "WonderSwan.h"
+#include "RomHeader.h"
 #include "Cart.h"
 #include "cpu.h"
 #include "Gfx.h"
@@ -16,6 +18,7 @@
 static void checkTimeOut(void);
 static void setupGraphics(void);
 
+bool gameInserted = false;
 static int sleepTimer = 60*60*5;	// 5 min
 
 u16 *menuMap;
@@ -47,10 +50,9 @@ int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
 	irqInit();
 
+	setupGraphics();
 	irqSet( IRQ_VBLANK, myVBlank );
 	irqEnable(IRQ_VBLANK);
-
-	setupGraphics();
 	setupGUI();
 	getInput();
 
@@ -63,6 +65,7 @@ int main(int argc, char **argv) {
 
 	machineInit();
 	loadCart();
+	initFileHelper(SMSID);
 	setupEmuBackground();
 
 	while (1) {
@@ -142,6 +145,7 @@ static void setupGraphics() {
 	GFX_BG1CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(1) | BG_TILE_BASE(2) | BG_PRIORITY(1);
 	REG_BG0CNT = GFX_BG0CNT;
 	REG_BG1CNT = GFX_BG1CNT;
+	// Background 2 is border
 	REG_BG2CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(2) | BG_256_COLOR | BG_TILE_BASE(1) | BG_PRIORITY(3);
 
 	REG_WIN0H = 0x0000+SCREEN_WIDTH;		// Horizontal start-end

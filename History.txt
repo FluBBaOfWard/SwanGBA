@@ -2,7 +2,7 @@ SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-
 
 
-V0.4.0 - 2022-09-21 (FluBBa)
+V0.4.0 - 2022-09-24 (FluBBa)
 	Fixed flag calculation for most opcodes.
 	Fixed emulation of undefined opcodes.
 	Fixed settings to disable Bg/Fg & Spr.

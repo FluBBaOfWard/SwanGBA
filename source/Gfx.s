@@ -12,6 +12,9 @@
 	.global endFrameGfx
 	.global v30ReadPort
 	.global v30WritePort
+	.global pushVolumeButton
+	.global setHeadphones
+	.global setLowBattery
 	.global setScreenRefresh
 	.global getInterruptVector
 	.global setInterruptExternal
@@ -459,6 +462,23 @@ v30WritePort:
 ;@----------------------------------------------------------------------------
 	adr spxptr,sphinx0
 	b wsvWrite
+;@----------------------------------------------------------------------------
+pushVolumeButton:
+;@----------------------------------------------------------------------------
+	adr spxptr,sphinx0
+	b wsvPushVolumeButton
+;@----------------------------------------------------------------------------
+setHeadphones:				;@ r0 = on/off
+	.type setHeadphones STT_FUNC
+;@----------------------------------------------------------------------------
+	adr spxptr,sphinx0
+	b wsvSetHeadphones
+;@----------------------------------------------------------------------------
+setLowBattery:				;@ r0 = on/off
+	.type setLowBattery STT_FUNC
+;@----------------------------------------------------------------------------
+	adr spxptr,sphinx0
+	b wsvSetLowBattery
 ;@----------------------------------------------------------------------------
 getInterruptVector:
 ;@----------------------------------------------------------------------------

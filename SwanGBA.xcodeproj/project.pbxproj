@@ -12,6 +12,8 @@
 		746D78E114ED9A8400CC738F /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = Makefile; sourceTree = "<group>"; };
 		9C1A755028DB1F1D005F342E /* WonderSwan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderSwan.h; sourceTree = "<group>"; };
 		9C1A755128DB1F1D005F342E /* WonderSwan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = WonderSwan.c; sourceTree = "<group>"; };
+		9C1A755628DCDC96005F342E /* FileHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileHelper.h; sourceTree = "<group>"; };
+		9C1A755728DCDC96005F342E /* FileHelper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FileHelper.c; sourceTree = "<group>"; };
 		9C42400D27E21F200042454B /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
 		9C42400E27E21F200042454B /* ARMV30MZ.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = ARMV30MZ.s; sourceTree = "<group>"; };
 		9C42400F27E21F200042454B /* ARMV30MZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARMV30MZ.h; sourceTree = "<group>"; };
@@ -84,10 +86,10 @@
 		350E1C3418AFB50800074DD5 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
-				9C42402C27E21FA30042454B /* WSBorder.png */,
 				9C42402F27E21FA30042454B /* WSBorder.grit */,
-				9C42402D27E21FA30042454B /* WSCBorder.png */,
+				9C42402C27E21FA30042454B /* WSBorder.png */,
 				9C42402E27E21FA30042454B /* WSCBorder.grit */,
+				9C42402D27E21FA30042454B /* WSCBorder.png */,
 			);
 			path = graphics;
 			sourceTree = "<group>";
@@ -197,6 +199,8 @@
 				9C42403527E225620042454B /* EmuSettings.h */,
 				9C42403327E225620042454B /* EmuMenu.h */,
 				9C42403227E225620042454B /* EmuMenu.c */,
+				9C1A755628DCDC96005F342E /* FileHelper.h */,
+				9C1A755728DCDC96005F342E /* FileHelper.c */,
 				9C42403427E225620042454B /* AsmExtra.h */,
 				9C42403727E225620042454B /* AsmExtra.s */,
 			);

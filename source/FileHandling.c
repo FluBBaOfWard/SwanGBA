@@ -11,63 +11,16 @@
 #include "Main.h"
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/FileHelper.h"
 #include "RomHeader.h"
 #include "GUI.h"
 #include "Cart.h"
 #include "Gfx.h"
 #include "io.h"
 
-static u32 headerId = SMSID;
-static const u8 *romData;
-static int romCount = 0;
 int selectedGame = 0;
 ConfigData cfg;
 
-// Set text_start (before moving the rom)
-extern u8 __rom_end__[];
-
-//---------------------------------------------------------------------------------
-const u8 *findRomHeader(const u8 *base, u32 headerId)
-{
-	// Look up to 256 bytes later for a ROM header
-	const u32 *p=(u32*)base;
-	
-	int i;
-	for (i=0; i<64; i++) {
-		if (*p == headerId) {
-			return ((u8*)p)-48;
-		}
-		else {
-			p++;
-		}
-	}
-	return NULL;
-}
-
-void initLocateRoms(u32 inHeaderId) {
-	romData = __rom_end__;
-	headerId = inHeaderId;
-	const u8 *p = romData;
-	romCount = 0;
-	while (p && *(u32*)(p+sizeof(romheader)) == headerId) {
-		// Count roms
-		p += *(u32*)(p+32)+sizeof(romheader);
-		p = findRomHeader(p, headerId);
-		romCount++;
-	}
-}
-
-// Return ptr to Nth ROM (including rominfo struct)
-const u8 *findrom(int n)
-{
-	const u8 *p = findRomHeader(romData, headerId);
-	while(p && n--)
-	{
-		p += *(u32*)(p+32)+sizeof(romheader);
-		p = findRomHeader(p, headerId);
-	}
-	return p;
-}
 //---------------------------------------------------------------------------------
 int loadSettings() {
 //	FILE *file;
@@ -136,110 +89,52 @@ void saveState(void) {
 //	packState(testState);
 	infoOutput("Saved state.");
 }
-/*
-void loadState(void) {
-	u32 *statePtr;
-//	FILE *file;
-	char stateName[32];
 
-	if (findFolder(folderName)) {
-		return;
-	}
-	strlcpy(stateName, gameNames[selectedGame], sizeof(stateName));
-	strlcat(stateName, ".sta", sizeof(stateName));
-	int stateSize = getStateSize();
-	if ( (file = fopen(stateName, "r")) ) {
-		if ( (statePtr = malloc(stateSize)) ) {
-			fread(statePtr, 1, stateSize, file);
-			unpackState(statePtr);
-			free(statePtr);
-			infoOutput("Loaded state.");
-		} else {
-			infoOutput("Couldn't alloc mem for state.");
-		}
-		fclose(file);
-	}
-}
-
-void saveState(void) {
-	u32 *statePtr;
-//	FILE *file;
-	char stateName[32];
-
-	if (findFolder(folderName)) {
-		return;
-	}
-	strlcpy(stateName, gameNames[selectedGame], sizeof(stateName));
-	strlcat(stateName, ".sta", sizeof(stateName));
-	int stateSize = getStateSize();
-	if ( (file = fopen(stateName, "w")) ) {
-		if ( (statePtr = malloc(stateSize)) ) {
-			packState(statePtr);
-			fwrite(statePtr, 1, stateSize, file);
-			free(statePtr);
-			infoOutput("Saved state.");
-		} else {
-			infoOutput("Couldn't alloc mem for state.");
-		}
-		fclose(file);
-	}
-}
-*/
 //---------------------------------------------------------------------------------
-bool loadGame() {
-	if (loadRoms(selected, false)) {
-		return true;
+bool loadGame( const romheader *rh) {
+	if (rh ) {
+		gRomSize = rh->filesize;
+		romSpacePtr = (const u8 *)rh + sizeof(romheader);
+		selectedGame = selected;
+		checkMachine();
+		setEmuSpeed(0);
+		loadCart();
+		gameInserted = true;
+		if ( emuSettings & AUTOLOAD_NVRAM ) {
+			loadNVRAM();
+		}
+		if (emuSettings & AUTOLOAD_STATE) {
+			loadState();
+		}
+		closeMenu();
+		return false;
 	}
-	selectedGame = selected;
-	loadRoms(selectedGame, true);
-	setEmuSpeed(0);
-	loadCart();
-	if (emuSettings & AUTOLOAD_STATE) {
-		loadState();
-	}
-	return false;
+	return true;
 }
 
-bool loadRoms(int game, bool doLoad) {
-//	int i, j, count;
-//	bool found;
-//	u8 *romArea = ROM_Space;
-//	FILE *file;
-
-//	count = fileCount[game];
-/*
-	chdir("/");			// Stupid workaround.
-	if (chdir(currentDir) == -1) {
-		return true;
+void selectGame() {
+	pauseEmulation = true;
+	setSelectedMenu(9);
+	const romheader *rh = browseForFile();
+	if ( loadGame(rh) ) {
+		backOutOfMenu();
 	}
+}
 
-	for (i=0; i<count; i++) {
-		found = false;
-		if ( (file = fopen(romFilenames[game][i], "r")) ) {
-			if (doLoad) {
-				fread(romArea, 1, romFilesizes[game][i], file);
-				romArea += romFilesizes[game][i];
-			}
-			fclose(file);
-			found = true;
-		} else {
-			for (j=0; j<GAMECOUNT; j++) {
-				if ( !(findFileInZip(gameZipNames[j], romFilenames[game][i])) ) {
-					if (doLoad) {
-						loadFileInZip(romArea, gameZipNames[j], romFilenames[game][i], romFilesizes[game][i]);
-						romArea += romFilesizes[game][i];
-					}
-					found = true;
-					break;
-				}
-			}
+void checkMachine() {
+	if ( gMachineSet == HW_AUTO ) {
+		if ( romSpacePtr[gRomSize - 9] != 0 ) {
+			gMachine = HW_WONDERSWANCOLOR;
 		}
-		if (!found) {
-			infoOutput("Couldn't open file:");
-			infoOutput(romFilenames[game][i]);
-			return true;
+//		else if ( strstr(fileExt, ".pc2") ) {
+//			gMachine = HW_POCKETCHALLENGEV2;
+//		}
+		else {
+			gMachine = HW_WONDERSWAN;
 		}
 	}
-*/
-	return false;
+	else {
+		gMachine = gMachineSet;
+	}
+	setupEmuBackground();
 }
