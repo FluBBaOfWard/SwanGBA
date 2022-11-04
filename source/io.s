@@ -71,8 +71,9 @@ eepromLoop:
 	bne eepromLoop
 	bx lr
 ;@----------------------------------------------------------------------------
-eepromDefault: // From adr 0x60, "@ NITROSWAN @"
-	.byte 0x25, 0x00, 0x18, 0x13, 0x1E, 0x1C, 0x19, 0x1D, 0x21, 0x0B, 0x18, 0x00, 0x25, 0x00, 0x00, 0x00
+eepromDefault: // From adr 0x60
+	// "@ SWANGBA @"
+	.byte 0x25, 0x00, 0x1D, 0x21, 0x0B, 0x18, 0x11, 0x0C, 0x0B, 0x00, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00
 
 ;@----------------------------------------------------------------------------
 ioSaveState:			;@ In r0=destination. Out r0=size.
@@ -114,7 +115,7 @@ refreshEMUjoypads:			;@ Call every frame
 	and r0,r4,#0xf0
 		ldr r2,joyCfg
 		andcs r3,r3,r2
-		tstcs r3,r3,lsr#10		;@ NDS L?
+		tstcs r3,r3,lsr#10		;@ GBA L?
 		andcs r3,r3,r2,lsr#16
 	adr r1,dulr2dlur
 	ldrb r0,[r1,r0,lsr#4]
@@ -124,10 +125,10 @@ refreshEMUjoypads:			;@ Call every frame
 	cmp r1,#0
 	bne verticalJoypad
 
-	tst r4,#0x200				;@ NDS L?
+	tst r4,#0x200				;@ GBA L?
 	moveq r0,r0,lsl#4			;@ Map dpad to X or Y keys.
 
-	tst r4,#0x08				;@ NDS Start
+	tst r4,#0x08				;@ GBA Start
 	orrne r0,r0,#0x200			;@ WS Start
 
 	ands r1,r3,#3				;@ A/B buttons
@@ -142,7 +143,7 @@ refreshEMUjoypads:			;@ Call every frame
 ;@----------------------------------------------------------------------------
 verticalJoypad:
 ;@----------------------------------------------------------------------------
-	tst r4,#0x08				;@ NDS Start
+	tst r4,#0x08				;@ GBA Start
 	orrne r0,r0,#0x200			;@ WS Start
 
 	and r1,r4,#0x3				;@ A/B buttons

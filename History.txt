@@ -1,8 +1,17 @@
 SwanGBA revision history
--=-=-=-=-=-=-=-=-=-=-=-
+-=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.4.2 - 2022-10-19 (FluBBa)
+	Fixed reset of mapper registers.
+	Fixed loading of roms that are not power of 2.
+	Added new debug menu.
+	Better menu traversing.
 
-V0.4.0 - 2022-09-24 (FluBBa)
+V0.4.1 - 2022-08-15 (FluBBa)
+	Added border for PCV2 mode.
+	WS refresh rate can control NDS refresh rate.
+
+V0.4.0 - 2022-08-11 (FluBBa)
 	Fixed flag calculation for most opcodes.
 	Fixed emulation of undefined opcodes.
 	Fixed settings to disable Bg/Fg & Spr.

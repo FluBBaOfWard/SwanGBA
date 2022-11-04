@@ -1,7 +1,7 @@
 #include <gba.h>
 #include <string.h>
 
-#include "GUI.h"
+#include "Gui.h"
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
 #include "Main.h"
@@ -14,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.4.0 2022-09-24"
+#define EMUVERSION "V0.4.2 2022-11-04"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -32,22 +32,22 @@ static void uiDebug(void);
 static void uiMachine(void);
 static void updateGameInfo(void);
 
-const fptr fnMain[] = {nullUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI};
+const fptr fnMain[] = {nullUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI};
 
 const fptr fnList0[] = {uiDummy};
-const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, ui8, gbaSleep, resetGame};
+const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, ui8, gbaSleep, resetGame, ui10};
 const fptr fnList2[] = {selectGame, loadState, saveState, saveSettings, resetGame};
 const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
 const fptr fnList4[] = {gammaSet, paletteChange};
-const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, sleepSet};
+const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, ewramSet, sleepSet};
 const fptr fnList6[] = {languageSet, machineSet, batteryChange, speedHackSet, cpuHalfSet};
 const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, stepFrame};
 const fptr fnList8[] = {uiDummy};
 const fptr fnList9[] = {quickSelectGame};
-const fptr *const fnListX[] = {fnList0, fnList1, fnList2, fnList3, fnList4, fnList5, fnList6, fnList7, fnList8, fnList9};
-const u8 menuXItems[] = {ARRSIZE(fnList0), ARRSIZE(fnList1), ARRSIZE(fnList2), ARRSIZE(fnList3), ARRSIZE(fnList4), ARRSIZE(fnList5), ARRSIZE(fnList6), ARRSIZE(fnList7), ARRSIZE(fnList8), ARRSIZE(fnList9)};
+const fptr fnList10[] = {exitEmulator, backOutOfMenu};
+const fptr *const fnListX[] = {fnList0, fnList1, fnList2, fnList3, fnList4, fnList5, fnList6, fnList7, fnList8, fnList9, fnList10};
+u8 menuXItems[] = {ARRSIZE(fnList0), ARRSIZE(fnList1), ARRSIZE(fnList2), ARRSIZE(fnList3), ARRSIZE(fnList4), ARRSIZE(fnList5), ARRSIZE(fnList6), ARRSIZE(fnList7), ARRSIZE(fnList8), ARRSIZE(fnList9), ARRSIZE(fnList10)};
 const fptr drawUIX[] = {uiNullNormal, uiMainMenu, uiFile, uiController, uiDisplay, uiSettings, uiMachine, uiDebug, uiAbout, uiLoadGame};
-const u8 menuXBack[] = {0,0,1,1,1,1,1,1,1,2};
 
 u8 gGammaValue = 0;
 char gameInfoString[32];
@@ -58,15 +58,17 @@ const char *const sleepTxt[] = {"5min", "10min", "30min", "Off"};
 const char *const brighTxt[] = {"I", "II", "III", "IIII", "IIIII"};
 const char *const dispTxt[]  = {"Unscaled", "Scaled"};
 const char *const flickTxt[] = {"No Flicker", "Flicker"};
+
+const char *const machTxt[]  = {"Auto", "WonderSwan", "WonderSwan Color", "SwanCrystal", "Pocket Challenge V2"};
 const char *const bordTxt[]  = {"Black", "Border Color", "None"};
 const char *const palTxt[]   = {"Black & White", "Red", "Green", "Blue", "Classic"};
 const char *const langTxt[]  = {"Japanese", "English"};
-const char *const machTxt[]  = {"Auto", "WonderSwan", "WonderSwan Color", "SwanCrystal", "Pocket Challenge V2"};
 
 /// This is called at the start of the emulator
 void setupGUI() {
 	emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM | ALLOW_SPEED_HACKS;
 //	keysSetRepeat(25, 4);	// Delay, repeat.
+	menuXItems[1] = ARRSIZE(fnList1) - (enableExit?0:1);
 	closeMenu();
 }
 
@@ -108,26 +110,26 @@ void uiMainMenu() {
 	drawMenuItem("Debug->");
 	drawMenuItem("About->");
 	drawMenuItem("Sleep");
-	drawMenuItem("Restart");
+	drawMenuItem("Reset Console");
 	if (enableExit) {
-		drawMenuItem("Exit");
+		drawMenuItem("Quit Emulator");
 	}
 }
 
 void uiAbout() {
 	setupSubMenu("About");
 	updateGameInfo();
-	drawText("Select:   Sound Button",3);
-	drawText("Start:    Start Button",4);
-	drawText("DPad:     Joystick",5);
-	drawText("B:        B Button",6);
-	drawText("A:        A Button",7);
+	drawText("B:        WS B Button", 3);
+	drawText("A:        WS A Button", 4);
+	drawText("Start:    WS Start Button", 5);
+	drawText("Select:   Sound Button", 6);
+	drawText("DPad:     Joystick", 7);
 
 	drawText(gameInfoString, 9);
 
-	drawText("SwanGBA     " EMUVERSION, 17);
-	drawText("Sphinx      " SPHINXVERSION, 18);
-	drawText("ARMV30MZ    " ARMV30MZVERSION, 19);
+	drawText("SwanGBA    " EMUVERSION, 17);
+	drawText("Sphinx     " SPHINXVERSION, 18);
+	drawText("ARMV30MZ   " ARMV30MZVERSION, 19);
 }
 
 void uiController() {
@@ -158,6 +160,7 @@ void uiSettings() {
 	drawSubItem("Autoload State: ", autoTxt[(emuSettings>>2)&1]);
 	drawSubItem("Autosave Settings: ", autoTxt[(emuSettings>>1)&1]);
 	drawSubItem("Autopause Game: ", autoTxt[emuSettings&1]);
+	drawSubItem("EWRAM Overclock: ", autoTxt[ewram&1]);
 	drawSubItem("Autosleep: ", sleepTxt[(emuSettings>>8)&3]);
 }
 

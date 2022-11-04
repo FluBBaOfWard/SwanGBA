@@ -1,6 +1,5 @@
 #ifdef __arm__
 
-#include "Shared/gba_asm.h"
 #include "ARMV30MZ/ARMV30MZ.i"
 #include "ARMV30MZ/ARMV30MZmac.h"
 #include "Sphinx/Sphinx.i"

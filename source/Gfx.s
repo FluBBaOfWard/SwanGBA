@@ -10,6 +10,7 @@
 	.global paletteTxAll
 	.global refreshGfx
 	.global endFrameGfx
+	.global vblIrqHandler
 	.global v30ReadPort
 	.global v30WritePort
 	.global pushVolumeButton
@@ -20,11 +21,9 @@
 	.global setInterruptExternal
 
 	.global gfxState
-	.global gGammaValue
 	.global gFlicker
 	.global gTwitch
 	.global gGfxMask
-	.global vblIrqHandler
 	.global GFX_DISPCNT
 	.global GFX_BG0CNT
 	.global GFX_BG1CNT

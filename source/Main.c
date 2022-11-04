@@ -6,9 +6,9 @@
 #include "Shared/FileHelper.h"
 #include "Shared/AsmExtra.h"
 #include "Gui.h"
+#include "FileHandling.h"
 #include "EmuFont.h"
 #include "WonderSwan.h"
-#include "RomHeader.h"
 #include "Cart.h"
 #include "cpu.h"
 #include "Gfx.h"
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 	irqInit();
 
 	setupGraphics();
-	irqSet( IRQ_VBLANK, myVBlank );
+	irqSet(IRQ_VBLANK, myVBlank);
 	irqEnable(IRQ_VBLANK);
 	setupGUI();
 	getInput();
@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
 	machineInit();
 	loadCart();
 	initFileHelper(SMSID);
+	loadBioses();
 	setupEmuBackground();
 
 	while (1) {
@@ -145,7 +146,7 @@ static void setupGraphics() {
 	GFX_BG1CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(1) | BG_TILE_BASE(2) | BG_PRIORITY(1);
 	REG_BG0CNT = GFX_BG0CNT;
 	REG_BG1CNT = GFX_BG1CNT;
-	// Background 2 is border
+	// Background 2 for border
 	REG_BG2CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(2) | BG_256_COLOR | BG_TILE_BASE(1) | BG_PRIORITY(3);
 
 	REG_WIN0H = 0x0000+SCREEN_WIDTH;		// Horizontal start-end
@@ -155,8 +156,6 @@ static void setupGraphics() {
 	// Set up background 3 for menu
 	REG_BG3CNT = TEXTBG_SIZE_512x256 | BG_MAP_BASE(6) | BG_TILE_BASE(0) | BG_PRIORITY(0);
 	menuMap = MAP_BASE_ADR(6);
-
-	setupEmuBackground();
 
 	LZ77UnCompVram(EmuFontTiles, (void *)VRAM+0x2400);
 	setupMenuPalette();

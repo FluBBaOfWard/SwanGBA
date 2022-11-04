@@ -74,7 +74,6 @@
 		9C50821025D45A9B00A8E1BA /* Gui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gui.h; sourceTree = "<group>"; };
 		9C50821125D45A9B00A8E1BA /* Gfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gfx.h; sourceTree = "<group>"; };
 		9C715146265661CE0084BE99 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
-		9C715149265662AF0084BE99 /* RomHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RomHeader.h; sourceTree = "<group>"; };
 		9CBC0C8E26DD7C2A0039D17E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9CC013FC2668FDD9005714F7 /* Emubase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emubase.h; sourceTree = "<group>"; };
 		A49D34381757E54900BD9B4B /* cpu.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = cpu.s; sourceTree = "<group>"; };
@@ -220,6 +219,8 @@
 				9C50820C25D45A9B00A8E1BA /* Main.c */,
 				9C50821025D45A9B00A8E1BA /* Gui.h */,
 				9C50820D25D45A9B00A8E1BA /* Gui.c */,
+				9C4C21E126E54754007D0280 /* FileHandling.h */,
+				9C4C21DE26E54754007D0280 /* FileHandling.c */,
 				9C1A755028DB1F1D005F342E /* WonderSwan.h */,
 				9C1A755128DB1F1D005F342E /* WonderSwan.c */,
 				9C42403027E224520042454B /* WSHeader.h */,
@@ -237,9 +238,6 @@
 				9C715146265661CE0084BE99 /* Memory.h */,
 				9C50820E25D45A9B00A8E1BA /* Memory.s */,
 				9C4C21C226E12781007D0280 /* SpeedHacks.s */,
-				9C715149265662AF0084BE99 /* RomHeader.h */,
-				9C4C21E126E54754007D0280 /* FileHandling.h */,
-				9C4C21DE26E54754007D0280 /* FileHandling.c */,
 			);
 			path = source;
 			sourceTree = "<group>";

@@ -7,21 +7,21 @@ extern "C" {
 
 #include "Emubase.h"
 #include "WonderSwan.h"
-#include "RomHeader.h"
 
-#define FILEEXTENSIONS ".ngp.ngc"
+#define FILEEXTENSIONS ".ws.wsc"
 
 extern ConfigData cfg;
 
 int loadSettings(void);
 void saveSettings(void);
+bool loadGame(const RomHeader *rh);
+void checkMachine(const RomHeader *rh);
 int loadNVRAM(void);
 void saveNVRAM(void);
 void loadState(void);
 void saveState(void);
 void selectGame(void);
-bool loadGame(const romheader *rh);
-void checkMachine(void);
+void loadBioses(void);
 
 #ifdef __cplusplus
 } // extern "C"

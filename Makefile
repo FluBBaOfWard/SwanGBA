@@ -8,6 +8,10 @@ ifeq ($(strip $(DEVKITARM)),)
 $(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
 endif
 
+GAME_TITLE		:=	SwanGBA
+GAME_CODE		:=	WSWN
+MAKER_CODE		:=	00
+
 include $(DEVKITARM)/gba_rules
 
 #---------------------------------------------------------------------------------

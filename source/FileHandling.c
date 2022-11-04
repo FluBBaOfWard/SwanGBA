@@ -1,10 +1,5 @@
 #include <gba.h>
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/dir.h>
 
 #include "FileHandling.h"
 #include "Emubase.h"
@@ -12,8 +7,7 @@
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/FileHelper.h"
-#include "RomHeader.h"
-#include "GUI.h"
+#include "Gui.h"
 #include "Cart.h"
 #include "Gfx.h"
 #include "io.h"
@@ -91,16 +85,35 @@ void saveState(void) {
 }
 
 //---------------------------------------------------------------------------------
-bool loadGame( const romheader *rh) {
-	if (rh ) {
+void loadBioses(void) {
+	const RomHeader *bh;
+	int n = 0;
+	g_BIOSBASE_COLOR = NULL;
+	g_BIOSBASE_CRYSTAL = NULL;
+	g_BIOSBASE_BNW = NULL;
+	while ((bh = findBios(n++))) {
+		if (bh->flags & 0x4) {
+			g_BIOSBASE_COLOR = (const u8 *)bh + sizeof(RomHeader);
+		}
+		else if (bh->flags & 0x8) {
+			g_BIOSBASE_CRYSTAL = (const u8 *)bh + sizeof(RomHeader);
+		}
+		else if ((bh->flags & 0xC) == 0) {
+			g_BIOSBASE_BNW = (const u8 *)bh + sizeof(RomHeader);
+		}
+	}
+}
+
+bool loadGame(const RomHeader *rh) {
+	if (rh) {
 		gRomSize = rh->filesize;
-		romSpacePtr = (const u8 *)rh + sizeof(romheader);
+		romSpacePtr = (const u8 *)rh + sizeof(RomHeader);
 		selectedGame = selected;
-		checkMachine();
+		checkMachine(rh);
 		setEmuSpeed(0);
 		loadCart();
 		gameInserted = true;
-		if ( emuSettings & AUTOLOAD_NVRAM ) {
+		if (emuSettings & AUTOLOAD_NVRAM) {
 			loadNVRAM();
 		}
 		if (emuSettings & AUTOLOAD_STATE) {
@@ -114,21 +127,21 @@ bool loadGame( const romheader *rh) {
 
 void selectGame() {
 	pauseEmulation = true;
-	setSelectedMenu(9);
-	const romheader *rh = browseForFile();
-	if ( loadGame(rh) ) {
+	ui9();
+	const RomHeader *rh = browseForFile();
+	if (loadGame(rh)) {
 		backOutOfMenu();
 	}
 }
 
-void checkMachine() {
-	if ( gMachineSet == HW_AUTO ) {
-		if ( romSpacePtr[gRomSize - 9] != 0 ) {
+void checkMachine(const RomHeader *rh) {
+	if (gMachineSet == HW_AUTO) {
+		if (romSpacePtr[gRomSize - 9] != 0 || rh->flags & 4) {
 			gMachine = HW_WONDERSWANCOLOR;
 		}
-//		else if ( strstr(fileExt, ".pc2") ) {
-//			gMachine = HW_POCKETCHALLENGEV2;
-//		}
+		else if (rh->flags & 2) {
+			gMachine = HW_POCKETCHALLENGEV2;
+		}
 		else {
 			gMachine = HW_WONDERSWAN;
 		}
