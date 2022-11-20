@@ -26,6 +26,8 @@ void refreshGfx(void);
 u8 v30ReadPort(u16 port);
 void v30WritePort(u16 port, u8 value);
 
+void setHeadphones(bool enable);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

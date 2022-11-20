@@ -2,7 +2,7 @@
   /   |   \ ___ __/ \__ ___  ___  /\__
   \  / \  // __>\_   _// __|/ __\/    \
    \_____/_\__ \  \_/  \___|\___/\_/\_/
-          \____/      2022-03-13
+          \____/      2022-11-20
 
 1. ABOUT
    WStech original doc made by Judge and Dox
@@ -130,7 +130,7 @@
                               0 -  3  Blue
                               4 -  7  Green
                               8 - 11  Red
-                             12 - 14  unused
+                             12 - 15  unused
                      Color palettes are stored in the RAM (segment 0) , at address $FE00
 
    Scrolling       - Each of layers can be scrolled horizontal or vertical using ports $10 - $13
@@ -167,15 +167,18 @@
 
 6. ROM HEADER
 
- Header taking last 10 bytes of each ROM file.
+ Header taking last 16 bytes of each ROM file.
  Bytes  :
- 0   - Developer ID
- 1   - Minimum support system
+ 0-4 Long jump instruction
+ 5   - bit 7 - Skip custom boot screen
+ 6   - Developer ID
+ 7   - Minimum support system
        00 - WS Mono
        01 - WS Color
- 2   - Cart ID number for developer defined at byte 0
- 3   - Cart revision
- 4   - ROM Size
+ 8   - Cart ID number for developer defined at byte 0
+ 9   - Cart revision
+       bit 7 = allow full EEPROM access
+ 10  - ROM Size
        01 - ?
        02 - 4Mbit
        03 - 8Mbit
@@ -185,7 +188,7 @@
        07 - ?
        08 - 64Mbit
        09 - 128Mbit
- 5   - SRAM/EEPROM Size
+ 11  - SRAM/EEPROM Size
        00 - 0k
        01 - 64k SRAM
        02 - 256k SRAM
@@ -195,12 +198,12 @@
        10 - 1k EEPROM
        20 - 16k EEPROM
        50 - 8k EEPROM
- 6   - Additional capabilities(?)
+ 12  - Additional capabilities(?)
        - bit 0 - 1 - vertical position , 1 - horizontal position
        - bit 2 - always 1
 
- 7   - 1 - RTC (Real Time Clock)
- 8,9 - Checksum = sum of all ROM bytes except two last ones ( where checksum is stored)
+ 13  - 1 - RTC (Real Time Clock)
+ 14,15 - Checksum = sum of all ROM bytes except two last ones ( where checksum is stored)
 
 7. INTERRUPTS
    The Wonderswan CPU recognizes 7 interrupts from the hardware, these are:
@@ -245,7 +248,7 @@
     0xBC (Word) - Address (calculated probably Modulo EEPROM size (unknown))
     0xBE (Byte) - Communication (?)
                    bit 4 set before reading data
-                   bit 1 set by hardware , when data is ready to read
+                   bit 1 set by hardware, when data is ready to read
 
     Example :
 
@@ -270,12 +273,12 @@
     - Year of birth   -  2 bytes (BCD)
     - Month of birth  -  1 byte  (BCD)
     - Day of birth    -  1 byte  (BCD)
-    - Sex             -  1 byte (1 - male , 2 - female)
-    - Blood           -  1 byte (1 - A, 2 - B, 3 - O, 4 - AB)
+    - Sex             -  1 byte (0 - ?, 1 - male , 2 - female)
+    - Blood           -  1 byte (0 - ?, 1 - A, 2 - B, 3 - O, 4 - AB)
 
 
     Struct size - 22 bytes  = 11 reads,
-    Address range = 0x1B0 - 0x1BA
+    Address range = 0x40 - 0x4A
 
 10. I/O PORTS (port number /initial value / description)
 
@@ -296,8 +299,7 @@
  - $04 - $00 - Determines the base address for the sprite table.
                 bit 5-0 - bit 14-9 of address (WSC).
                 bit 4-0 - bit 13-9 of address (WS).
-                To get the address of the table, shift this value left 9 times
-                and clear MSB.
+                To get the address of the table, shift this value left 9 times.
 		        (Sprite Attribute Table Base can move from $00000-$07E00 with $200 bytes step)
  - $05 - $00 - Determines the number of the sprite to start drawing with
  - $06 - $00 - Determines the number of the sprite to stop drawing.
@@ -336,7 +338,11 @@
  - $17 - $9B - VSync, which line vsync is sent? Doesn't exist on SwanCrystal.
  - $18 - $00 - ???
  - $19 - $00 - ???
- - $1A - $00 - ???
+ - $1A - $00 - LCD Volume
+                bit 4 - Set when the LCD volume icon is being displayed.
+                bit 2-3 - Volume level
+                bit 1 - 0
+                bit 0 - LCD Sleep
  - $1B - $00 - ???
  - $1C - $99 - PALCOL10
  - $1D - $FD - PALCOL32
@@ -382,7 +388,7 @@
  - $45 - $00 - ^^^
  - $46 - $00 - size of copied data (in bytes)
  - $47 - $00 - ^^^
- - $48 - $00 - bit  7 = 1  -> copy start
+ - $48 - $00 - bit 7 = 1  -> copy start
                 (bit 7=0 when data transfer is finished)
                 ports $40-$48 are updated during copy process
                bit 6 inc/dec
@@ -495,21 +501,21 @@
                 7 - Audio 4 Noise
                 6 - Audio 3 Sweep
                 5 - Audio 2 Voice
-                4 - ???
+                4 - 0
                 3 - Audio 4 on/off
                 2 - Audio 3 on/off
                 1 - Audio 2 on/off
                 0 - Audio 1 on/off
  - $91 - $00 - Audio Output
                 Bits :
-                7 - External Speaker (set by hardware)
-                6 - ???
-                5 - ???
-                4 - ???
-                3 - External Stereo
-                2 - ^^^
-                1 - Output Volume
-                0 - Mono
+                7 - Headphones connected
+                6 - 0
+                5 - 0
+                4 - 0
+                3 - Enable headphones
+                2 - Output Volume
+                1 - ^^^
+                0 - Main speaker enable
  - $92 - $00 - Noise Counter Shift Register (15 bits)
  - $93 - $00 - ^^^
  - $94 - $00 - Voice Volume (4 bit)
@@ -526,6 +532,7 @@
  - $9F - $00 - ???
  - $A0 - $87 - Hardware type
                 bit 7 - 1 = finnished booting?
+                bit 3     = Cart ROM speed (0=3 cycle, 1=1 cycle)
                 bit 2 - 1 = 16bit cart access
                 bit 1 - 1 = color, 0 = mono
                 bit 0 - 1 = lock the boot rom
@@ -614,7 +621,10 @@
                 bit 2 - RTC Alarm (cartridge)
                 bit 1 - Key press
                 bit 0 - Serial transmit
- - $B7 - $00 - INT_NMI_CTRL, some games write 0x10/0x00
+ - $B7 - $00 - INT_NMI_CTRL
+                bit 5-7 - ???
+                bit 4 - Enable/disable NMI when battery low
+                bit 0-3 - ???
  - $B8 - $00 - ???
  - $B9 - $00 - ???
  - $BA - $01 - Internal EEPROM Data
@@ -633,7 +643,7 @@
  - $BF - $00 - ???
 
 ---------------------------------------------------------------------
-Mapped to cartridge. Luxor1 / Luxor2
+Mapped to cartridge. 2001/Luxsor1 & 2003/Luxsor2
 ---------------------------------------------------------------------
  - $C0 - $2F - ROM Bank Base Selector for segments 4-$F
  - $C1 - $3F - SRAM Bank selector (0x10000))
@@ -677,6 +687,7 @@ Mapped to cartridge. Luxor1 / Luxor2
                 bit 1 - Write complete (Read only)
                 bit 0 - Read complete (Read only)
  - $C9 - $D1 - ^^^
+ // The rest only 2003/Luxor 2
  - $CA - $D1 - RTC Command / Status
                 Write :
                         - $10 - Reset
@@ -712,8 +723,8 @@ Mapped to cartridge. Luxor1 / Luxor2
                                 - Sec
  - $CC - $D1 - GPIO enable
  - $CD - $D1 - GPIO data
- - $CE - $D1 - MEMORY_CTRL
- - $CF - $D1 - ???
+ - $CE - $D1 - MEMORY_CTRL, bit 0 switch between "ROM" and SRAM @ 0x10000.
+ - $CF - $D1 - ROM Bank selector for segment 4-F
  - $D0 - $D1 - SRAM Bank selector low
  - $D1 - $D1 - SRAM Bank selector high
  - $D2 - $D1 - BNK2SLCT - ROM Bank selector for segment 2 low

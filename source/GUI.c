@@ -14,10 +14,11 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.4.2 2022-11-04"
+#define EMUVERSION "V0.4.2 2022-11-20"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
+#define ENABLE_HEADPHONES	(1<<18)
 
 void hacksInit(void);
 
@@ -294,6 +295,11 @@ void cpuHalfSet() {
 //	tweakCpuSpeed(emuSettings & HALF_CPU_SPEED);
 }
 
+void headphonesSet() {
+	emuSettings ^= ENABLE_HEADPHONES;
+	setHeadphones(emuSettings & ENABLE_HEADPHONES);
+}
+
 void batteryChange() {
-	batteryLevel = 0xFFFF;				// 0xFFFF for 2 days battery?
+	batteryLevel = 15000;				// 0x15000 for 24h battery?
 }

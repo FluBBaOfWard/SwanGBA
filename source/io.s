@@ -201,8 +201,10 @@ updateSlowIO:				;@ Call once every frame, updates rtc and battery levels.
 	subs r0,r0,#1
 	movmi r0,#1
 	str r0,batteryLevel
-	cmp r0,#10
-	blmi setLowBattery
+	cmp r0,#60
+	movpl r0,#0
+	movmi r0,#1
+	bl setLowBattery
 	ldmfd sp!,{r12,lr}
 
 	b cartRtcUpdate
