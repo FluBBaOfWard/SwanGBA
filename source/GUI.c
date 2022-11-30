@@ -14,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.4.2 2022-11-20"
+#define EMUVERSION "V0.4.2 2022-11-30"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -23,11 +23,12 @@
 void hacksInit(void);
 
 static void paletteChange(void);
-static void languageSet(void);
 static void machineSet(void);
 static void batteryChange(void);
+static void headphonesSet(void);
 static void speedHackSet(void);
 static void cpuHalfSet(void);
+static void languageSet(void);
 
 static void uiDebug(void);
 static void uiMachine(void);
@@ -41,7 +42,7 @@ const fptr fnList2[] = {selectGame, loadState, saveState, saveSettings, resetGam
 const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
 const fptr fnList4[] = {gammaSet, paletteChange};
 const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, ewramSet, sleepSet};
-const fptr fnList6[] = {languageSet, machineSet, batteryChange, speedHackSet, cpuHalfSet};
+const fptr fnList6[] = {machineSet, batteryChange, headphonesSet, speedHackSet, cpuHalfSet /*languageSet*/};
 const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, stepFrame};
 const fptr fnList8[] = {uiDummy};
 const fptr fnList9[] = {quickSelectGame};
@@ -148,11 +149,12 @@ void uiDisplay() {
 
 static void uiMachine() {
 	setupSubMenu("Machine Settings");
-	drawSubItem("Language: ",langTxt[gLang]);
 	drawSubItem("Machine: ",machTxt[gMachineSet]);
 	drawMenuItem("Change Batteries");
+	drawSubItem("Headphones:", autoTxt[(emuSettings&ENABLE_HEADPHONES)>>18]);
 	drawSubItem("Cpu speed hacks: ",autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
 	drawSubItem("Half cpu speed: ",autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
+//	drawSubItem("Language: ",langTxt[gLang]);
 }
 
 void uiSettings() {

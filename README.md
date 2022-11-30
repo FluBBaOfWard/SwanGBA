@@ -79,16 +79,16 @@ Holding L maps the dpad to WS Y1-Y4.
 In vertical games the d-pad is mapped to WS Y1-Y4. A, B, X & Y are mapped to WS X1-X4.
 
 ## Credits:
-
-Huge thanks to Loopy for the incredible PocketNES, without it this emu would
-probably never have been made.
-Thanks to:
-Ed Mandy (Flavor) for WonderSwan info & flashcart. https://www.flashmasta.com
-Koyote for WonderSwan info.
-Alex Marshall (trap15) for WonderSwan info. http://daifukkat.su/docs/wsman/
-Godzil for the boot rom stubs. https://github.com/Godzil/NewOswan
-lidnariq for RTC info.
-Dwedit for help and inspiration with a lot of things.
+	Huge thanks to Loopy for the incredible PocketNES, without it this emu would probably never have been made.
+	Thanks to:
+	Ed Mandy (Flavor) for WonderSwan info & flashcart. https://www.flashmasta.com
+	Koyote for WonderSwan info.
+	Alex Marshall (trap15) for WonderSwan info. http://daifukkat.su/docs/wsman/
+	Guy Perfect for WonderSwan info http://perfectkiosk.net/stsws.html
+	asie for info and inspiration.
+	Godzil for the boot rom stubs. https://github.com/Godzil/NewOswan
+	lidnariq for RTC info.
+	Dwedit for help and inspiration with a lot of things.
 
 
 Fredrik Ahlström

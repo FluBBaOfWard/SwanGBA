@@ -56,12 +56,12 @@ initIntEepromColor:			;@ r0 = eepromAdr
 	.type   initIntEepromColor STT_FUNC
 ;@----------------------------------------------------------------------------
 	mov r1,#0x03
-	strb r1,[r0,#0x83]	;@ Default sound volume
+	strb r1,[r0,#0x83]			;@ Default sound volume
 ;@----------------------------------------------------------------------------
 initIntEeprom:				;@ r0 = eepromAdr
 	.type   initIntEeprom STT_FUNC
 ;@----------------------------------------------------------------------------
-	add r0,r0,#0x60		;@ Name offset
+	add r0,r0,#0x60				;@ Name offset
 	ldr r1,=eepromDefault
 	mov r3,#16
 eepromLoop:
@@ -76,7 +76,7 @@ eepromDefault: // From adr 0x60
 	.byte 0x25, 0x00, 0x1D, 0x21, 0x0B, 0x18, 0x11, 0x0C, 0x0B, 0x00, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00
 
 ;@----------------------------------------------------------------------------
-ioSaveState:			;@ In r0=destination. Out r0=size.
+ioSaveState:				;@ In r0=destination. Out r0=size.
 	.type   ioSaveState STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{lr}
@@ -89,7 +89,7 @@ ioSaveState:			;@ In r0=destination. Out r0=size.
 	mov r0,#0x100
 	bx lr
 ;@----------------------------------------------------------------------------
-ioLoadState:			;@ In r0=source. Out r0=size.
+ioLoadState:				;@ In r0=source. Out r0=size.
 	.type   ioLoadState STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{lr}
@@ -98,7 +98,7 @@ ioLoadState:			;@ In r0=source. Out r0=size.
 
 	ldmfd sp!,{lr}
 ;@----------------------------------------------------------------------------
-ioGetStateSize:		;@ Out r0=state size.
+ioGetStateSize:				;@ Out r0=state size.
 	.type   ioGetStateSize STT_FUNC
 ;@----------------------------------------------------------------------------
 	mov r0,#0x100
@@ -163,21 +163,21 @@ joy0State:	.long 0
 dulr2dlur:	.byte 0x00,0x02,0x08,0x0A, 0x01,0x03,0x09,0x0B, 0x04,0x06,0x0C,0x0E, 0x05,0x07,0x0D,0x0F
 abxy2ypad:	.byte 0x00,0x02,0x04,0x06, 0x01,0x03,0x05,0x07, 0x08,0x0A,0x0C,0x0E, 0x09,0x0B,0x0D,0x0F
 
-EMUinput:			;@ This label here for main.c to use
+EMUinput:			;@ This label here for Main.c to use
 	.long 0			;@ EMUjoypad (this is what Emu sees)
 
 ;@----------------------------------------------------------------------------
-IOPortA_R:		;@ Player1...
+IOPortA_R:					;@ Player1...
 ;@----------------------------------------------------------------------------
 	ldr spxptr,=sphinx0
 	ldrb r1,[spxptr,#wsvControls]
 	and r1,r1,#0x70
 	ldr r0,joy0State
-	tst r1,#0x10		;@ Y keys enabled?
+	tst r1,#0x10				;@ Y keys enabled?
 	biceq r0,r0,#0x00F
-	tst r1,#0x20		;@ X keys enabled?
+	tst r1,#0x20				;@ X keys enabled?
 	biceq r0,r0,#0x0F0
-	tst r1,#0x40		;@ Buttons enabled?
+	tst r1,#0x40				;@ Buttons enabled?
 	biceq r0,r0,#0xF00
 	orr r0,r0,r0,lsr#4
 	orr r0,r0,r0,lsr#4
@@ -245,27 +245,27 @@ intEepromStatusR:
 	adr eeptr,intEeprom
 	b wsEepromStatusR
 ;@----------------------------------------------------------------------------
-intEepromDataLowW:		;@ r1 = value
+intEepromDataLowW:			;@ r1 = value
 ;@----------------------------------------------------------------------------
 	adr eeptr,intEeprom
 	b wsEepromDataLowW
 ;@----------------------------------------------------------------------------
-intEepromDataHighW:		;@ r1 = value
+intEepromDataHighW:			;@ r1 = value
 ;@----------------------------------------------------------------------------
 	adr eeptr,intEeprom
 	b wsEepromDataHighW
 ;@----------------------------------------------------------------------------
-intEepromAdrLowW:		;@ r1 = value
+intEepromAdrLowW:			;@ r1 = value
 ;@----------------------------------------------------------------------------
 	adr eeptr,intEeprom
 	b wsEepromAddressLowW
 ;@----------------------------------------------------------------------------
-intEepromAdrHighW:		;@ r1 = value
+intEepromAdrHighW:			;@ r1 = value
 ;@----------------------------------------------------------------------------
 	adr eeptr,intEeprom
 	b wsEepromAddressHighW
 ;@----------------------------------------------------------------------------
-intEepromCommandW:		;@ r1 = value
+intEepromCommandW:			;@ r1 = value
 ;@----------------------------------------------------------------------------
 	adr eeptr,intEeprom
 	b wsEepromCommandW
