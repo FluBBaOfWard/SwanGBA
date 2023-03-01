@@ -8,8 +8,8 @@
 	.global monoPalInit
 	.global paletteInit
 	.global paletteTxAll
-	.global refreshGfx
-	.global endFrameGfx
+	.global gfxRefresh
+	.global gfxEndFrame
 	.global vblIrqHandler
 	.global v30ReadPort
 	.global v30WritePort
@@ -37,7 +37,7 @@
 	.syntax unified
 	.arm
 
-#if GBA
+#ifdef GBA
 	.section .ewram, "ax", %progbits	;@ For the GBA
 #else
 	.section .text						;@ For anything else
@@ -86,6 +86,11 @@ gfxReset:					;@ Called with CPU reset
 	ldr spxptr,=sphinx0
 	ldrb r0,[r0]
 	strb r0,[spxptr,#wsvOrientation]
+
+	ldr r0,=emuSettings
+	ldr r0,[r0]
+	and r0,r0,#1<<18
+	bl setHeadphones
 
 	ldmfd sp!,{pc}
 
@@ -395,12 +400,12 @@ nothingNew:
 
 
 ;@----------------------------------------------------------------------------
-refreshGfx:					;@ Called from C when changing scaling.
-	.type refreshGfx STT_FUNC
+gfxRefresh:					;@ Called from C when changing scaling.
+	.type gfxRefresh STT_FUNC
 ;@----------------------------------------------------------------------------
 	adr spxptr,sphinx0
 ;@----------------------------------------------------------------------------
-endFrameGfx:				;@ Called just before screen end (~line 143)	(r0-r3 safe to use)
+gfxEndFrame:				;@ Called just after screen end (line 144)	(r0-r3 safe to use)
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{lr}
 

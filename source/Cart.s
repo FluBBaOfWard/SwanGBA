@@ -84,18 +84,29 @@ ROM_Space:
 //	.incbin "wsroms/Beat Mania (J) [M][!].ws"
 //	.incbin "wsroms/Crazy Climber (J) [M][!].ws"
 //	.incbin "wsroms/Chaos Demo V2.1 by Charles Doty (PD).wsc"
+//	.incbin "wsroms/Chaos Gear - Michibikareshi Mono (Japan).ws"
 //	.incbin "wsroms/Dicing Knight. (J).wsc"
+//	.incbin "wsroms/dkd-vesilintu.wsc"
+//	.incbin "wsroms/Final Fantasy (Japan).wsc"
 //	.incbin "wsroms/Guilty Gear Petit (J).wsc"
 //	.incbin "wsroms/GunPey (Japan).ws"
 //	.incbin "wsroms/Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan).wsc"
 //	.incbin "wsroms/Kaze no Klonoa - Moonlight Museum (Japan).ws"
 //	.incbin "wsroms/Macross - True Love Song (Japan).ws"
 //	.incbin "wsroms/Magical Drop for WonderSwan (Japan).ws"
+//	.incbin "wsroms/Mahjong Touryuumon (Japan).ws"
 //	.incbin "wsroms/Makaimura for WonderSwan (Japan).ws"
+//	.incbin "wsroms/Mingle Magnet (Japan).ws"
 //	.incbin "wsroms/Mr. Driller (J) [!].wsc"
+//	.incbin "wsroms/Nazo Ou Pocket (Japan).ws"
 //	.incbin "wsroms/SD Gundam - Operation U.C. (Japan).wsc"
+//	.incbin "wsroms/Side Pocket for WonderSwan (Japan).ws"
 //	.incbin "wsroms/Tetris (Japan).wsc"
+//	.incbin "wsroms/Time Bokan Series - Bokan Densetsu - Butamo Odaterya Doronbou (Japan).ws"
+//	.incbin "wsroms/timingtest.ws"
 //	.incbin "wsroms/Tonpuusou (Japan).wsc"
+//	.incbin "wsroms/Ultraman - Hikari no Kuni no Shisha (Japan).wsc"
+//	.incbin "wsroms/With You - Mitsumete Itai (Japan).wsc"
 //	.incbin "wsroms/WONDERPR.WSC"
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:
@@ -208,6 +219,8 @@ noHWCheck:
 	ldreq r2,=SC_BIOS_INTERNAL
 	moveq r4,#SOC_SPHINX2
 	strb r4,gSOC
+	cmp r5,#HW_POCKETCHALLENGEV2
+	moveq r0,#0					;@ Set boot rom overlay (none)
 	cmp r1,#0
 	moveq r1,r2					;@ Use internal bios
 	str r1,biosBase
@@ -224,7 +237,7 @@ noHWCheck:
 	moveq r2,#0xC000
 	bleq memset
 
-//	bl hacksInit
+	bl hacksInit
 	bl extEepromReset
 	bl cartRtcReset
 	bl gfxReset

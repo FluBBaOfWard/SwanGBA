@@ -6,12 +6,30 @@
 	.global empty_IO_R
 	.global empty_IO_W
 	.global rom_W
+
 	.global cpuReadMem20
 	.global cpuReadMem20W
 	.global dmaReadMem20W
+	.global v30ReadEA1
+	.global v30ReadEA
+	.global v30ReadStack
+	.global v30ReadSegOfs
+	.global v30ReadEAW1
+	.global v30ReadEAW
+	.global v30ReadEAW_noAdd
+	.global v30ReadSegOfsW
+
 	.global cpuWriteMem20
 	.global cpuWriteMem20W
 	.global dmaWriteMem20W
+	.global v30WriteEA
+	.global v30ReadDsIx
+	.global v30WriteSegOfs
+	.global v30WriteEAW2
+	.global v30WriteEAW
+	.global v30PushW
+	.global v30PushLastW
+	.global v30WriteSegOfsW
 	.global setBootRomOverlay
 
 
@@ -74,8 +92,29 @@ cpuReadWordUnaligned:	;@ Make sure cpuReadMem20 does not use r3 or r12!
 	bl cpuReadMem20
 	orr r0,r12,r0,lsl#8
 	ldmfd sp!,{pc}
+
+;@----------------------------------------------------------------------------
+v30ReadEA1:			;@ In v30ofs=v30ptr+second byte of opcode.
+;@----------------------------------------------------------------------------
+	eatCycles 1
+;@----------------------------------------------------------------------------
+v30ReadEA:			;@ In v30ofs=v30ptr+second byte of opcode.
+;@----------------------------------------------------------------------------
+	adr r12,v30ReadSegOfs		;@ Return reg for EA
+	ldr pc,[v30ofs,#v30EATable]
+;@----------------------------------------------------------------------------
+v30ReadDsIx:		;@
+;@----------------------------------------------------------------------------
+	TestSegmentPrefix
+	ldreq v30csr,[v30ptr,#v30SRegDS]
+	ldr v30ofs,[v30ptr,#v30RegIX]
+;@----------------------------------------------------------------------------
+v30ReadSegOfs:		;@ In r7=segment in top 16 bits, r6=offset in top 16 bits.
+;@----------------------------------------------------------------------------
+	add r0,v30csr,v30ofs,lsr#4
 ;@----------------------------------------------------------------------------
 cpuReadMem20:		;@ In r0=address set in top 20 bits. Out r0=val, r1=phyAdr
+;@ If this is updated, remember to also update V30EncodePC
 ;@----------------------------------------------------------------------------
 	mvn r2,r0,lsr#28
 	ldr r1,[v30ptr,r2,lsl#2]
@@ -89,6 +128,28 @@ bootRomSwitch:
 	ldrb r0,[r1,r2]!
 	bx lr
 
+;@----------------------------------------------------------------------------
+v30ReadEAW1:		;@ In v30ofs=v30ptr+second byte of opcode.
+;@----------------------------------------------------------------------------
+	eatCycles 1
+	adr r12,v30ReadSegOfsW		;@ Return reg for EA
+	ldr pc,[v30ofs,#v30EATable]
+;@----------------------------------------------------------------------------
+v30ReadEAW:			;@ In r0=second byte of opcode.
+;@----------------------------------------------------------------------------
+	add v30ofs,v30ptr,r0,lsl#2
+v30ReadEAW_noAdd:
+	adr r12,v30ReadSegOfsW		;@ Return reg for EA
+	ldr pc,[v30ofs,#v30EATable]
+;@----------------------------------------------------------------------------
+v30ReadStack:		;@ Read a word from the stack, r0=value on stack.
+;@----------------------------------------------------------------------------
+	ldr v30ofs,[v30ptr,#v30RegSP]
+	ldr v30csr,[v30ptr,#v30SRegSS]
+;@----------------------------------------------------------------------------
+v30ReadSegOfsW:		;@ In r7=segment in top 16 bits, r6=offset in top 16 bits.
+;@----------------------------------------------------------------------------
+	add r0,v30csr,v30ofs,lsr#4
 ;@----------------------------------------------------------------------------
 cpuReadMem20W:		;@ In r0=address set in top 20 bits. Out r0=val, r1=phyAdr
 ;@----------------------------------------------------------------------------
@@ -116,8 +177,19 @@ cpuWriteWordUnaligned:	;@ Make sure cpuWriteMem20 does not change r0 or r1!
 	ldmfd sp!,{lr}
 	add r0,r0,#0x1000
 	mov r1,r1,lsr#8
+	b cpuWriteMem20
+
 ;@----------------------------------------------------------------------------
-cpuWriteMem20:		;@ r0=address set in top 20 bits
+v30WriteEA:				;@ In v30ofs=v30ptr+second byte of opcode.
+;@----------------------------------------------------------------------------
+	adr r12,v30WriteSegOfs		;@ Return reg for EA
+	ldr pc,[v30ofs,#v30EATable]
+;@----------------------------------------------------------------------------
+v30WriteSegOfs:		;@ In r7=segment in top 16 bits, r6=offset in top 16 bits.
+;@----------------------------------------------------------------------------
+	add r0,v30csr,v30ofs,lsr#4
+;@----------------------------------------------------------------------------
+cpuWriteMem20:		;@ r0=address set in top 20 bits, r1=value
 ;@----------------------------------------------------------------------------
 	movs r2,r0,lsr#28
 	bne tstSRAM_WB
@@ -126,23 +198,46 @@ ram_WB:				;@ Write ram ($00000-$0FFFF)
 ;@----------------------------------------------------------------------------
 	ldr r2,[v30ptr,#v30MemTblInv-1*4]
 	strb r1,[r2,r0,lsr#12]
-	ldr r2,=DIRTYTILES
+	add r2,r2,#0x10000			;@ Size of wsRAM, ptr to DIRTYTILES.
 	strb r0,[r2,r0,lsr#17]
 	bx lr
 ;@----------------------------------------------------------------------------
 tstSRAM_WB:
 ;@----------------------------------------------------------------------------
 	cmp r2,#1
-	bne rom_W
 ;@----------------------------------------------------------------------------
 sram_WB:			;@ Write sram ($10000-$1FFFF)
 ;@----------------------------------------------------------------------------
-	ldr r2,[v30ptr,#v30MemTblInv-2*4]
-	strb r1,[r2,r0,lsr#12]
-	bx lr
+	ldreq r2,[v30ptr,#v30MemTblInv-2*4]
+	strbeq r1,[r2,r0,lsr#12]
+	bxeq lr
+	b rom_W
 
 ;@----------------------------------------------------------------------------
-cpuWriteMem20W:		;@ r0=address set in top 20 bits
+v30WriteEAW2:		;@ In v30ofs=v30ptr+second byte of opcode.
+;@----------------------------------------------------------------------------
+	eatCycles 2
+;@----------------------------------------------------------------------------
+v30WriteEAW:		;@ In v30ofs=v30ptr+second byte of opcode.
+;@----------------------------------------------------------------------------
+	adr r12,v30WriteSegOfsW		;@ Return reg for EA
+	ldr pc,[v30ofs,#v30EATable]
+;@----------------------------------------------------------------------------
+v30PushW:		;@ In r1=value.
+;@----------------------------------------------------------------------------
+	ldr v30ofs,[v30ptr,#v30RegSP]
+	ldr v30csr,[v30ptr,#v30SRegSS]
+;@----------------------------------------------------------------------------
+v30PushLastW:	;@ In r1=value.
+;@----------------------------------------------------------------------------
+	sub v30ofs,v30ofs,#0x20000
+	str v30ofs,[v30ptr,#v30RegSP]
+;@----------------------------------------------------------------------------
+v30WriteSegOfsW:	;@ In r7=segment in top 16 bits, r6=offset in top 16 bits.
+;@----------------------------------------------------------------------------
+	add r0,v30csr,v30ofs,lsr#4
+;@----------------------------------------------------------------------------
+cpuWriteMem20W:		;@ r0=address set in top 20 bits, r1=value
 ;@----------------------------------------------------------------------------
 	tst r0,#0x1000
 	bne cpuWriteWordUnaligned
@@ -153,24 +248,24 @@ ram_WW:				;@ Write ram ($00000-$0FFFF)
 dmaWriteMem20W:
 ;@----------------------------------------------------------------------------
 	ldr r2,[v30ptr,#v30MemTblInv-1*4]
+	add r3,r2,#0x10000			;@ Size of wsRAM, ptr to DIRTYTILES.
 	add r2,r2,r0,lsr#12
 	strh r1,[r2]
-	ldr r2,=DIRTYTILES
-	strb r0,[r2,r0,lsr#17]
+	strb r0,[r3,r0,lsr#17]
 	bx lr
 ;@----------------------------------------------------------------------------
 tstSRAM_WW:
 ;@----------------------------------------------------------------------------
 	cmp r2,#1
-	bne rom_W
 ;@----------------------------------------------------------------------------
 sram_WW:			;@ Write sram ($10000-$1FFFF)
 ;@----------------------------------------------------------------------------
-	eatCycles 1
-	ldr r2,[v30ptr,#v30MemTblInv-2*4]
-	mov r0,r0,lsr#12
-	strh r1,[r2,r0]
-	bx lr
+	subeq v30cyc,v30cyc,#1*CYCLE
+	ldreq r2,[v30ptr,#v30MemTblInv-2*4]
+	moveq r0,r0,lsr#12
+	strheq r1,[r2,r0]
+	bxeq lr
+	b rom_W
 ;@----------------------------------------------------------------------------
 	.end
 #endif // #ifdef __arm__

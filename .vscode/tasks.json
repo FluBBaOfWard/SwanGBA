@@ -80,6 +80,9 @@
         {
             "label": "run",
             "type": "shell",
+            "dependsOn": [
+                "make release"
+            ],
             "isBackground": true,
             "windows": {
                 "command": "C:/NO$GBADebugger/NO$GBA.exe ${workspaceFolder}/${workspaceFolderBasename}.gba",

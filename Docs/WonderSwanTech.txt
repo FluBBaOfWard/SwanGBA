@@ -2,7 +2,7 @@
   /   |   \ ___ __/ \__ ___  ___  /\__
   \  / \  // __>\_   _// __|/ __\/    \
    \_____/_\__ \  \_/  \___|\___/\_/\_/
-          \____/      2022-11-20
+          \____/      2023-03-01
 
 1. ABOUT
    WStech original doc made by Judge and Dox
@@ -381,9 +381,9 @@
  - $3E - $10 - PALF0
  - $3F - $73 - PALF1
  - $40 - $00 - DMA (?) copy source address
- - $41 - $00 -  ^^^
+ - $41 - $00 - ^^^
  - $42 - $00 - copy source bank
- - $43 - $00 - ???
+ - $43 - $00 - 0
  - $44 - $00 - copy destination address
  - $45 - $00 - ^^^
  - $46 - $00 - size of copied data (in bytes)
@@ -392,18 +392,24 @@
                 (bit 7=0 when data transfer is finished)
                 ports $40-$48 are updated during copy process
                bit 6 inc/dec
- - $49 - $00 - ???
+ - $49 - $00 - 0
 
- - $4A - $00 - sound DMA source address
+ - $4A - $00 - Sound DMA source address
  - $4B - $00 - ^^^
- - $4C - $00 - sound DMA source memory segment bank
+ - $4C - $00 - Sound DMA source memory segment bank
  - $4D - $00 - 0
- - $4E - $00 - DMA transfer size (in bytes)
+ - $4E - $00 - Sound DMA transfer size (in bytes)
  - $4F - $00 - ^^^
  - $50 - $00 - ^^^
- - $51 - $00 - ???
- - $52 - $00 - DMA control bit  7 = 1  -> DMA start
- - $53 - $00 - ???
+ - $51 - $00 - 0
+ - $52 - $00 - Sound DMA control
+               bit 7 = 1 -> DMA start
+               bit 6 = inc/dec
+               bit 4 = destination, 0=SND_VOL_2, 1=HYPER_VOICE
+               bit 3 = 1 -> DMA loop
+               bit 2 = ???, if set DMA doesn't appear to work.
+               bit 0-1 = rate, 0=4kHz, 1=6kHz, 2=12kHz, 3=24kHz.
+ - $53 - $00 - 0
  - $54 - $00 - ???
  - $55 - $00 - ???
  - $56 - $00 - ???
@@ -453,7 +459,7 @@
  - $6D - $00 - ???
  - $6E - $00 - ???
  - $6F - $00 - ???
- - $70 - $00 - REG_UNK_70 SwanCrystal=$D0
+ - $70 - $00 - REG_UNK_70 SwanCrystal=$D0 Written by SC Bootrom
  - $71 - $00 - REG_UNK_71 SwanCrystal=$77
  - $72 - $00 - REG_UNK_72 SwanCrystal=$F7
  - $73 - $00 - REG_UNK_73 SwanCrystal=$06
@@ -520,20 +526,20 @@
  - $93 - $00 - ^^^
  - $94 - $00 - Voice Volume (4 bit)
  - $95 - $00 - REG_SND_HYPERVOICE
- - $96 - $00 - REG_SND_9697
- - $97 - $00 - ???
- - $98 - $00 - REG_SND_9899
- - $99 - $00 - ???
- - $9A - $00 - REG_SND_9A
- - $9B - $00 - REG_SND_9B
+ - $96 - $00 - SND_OUT_R (channels 1-4) right channel output, 10-bit, read-only
+ - $97 - $00 - ^^^
+ - $98 - $00 - SND_OUT_L (channels 1-4) left channel output, 10-bit, read-only
+ - $99 - $00 - ^^^
+ - $9A - $00 - SND_OUT_M left+right channels sum, 11-bit, read-only just the sequencer - no Hyper Voice
+ - $9B - $00 - ^^^
  - $9C - $00 - REG_SND_9C
  - $9D - $00 - REG_SND_9D
- - $9E - $03 - Volume set from Bios 0-3.
+ - $9E - $03 - Volume set from Bios 0-3. Changes the volume as well as the corresponding LCD segments.
  - $9F - $00 - ???
  - $A0 - $87 - Hardware type
                 bit 7 - 1 = finnished booting?
                 bit 3     = Cart ROM speed (0=3 cycle, 1=1 cycle)
-                bit 2 - 1 = 16bit cart access
+                bit 2 - 1 = 16bit cart access, 0 = 8 bit access
                 bit 1 - 1 = color, 0 = mono
                 bit 0 - 1 = lock the boot rom
  - $A1 - $00 - ???
@@ -549,7 +555,7 @@
  - $A3 - $00 - ^^^
  - $A4 - $00 - Hblank Timer 'frequency'
                 0 = no HBLANK Interrupt
-                n = HBLANK Interrupt every n lines (???)
+                n = HBLANK Interrupt every n lines
  - $A5 - $00 - ^^^
  - $A6 - $4F - Vblank Timer 'frequency'
  - $A7 - $FF - ^^^
@@ -564,6 +570,7 @@
  - $B0 - $00 - Interrupt Base
  - $B1 - $DB - Communication byte
  - $B2 - $00 - Interrupt enable
+               This enables latching of each individual interrupt source.
                 bit 7 - HBlank Timer
                 bit 6 - VBlank begin
                 bit 5 - VBlank Timer
@@ -573,15 +580,15 @@
                 bit 1 - Key press
                 bit 0 - Serial transmit
  - $B3 - $00 - Communication direction
-                bit 7 - Receive data interrupt generation
+                bit 7 - Serial Enable
                 bit 6 - Connection Speed
                         0 - 9600  bps
                         1 - 38400 bps
-                bit 5 - Send data interrupt generation
-                bit 4 - ???
-                bit 3 - ???
-                bit 2 - Send Complete
-                bit 1 - Error
+                bit 5 - Overrun Reset
+                bit 4 - 0
+                bit 3 - 0
+                bit 2 - Send Buffer Empty
+                bit 1 - Overrun
                 bit 0 - Receive Complete
 
                         write $00-$7f = read $00
@@ -599,7 +606,7 @@
  - $B5 - $40 - Controls
                 bits 4-7 : read/write - Select line of inputs to read
                         0001 - read vertical cursors
-                        0010 - read hozizontal cursors
+                        0010 - read horizontal cursors
                         0100 - read buttons
                 bits 0-3 : read only - Read the current state of the input lines (positive logic) after having written 10h,20h, or 40h.
                         Meaning of the bits when reading cursors:
@@ -640,7 +647,7 @@
                 bit 2 - Erase complete (Read only)
                 bit 1 - Write complete (Read only)
                 bit 0 - Read complete (Read only)
- - $BF - $00 - ???
+ - $BF - $00 - ^^^
 
 ---------------------------------------------------------------------
 Mapped to cartridge. 2001/Luxsor1 & 2003/Luxsor2

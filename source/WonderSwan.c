@@ -44,13 +44,13 @@ int getStateSize() {
 
 void setupWSBackground() {
 	LZ77UnCompVram(WSBorderTiles, TILE_BASE_ADR(1));
-	LZ77UnCompVram(WSBorderMap, MAP_BASE_ADR(12));
+	LZ77UnCompVram(WSBorderMap, MAP_BASE_ADR(15));
 	memcpy(EMUPALBUFF, WSBorderPal, WSBorderPalLen);
 }
 
 void setupWSCBackground() {
 	LZ77UnCompVram(WSCBorderTiles, TILE_BASE_ADR(1));
-	LZ77UnCompVram(WSCBorderMap, MAP_BASE_ADR(12));
+	LZ77UnCompVram(WSCBorderMap, MAP_BASE_ADR(15));
 	memcpy(EMUPALBUFF, WSCBorderPal, WSCBorderPalLen);
 }
 

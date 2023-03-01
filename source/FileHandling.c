@@ -12,8 +12,8 @@
 #include "Gfx.h"
 #include "io.h"
 
-int selectedGame = 0;
-ConfigData cfg;
+EWRAM_BSS int selectedGame = 0;
+EWRAM_BSS ConfigData cfg;
 
 //---------------------------------------------------------------------------------
 int loadSettings() {

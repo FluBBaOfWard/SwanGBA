@@ -53,20 +53,19 @@ noHacks:
 
 InstallHack:
 	and r2,r0,#0x0F
-	orr r2,r2,#0xF0
-	strb r2,[r1,#0x30]			;@ Change compare value for branch distance.
+	strb r2,[r1,#0x1C]			;@ Change compare value for branch distance.
 
 	mov r0,r0,lsr#4
 	adr r3,HackOpcodes
 	ldr r2,[r3,r0,lsl#2]
 	ldr r3,[r2]
-	str r3,[r1,#0x14]
+	str r3,[r1,#0x04]
 	ldr r3,[r2,#0x04]
-	str r3,[r1,#0x18]
+	str r3,[r1,#0x08]
 	ldr r3,[r2,#8]
-	str r3,[r1,#0x1C]
+	str r3,[r1,#0x0C]
 	ldrb r3,[r2,#15]
-	strb r3,[r1,#0x23]
+	strb r3,[r1,#0x13]
 	add r0,r0,#0x70
 	b V30RedirectOpcode			;@ Insert new pointer to hack opcode in optable
 
@@ -84,9 +83,9 @@ SpeedHacks:
 	.byte 0x00,0x00	;@ #0x02 Chocobo no Fushigi na Dungeon
 	.byte 0x00,0x00	;@ #0x03 Armored Unit
 	.byte 0x00,0x00	;@ #0x04 Anchorz Field
-	.byte 0x00,0x00	;@ #0x05
+	.byte 0x4A,0x00	;@ #0x05 Time Bokan Series
 	.byte 0x00,0x00	;@ #0x06
-	.byte 0x29,0x00	;@ #0x07 Guilty Gear Petit
+	.byte 0x27,0x00	;@ #0x07 Guilty Gear Petit
 	.byte 0x00,0x00	;@ #0x08
 	.byte 0x00,0x00	;@ #0x09
 	.byte 0x00,0x00	;@ #0x0A
@@ -135,44 +134,38 @@ i_be_hack:				;@ 0x74
 	beq be_end
 be_end:
 
-#if GBA
+#ifdef GBA
 	.section .ewram, "ax", %progbits	;@ For the GBA
 	.align 2
 #endif
 ;@----------------------------------------------------------------------------
 sngJR_hack0:				;@
 ;@----------------------------------------------------------------------------
-	stmfd sp!,{lr}
-	getNextByte
+	getNextSignedByte
 	mov r0,r0
 	mov r0,r0
 	tst v30f,#PSR_Z
-	beq hack1End
-	mov r0,r0,lsl#24
-	add v30pc,v30pc,r0,asr#8
+	beq hack0End
+	add v30pc,v30pc,r0
 	sub v30cyc,v30cyc,#3*CYCLE
-	cmp r0,#0xFA000000				;@ Speedhack 0
+	cmp r0,#-4				;@ Speedhack 0
 	andeq v30cyc,v30cyc,#CYC_MASK
 hack0End:
-	sub v30cyc,v30cyc,#1*CYCLE
-	ldmfd sp!,{pc}
+	fetch 1
 ;@----------------------------------------------------------------------------
 sngJR_hack1:				;@
 ;@----------------------------------------------------------------------------
-	stmfd sp!,{lr}
-	getNextByte
+	getNextSignedByte
 	mov r0,r0
 	mov r0,r0
 	tst r1,#PSR_V
 	beq hack1End
-	mov r0,r0,lsl#24
-	add v30pc,v30pc,r0,asr#8
+	add v30pc,v30pc,r0
 	sub v30cyc,v30cyc,#3*CYCLE
-	cmp r0,#0xF9000000				;@ Speedhack 1
+	cmp r0,#-5				;@ Speedhack 1
 	andeq v30cyc,v30cyc,#CYC_MASK
 hack1End:
-	sub v30cyc,v30cyc,#1*CYCLE
-	ldmfd sp!,{pc}
+	fetch 1
 
 ;@----------------------------------------------------------------------------
 	.end
