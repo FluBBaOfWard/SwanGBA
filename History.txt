@@ -1,6 +1,18 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.5.2 - 2023-04-25 (FluBBa)
+	Fixed controls for PCV2.
+	Fixed WS sound levels.
+	Fixed WS sound icon.
+	Fixed save state.
+	Added more BnW palettes.
+
+V0.5.1 - 2023-03-09 (FluBBa)
+	Fixed noise calculation.
+	Fixed BnW palettes.
+	Added setting for border.
+
 V0.5.0 - 2023-03-01 (FluBBa)
 	Fixed reset of mapper registers.
 	Fixed loading of roms that are not power of 2.

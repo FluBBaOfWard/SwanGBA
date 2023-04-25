@@ -45,29 +45,37 @@ int getStateSize() {
 void setupWSBackground() {
 	LZ77UnCompVram(WSBorderTiles, TILE_BASE_ADR(1));
 	LZ77UnCompVram(WSBorderMap, MAP_BASE_ADR(15));
+}
+
+void setupWSBorderPalette() {
 	memcpy(EMUPALBUFF, WSBorderPal, WSBorderPalLen);
 }
 
 void setupWSCBackground() {
 	LZ77UnCompVram(WSCBorderTiles, TILE_BASE_ADR(1));
 	LZ77UnCompVram(WSCBorderMap, MAP_BASE_ADR(15));
-	memcpy(EMUPALBUFF, WSCBorderPal, WSCBorderPalLen);
 }
 
-void setupBorderPalette() {
-	if (gMachine == HW_WONDERSWANCOLOR) {
-		memcpy(EMUPALBUFF, WSCBorderPal, WSCBorderPalLen);
-	}
-	else if (gMachine == HW_WONDERSWAN) {
-		memcpy(EMUPALBUFF, WSBorderPal, WSBorderPalLen);
-	}
+void setupWSCBorderPalette() {
+	memcpy(EMUPALBUFF, WSCBorderPal, WSCBorderPalLen);
 }
 
 void setupEmuBackground() {
 	if (gMachine == HW_WONDERSWANCOLOR) {
 		setupWSCBackground();
+		setupWSCBorderPalette();
 	}
 	else if (gMachine == HW_WONDERSWAN) {
 		setupWSBackground();
+		setupWSBorderPalette();
+	}
+}
+
+void setupEmuBorderPalette() {
+	if (gMachine == HW_WONDERSWANCOLOR) {
+		setupWSCBorderPalette();
+	}
+	else if (gMachine == HW_WONDERSWAN) {
+		setupWSBorderPalette();
 	}
 }

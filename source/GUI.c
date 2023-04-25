@@ -14,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.5.0 2023-03-01"
+#define EMUVERSION "V0.5.2 2023-04-25"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -40,7 +40,7 @@ const fptr fnList0[] = {uiDummy};
 const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, ui8, gbaSleep, resetGame, ui10};
 const fptr fnList2[] = {selectGame, loadState, saveState, saveSettings, resetGame};
 const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
-const fptr fnList4[] = {gammaSet, paletteChange};
+const fptr fnList4[] = {gammaSet, contrastSet, paletteChange};
 const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, ewramSet, sleepSet};
 const fptr fnList6[] = {machineSet, batteryChange, headphonesSet, speedHackSet, cpuHalfSet /*languageSet*/};
 const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, stepFrame};
@@ -52,6 +52,8 @@ u8 menuXItems[] = {ARRSIZE(fnList0), ARRSIZE(fnList1), ARRSIZE(fnList2), ARRSIZE
 const fptr drawUIX[] = {uiNullNormal, uiMainMenu, uiFile, uiController, uiDisplay, uiSettings, uiMachine, uiDebug, uiAbout, uiLoadGame};
 
 u8 gGammaValue = 0;
+u8 gContrastValue = 3;
+u8 gBorderEnable = 1;
 char gameInfoString[32];
 
 const char *const autoTxt[]  = {"Off", "On", "With R"};
@@ -63,7 +65,7 @@ const char *const flickTxt[] = {"No Flicker", "Flicker"};
 
 const char *const machTxt[]  = {"Auto", "WonderSwan", "WonderSwan Color", "SwanCrystal", "Pocket Challenge V2"};
 const char *const bordTxt[]  = {"Black", "Border Color", "None"};
-const char *const palTxt[]   = {"Black & White", "Red", "Green", "Blue", "Classic"};
+const char *const palTxt[]   = {"Classic", "Black & White", "Red", "Green", "Blue", "Green-Blue", "Blue-Green", "Puyo Puyo Tsu"};
 const char *const langTxt[]  = {"Japanese", "English"};
 
 /// This is called at the start of the emulator
@@ -80,7 +82,7 @@ void enterGUI() {
 
 /// This is called going from ui to emu.
 void exitGUI() {
-	setupBorderPalette();
+	setupEmuBorderPalette();
 }
 
 void quickSelectGame() {
@@ -144,6 +146,7 @@ void uiController() {
 void uiDisplay() {
 	setupSubMenu("Display Settings");
 	drawSubItem("Gamma: ", brighTxt[gGammaValue]);
+	drawSubItem("Contrast:", brighTxt[gContrastValue]);
 	drawSubItem("B&W Palette: ", palTxt[gPaletteBank]);
 }
 
@@ -152,8 +155,8 @@ static void uiMachine() {
 	drawSubItem("Machine: ",machTxt[gMachineSet]);
 	drawMenuItem("Change Batteries");
 	drawSubItem("Headphones:", autoTxt[(emuSettings&ENABLE_HEADPHONES)>>18]);
-	drawSubItem("Cpu speed hacks: ",autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
-	drawSubItem("Half cpu speed: ",autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
+	drawSubItem("Cpu Speed Hacks: ",autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
+	drawSubItem("Half Cpu Speed: ",autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
 //	drawSubItem("Language: ",langTxt[gLang]);
 }
 
@@ -239,9 +242,23 @@ void swapABSet() {
 void gammaSet() {
 	gGammaValue++;
 	if (gGammaValue > 4) gGammaValue=0;
-	paletteInit(gGammaValue);
+	paletteInit(gGammaValue, gContrastValue);
+	monoPalInit(gGammaValue, gContrastValue);
 	paletteTxAll();					// Make new palette visible
 	setupMenuPalette();
+	settingsChanged = true;
+}
+
+/// Change contrast
+void contrastSet() {
+	gContrastValue++;
+	if (gContrastValue > 4) gContrastValue = 0;
+	paletteInit(gGammaValue, gContrastValue);
+	monoPalInit(gGammaValue, gContrastValue);
+	paletteTxAll();					// Make new palette visible
+//	setupEmuBorderPalette();
+	setupMenuPalette();
+	settingsChanged = true;
 }
 
 /// Turn on/off rendering of foreground
@@ -259,22 +276,20 @@ void sprLayerSet() {
 
 void paletteChange() {
 	gPaletteBank++;
-	if (gPaletteBank > 4) {
+	if (gPaletteBank > 7) {
 		gPaletteBank = 0;
 	}
-	monoPalInit();
+	monoPalInit(gGammaValue, gContrastValue);
 	paletteTxAll();
+	setupMenuPalette();
 	settingsChanged = true;
 }
-/*
+
 void borderSet() {
-	bcolor++;
-	if (bcolor > 2) {
-		bcolor = 0;
-	}
-	makeborder();
+	gBorderEnable ^= 0x01;
+//	setupEmuBorderPalette();
 }
-*/
+
 void languageSet() {
 	gLang ^= 0x01;
 }

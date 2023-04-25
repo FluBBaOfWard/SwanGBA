@@ -47,8 +47,8 @@ Needs RTC:
 	Tenori-On
 
 Games With Glitches:
-	WonderSwanColor BIOS, needs all 1024 tiles in 4color mode.
 	Sorobang, needs all 1024 tiles in 4color mode.
+	WonderSwanColor BIOS, needs all 1024 tiles in 4color mode.
 
 Speedhacks:
 	Halt (0xf4).

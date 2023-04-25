@@ -1,18 +1,19 @@
-# SwanGBA V0.4.2
+# SwanGBA V0.5.2
 
 <img align="right" width="220" src="./logo.png" />
 
 This is a Bandai WonderSwan (Color/Crystal) & PocketChallenge V2 emulator for the Nintendo GBA.
 
-## How to use:
+## How to use
 
 When the emulator starts, you press L+R to open up the menu.
 Now you can use the cross to navigate the menus, A to select an option,
 B to go back a step.
 
-## Menu:
+## Menu
 
-### File:
+### File
+
 	Load Game: Select a game to load.
 	Load State: Load a previously saved state of the currently running game.
 	Save State: Save a state of the currently running game.
@@ -21,15 +22,19 @@ B to go back a step.
 	Save Settings: Save the current settings (and internal EEPROM).
 	Reset Game: Reset the currently running game.
 
-### Controller:
+### Controller
+
 	Autofire: Select if you want autofire.
 	Swap A/B: Swap which GBA button is mapped to which WS button.
 
-### Display:
-	Mono Palette: Here you can select the palette for B & W games.
-	Gamma: Lets you change the gamma ("brightness").
+### Display
 
-### Settings:
+	Gamma: Lets you change the gamma ("brightness").
+	Contrast: Lets you change the contrast.
+	B&W Palette: Here you can select the palette for B & W games.
+
+### Settings
+
 	Speed: Switch between speed modes.
 		Normal: Game runs at it's normal speed.
 		200%: Game runs at double speed.
@@ -47,7 +52,8 @@ B to go back a step.
 		Use at your own risk!
 	Autosleep: Change the autosleep time, also see Sleep.
 
-### Machine Settings:
+### Machine Settings
+
 	Machine: Select the emulated machine.
 	Select WS Bios: Load a real WS Bios.
 	Select WS Color Bios: Load a real WS Color Bios.
@@ -58,27 +64,32 @@ B to go back a step.
 	Change Battery: Change to a new main battery (AA/LR6).
 	Language: Select between Japanese and English.
 
-### Debug:
+### Debug
+
 	Debug Output: Show FPS and logged text.
 	Disable Foreground: Turn on/off foreground rendering.
 	Disable Background: Turn on/off background rendering.
 	Disable Sprites: Turn on/off sprite rendering.
 	Step Frame: Emulate one frame.
 
-### About:
+### About
+
 	Some info about the emulator and game...
 
-### Sleep:
+### Sleep
+
 	Put the GBA into sleepmode.
 	START+SELECT wakes up from sleep mode (activated from this menu or from	5/10/30	minutes of inactivity).
 
-## Controls:
-In horizontal games the d-pad is mapped to WS X1-X4. A & B buttons are mapped to WS A & B.
-Holding L maps the dpad to WS Y1-Y4.
+## Controls
 
-In vertical games the d-pad is mapped to WS Y1-Y4. A, B, X & Y are mapped to WS X1-X4.
+	In horizontal games the d-pad is mapped to WS X1-X4. A & B buttons are mapped to WS A & B.
+	Holding L maps the dpad to WS Y1-Y4.
 
-## Credits:
+	In vertical games the d-pad is mapped to WS Y1-Y4. A, B, X & Y are mapped to WS X1-X4.
+
+## Credits
+
 	Huge thanks to Loopy for the incredible PocketNES, without it this emu would probably never have been made.
 	Thanks to:
 	Ed Mandy (Flavor) for WonderSwan info & flashcart. https://www.flashmasta.com
@@ -88,6 +99,7 @@ In vertical games the d-pad is mapped to WS Y1-Y4. A, B, X & Y are mapped to WS 
 	asie for info and inspiration.
 	Godzil for the boot rom stubs. https://github.com/Godzil/NewOswan
 	lidnariq for RTC info.
+	plasturion for some BnW palettes.
 	Dwedit for help and inspiration with a lot of things.
 
 

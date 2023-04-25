@@ -36,6 +36,7 @@ void controllerSet(void);
 void swapABSet(void);
 
 void gammaSet(void);
+void contrastSet(void);
 void fgrLayerSet(void);
 void bgrLayerSet(void);
 void sprLayerSet(void);
