@@ -5,8 +5,8 @@
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
 #include "Main.h"
-#include "WonderSwan.h"
 #include "FileHandling.h"
+#include "WonderSwan.h"
 #include "Cart.h"
 #include "Gfx.h"
 #include "io.h"
@@ -14,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.5.2 2023-04-25"
+#define EMUVERSION "V0.5.2 2023-07-07"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)

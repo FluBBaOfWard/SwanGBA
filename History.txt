@@ -1,6 +1,9 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.5.3 - 2023-07-07 (FluBBa)
+	Added differences for the 2 cart mappers.
+
 V0.5.2 - 2023-04-25 (FluBBa)
 	Fixed controls for PCV2.
 	Fixed WS sound levels.
