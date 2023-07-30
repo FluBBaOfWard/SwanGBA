@@ -15,16 +15,6 @@
 	.global reBankSwitch1
 	.global reBankSwitch2
 	.global reBankSwitch3
-	.global BankSwitch4_F_W
-	.global BankSwitch1_W
-	.global BankSwitch1_L_W
-	.global BankSwitch1_H_W
-	.global BankSwitch2_W
-	.global BankSwitch2_L_W
-	.global BankSwitch2_H_W
-	.global BankSwitch3_W
-	.global BankSwitch3_L_W
-	.global BankSwitch3_H_W
 	.global clearDirtyTiles
 
 	.global wsHeader
@@ -57,21 +47,6 @@
 	.global gLang
 	.global gPaletteBank
 
-	.global extEepromDataLowR
-	.global extEepromDataHighR
-	.global extEepromAdrLowR
-	.global extEepromAdrHighR
-	.global extEepromStatusR
-	.global extEepromDataLowW
-	.global extEepromDataHighW
-	.global extEepromAdrLowW
-	.global extEepromAdrHighW
-	.global extEepromCommandW
-
-	.global cartRtcStatusR
-	.global cartRtcCommandW
-	.global cartRtcDataR
-	.global cartRtcDataW
 	.global cartRtcUpdate
 
 	.syntax unified
@@ -83,12 +58,14 @@
 ROM_Space:
 //	.incbin "wsroms/Anchorz Field (Japan).ws"
 //	.incbin "wsroms/Beat Mania (J) [M][!].ws"
+//	.incbin "wsroms/Blue Wing Blitz (Japan).wsc"
 //	.incbin "wsroms/Crazy Climber (J) [M][!].ws"
 //	.incbin "wsroms/Chaos Demo V2.1 by Charles Doty (PD).wsc"
 //	.incbin "wsroms/Chaos Gear - Michibikareshi Mono (Japan).ws"
 //	.incbin "wsroms/Dicing Knight. (J).wsc"
 //	.incbin "wsroms/dkd-vesilintu.wsc"
 //	.incbin "wsroms/Final Fantasy (Japan).wsc"
+//	.incbin "wsroms/Final Fantasy IV (Japan).wsc"
 //	.incbin "wsroms/Guilty Gear Petit (J).wsc"
 //	.incbin "wsroms/GunPey (Japan).ws"
 //	.incbin "wsroms/Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan).wsc"
@@ -96,10 +73,12 @@ ROM_Space:
 //	.incbin "wsroms/Macross - True Love Song (Japan).ws"
 //	.incbin "wsroms/Magical Drop for WonderSwan (Japan).ws"
 //	.incbin "wsroms/Mahjong Touryuumon (Japan).ws"
+//	.incbin "wsroms/Makai Toushi Sa-Ga (Japan).wsc"
 //	.incbin "wsroms/Makaimura for WonderSwan (Japan).ws"
 //	.incbin "wsroms/Mingle Magnet (Japan).ws"
 //	.incbin "wsroms/Mr. Driller (J) [!].wsc"
 //	.incbin "wsroms/Nazo Ou Pocket (Japan).ws"
+//	.incbin "wsroms/Romancing Sa-Ga (Japan).wsc"
 //	.incbin "wsroms/SD Gundam - Operation U.C. (Japan).wsc"
 //	.incbin "wsroms/Side Pocket for WonderSwan (Japan).ws"
 //	.incbin "wsroms/Tetris (Japan).wsc"
@@ -109,6 +88,7 @@ ROM_Space:
 //	.incbin "wsroms/Ultraman - Hikari no Kuni no Shisha (Japan).wsc"
 //	.incbin "wsroms/With You - Mitsumete Itai (Japan).wsc"
 //	.incbin "wsroms/WONDERPR.WSC"
+//	.incbin "wsroms/WSHWTest.wsc"
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:
 WS_BIOS_INTERNAL:
@@ -409,24 +389,39 @@ BankSwitch3_L_W:			;@ 0x30000-0x3FFFF
 	bx lr
 
 ;@----------------------------------------------------------------------------
-BankSwitch4_F_R:			;@ 0xC0
+BankSwitch4_F_R:			;@ 0xC0/0xCF
 ;@----------------------------------------------------------------------------
 	ldrb r0,[spxptr,wsvBnk0SlctX]
 	bx lr
 ;@----------------------------------------------------------------------------
-BankSwitch1_R:				;@ 0xC1
+BankSwitch1_R:				;@ 0xC1/0xD0
 ;@----------------------------------------------------------------------------
 	ldrb r0,[spxptr,wsvBnk1SlctX]
 	bx lr
 ;@----------------------------------------------------------------------------
-BankSwitch2_R:				;@ 0xC2
+BankSwitch1_H_R:			;@ 0xD1
+;@----------------------------------------------------------------------------
+	ldrb r0,[spxptr,wsvBnk1SlctX+1]
+	bx lr
+;@----------------------------------------------------------------------------
+BankSwitch2_R:				;@ 0xC2/0xD2
 ;@----------------------------------------------------------------------------
 	ldrb r0,[spxptr,wsvBnk2SlctX]
 	bx lr
 ;@----------------------------------------------------------------------------
-BankSwitch3_R:				;@ 0xC3
+BankSwitch2_H_R:			;@ 0xD3
+;@----------------------------------------------------------------------------
+	ldrb r0,[spxptr,wsvBnk2SlctX+1]
+	bx lr
+;@----------------------------------------------------------------------------
+BankSwitch3_R:				;@ 0xC3/0xD4
 ;@----------------------------------------------------------------------------
 	ldrb r0,[spxptr,wsvBnk3SlctX]
+	bx lr
+;@----------------------------------------------------------------------------
+BankSwitch3_H_R:			;@ 0xD5
+;@----------------------------------------------------------------------------
+	ldrb r0,[spxptr,wsvBnk3SlctX+1]
 	bx lr
 
 ;@----------------------------------------------------------------------------
@@ -704,11 +699,11 @@ Luxsor2003R:
 	.long BankSwitch4_F_R		;@ 0xCF Alias to 0xC0
 
 	.long BankSwitch1_R			;@ 0xD0 Alias to 0xC1
-	.long wsvRegR				;@ 0xD1 2 more bits for 0xC1
+	.long BankSwitch1_H_R		;@ 0xD1 2 more bits for 0xC1
 	.long BankSwitch2_R			;@ 0xD2 Alias to 0xC2
-	.long wsvRegR				;@ 0xD3 2 more bits for 0xC2
+	.long BankSwitch2_H_R		;@ 0xD3 2 more bits for 0xC2
 	.long BankSwitch3_R			;@ 0xD4 Alias to 0xC3
-	.long wsvRegR				;@ 0xD5 2 more bits for 0xC3
+	.long BankSwitch3_H_R		;@ 0xD5 2 more bits for 0xC3
 	;@ 0xD6-0xDF
 	.long cartUnmR,cartUnmR
 	.long cartUnmR,cartUnmR,cartUnmR,cartUnmR,cartUnmR,cartUnmR,cartUnmR,cartUnmR

@@ -1,13 +1,10 @@
 SwanGBA Todo
 
 	Fix identification of BnW/Color roms.
-	Add UI for setting headphone on/off.
 	Fix better sound!
 	Find speed hacks.
 	Better key mappings.
-	Add IO word access? Also fix odd word access takes extra cycles.
 	Add serial port emulation.
-	SD Gundam Operation U.C pauses like hitting start, but with a message about the low battery.
 
 GFX:
 	See Sphinx todo.
@@ -35,9 +32,11 @@ Misc:
 Games Not Working:
 
 Games Not Working Fixed:
-	Bakusou Dekotora Densetsu. Unzip craps out. Fixed
-	Chou Denki Card Game. Needs initialization, last item on first page.
-	Hanjuku Hero, crashes. Reads mapper register 0xC0 which was not reset correctly.
+	Bakusou Dekotora Densetsu. Unzip craps out.
+	Chou Denki Card Game, crashes.
+		* Needs initialization, last item on first page.
+	Hanjuku Hero, crashes.
+		* Reads mapper register 0xC0 which was not reset correctly.
 	Kurupara, crashes. Crashes because of LineCompareIRQ on line 0.
 		* Fixing interrupt handling in Sphinx fixed it.
 	Riviera freezes on a black screen after the chapter 1 screen.
@@ -49,15 +48,29 @@ Games Not Working Fixed:
 		* Fixing interrupt handling in Sphinx fixed it.
 	With You - Mitsumete Itai, halts at black screen.
 		* Waiting for EEPROM ready.
-	Xi Little. Can't start. Waiting on sample playing. Fixed.
+	Xi Little, Can't start.
+		* Waiting on sample playing.
 
 Games With Glitches:
+	Battle Spirits, missing status bar.
+		* Changes tilemap address.
+	From TV Animation One Piece - Grand Battle Swan Colosseum, missing status bar.
+		* Changes tilemap address.
+	Front Mission, missing some text boxes.
+		* Changes tilemap address.
 	Mahjong Touryuumon, speed too fast.
 		* Apparently it sets the ROM waitstate to 3(?).
 	Makaimura, first boss sprites are glitchy.
-	Makai Toushi Sa-Ga, textboxes overlap Characters and background.
-	Sorobang, needs all 1024 tiles in 4color mode.
-	WonderSwanColor BIOS, needs all 1024 tiles in 4color mode.
+	Makai Toushi Sa-Ga, textboxes overlap sprites and background.
+		* Changes tilemap address.
+	Romancing Sa-Ga, sprites overlap text boxes.
+		* Sprite windows and sprite priority.
+	SD Gundam Operation U.C, missing status bar.
+		* Changes tilemap address.
+	Sorobang, incorrect tiles.
+		* Needs all 1024 tiles in 4color mode.
+	WonderSwanColor BIOS, incorrect tiles.
+		* Needs all 1024 tiles in 4color mode.
 Games With Glitches Fixed:
 	Cardcaptor Sakura, book dissolve in intro glitches the second time.
 		* Requires "correct" noise calculation.
