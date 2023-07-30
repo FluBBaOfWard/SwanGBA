@@ -66,6 +66,8 @@ ROM_Space:
 //	.incbin "wsroms/dkd-vesilintu.wsc"
 //	.incbin "wsroms/Final Fantasy (Japan).wsc"
 //	.incbin "wsroms/Final Fantasy IV (Japan).wsc"
+//	.incbin "wsroms/Finally.emu.wsc"
+//	.incbin "wsroms/Finally.hw.wsc"
 //	.incbin "wsroms/Guilty Gear Petit (J).wsc"
 //	.incbin "wsroms/GunPey (Japan).ws"
 //	.incbin "wsroms/Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan).wsc"
