@@ -505,12 +505,12 @@ copyWindowValues2:		;@ r0 = destination
 	stmfd sp!,{r4-r10,lr}
 	add r0,r0,#((SCREEN_HEIGHT-GAME_HEIGHT)/2)*12		;@ 12 bytes per row
 	ldr r9,=(((SCREEN_WIDTH-GAME_WIDTH)/2)<<24)+(((SCREEN_WIDTH+GAME_WIDTH)/2)<<16)+(((SCREEN_WIDTH-GAME_WIDTH)/2)<<8)+((SCREEN_WIDTH-GAME_WIDTH)/2 + 1)
-	ldr r10,=(((SCREEN_HEIGHT-GAME_HEIGHT)/2)<<24)+(((SCREEN_HEIGHT+GAME_HEIGHT)/2)<<16)+(((SCREEN_HEIGHT-GAME_HEIGHT)/2)<<8)+((SCREEN_HEIGHT-GAME_HEIGHT)/2)
+	ldr r10,=(((SCREEN_HEIGHT-GAME_HEIGHT)/2)<<24)+(((SCREEN_HEIGHT+GAME_HEIGHT)/2)<<16)+(((SCREEN_HEIGHT-GAME_HEIGHT)/2)<<8)+((SCREEN_HEIGHT-GAME_HEIGHT)/2 + 1)
 	ldr r1,[spxptr,#dispBuff]
 	ldr r4,[spxptr,#windowBuff]
 	ldr r2,=DISP_CTRL_LUT
 
-	mov r3,#GAME_HEIGHT
+	mov r3,#GAME_HEIGHT<<24
 setWindowLoop:
 	ldr r8,[r4],#4				;@ FG Win pos/size
 	and r6,r8,#0x000000FF		;@ H start
@@ -521,30 +521,26 @@ setWindowLoop:
 	movcs r7,#(GAME_WIDTH-1)<<16
 	cmp r7,r6,lsl#16
 	orr r6,r6,r7,lsl#8
-	movcc r6,#0
+	movcc r6,#-1
 	add r6,r9,r6,ror#24
 
-	rsb r5,r3,#GAME_HEIGHT
-	and r7,r8,#0x0000FF00		;@ V start
-	mov r8,r8,lsr#24			;@ V end
-	cmp r7,r5,lsl#8
-	movcc r7,r5,lsl#8
+	rsb r5,r3,#GAME_HEIGHT<<24
+	and r7,r8,#0x0000FF00		;@ V start, V end top byte
+	cmp r7,r5,lsr#16
+	movcc r7,r5,lsr#16
 	cmp r7,#GAME_HEIGHT<<8
 	movcs r7,#GAME_HEIGHT<<8
-	add r8,r8,#1
+	cmp r8,#(GAME_HEIGHT-1)<<24
+	movcs r8,#(GAME_HEIGHT-1)<<24
 	cmp r8,r5
-	movcc r8,r5
-	cmp r8,#GAME_HEIGHT
-	movcs r8,#GAME_HEIGHT
-	cmp r8,r7,lsr#8
-	orr r7,r7,r8
-	movcc r7,#0
+	subcc r8,r5,#1<<24
+	orr r7,r7,r8,lsr#24
 	add r7,r7,r10
 
 	ldrb r8,[r1],#1
 	ldr r8,[r2,r8,lsl#2]
 	stmia r0!,{r6-r8}
-	subs r3,r3,#1
+	subs r3,r3,#1<<24
 	bne setWindowLoop
 
 	ldmfd sp!,{r4-r10,pc}
@@ -591,8 +587,6 @@ gfxEndFrame:				;@ Called just after screen end (line 144)	(r0-r3 safe to use)
 	bx lr
 
 ;@----------------------------------------------------------------------------
-DMA0BUFPTR:		.long 0
-
 tmpOamBuffer:	.long OAM_BUFFER1
 dmaOamBuffer:	.long OAM_BUFFER2
 tmpScroll:		.long SCROLLBUFF1
