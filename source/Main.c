@@ -152,6 +152,8 @@ static void setupGraphics() {
 	REG_BG1CNT = GFX_BG1CNT;
 	// Background 2 for border
 	REG_BG2CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(15) | BG_256_COLOR | BG_TILE_BASE(1) | BG_PRIORITY(3);
+	REG_BG2HOFS = 8;	// Center border
+	REG_BG2VOFS = 16;
 
 	REG_WIN0H = 0x0000+SCREEN_WIDTH;		// Horizontal start-end
 	REG_WIN0V = 0x0000+SCREEN_HEIGHT;		// Vertical start-end

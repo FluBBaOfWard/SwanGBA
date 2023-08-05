@@ -14,6 +14,8 @@
 		9C1A755128DB1F1D005F342E /* WonderSwan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = WonderSwan.c; sourceTree = "<group>"; };
 		9C1A755628DCDC96005F342E /* FileHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileHelper.h; sourceTree = "<group>"; };
 		9C1A755728DCDC96005F342E /* FileHelper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FileHelper.c; sourceTree = "<group>"; };
+		9C32295D2A7E78CE0063DD8F /* PCV2Border.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCV2Border.png; sourceTree = "<group>"; };
+		9C32295E2A7E78CE0063DD8F /* PCV2Border.grit */ = {isa = PBXFileReference; lastKnownFileType = text; path = PCV2Border.grit; sourceTree = "<group>"; };
 		9C42400D27E21F200042454B /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
 		9C42400E27E21F200042454B /* ARMV30MZ.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = ARMV30MZ.s; sourceTree = "<group>"; };
 		9C42400F27E21F200042454B /* ARMV30MZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARMV30MZ.h; sourceTree = "<group>"; };
@@ -85,6 +87,8 @@
 		350E1C3418AFB50800074DD5 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
+				9C32295E2A7E78CE0063DD8F /* PCV2Border.grit */,
+				9C32295D2A7E78CE0063DD8F /* PCV2Border.png */,
 				9C42402F27E21FA30042454B /* WSBorder.grit */,
 				9C42402C27E21FA30042454B /* WSBorder.png */,
 				9C42402E27E21FA30042454B /* WSCBorder.grit */,
