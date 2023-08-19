@@ -1,4 +1,4 @@
-# SwanGBA V0.6.0
+# SwanGBA V0.6.1
 
 <img align="right" width="220" src="./logo.png" />
 
@@ -101,7 +101,7 @@ There are a couple of games that have visual glitches.
 * Final Lap 2000, incorrect road colors.
 * Final Lap Special - GT & Formula Machine, incorrect road colors.
 * From TV Animation One Piece - Grand Battle Swan Colosseum, incorrect sky color.
-* Makaimura, first boss sprites are glitchy.
+* Makaimura, first boss sprites are glitchy, gargoyles in intro should not show up on the right.
 * Romancing Sa-Ga, sprites overlap text boxes.
 * Sorobang, needs all 1024 tiles in 4color mode.
 * WonderSwanColor BIOS, needs all 1024 tiles in 4color mode.

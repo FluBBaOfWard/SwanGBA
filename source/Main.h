@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+extern bool powerIsOn;
 extern bool gameInserted;
 extern u16 *menuMap;
 

@@ -18,6 +18,7 @@
 static void checkTimeOut(void);
 static void setupGraphics(void);
 
+bool powerIsOn = false;
 bool gameInserted = false;
 static int sleepTimer = 60*60*5;	// 5 min
 
@@ -68,12 +69,13 @@ int main(int argc, char **argv) {
 	initFileHelper(SMSID);
 	loadBioses();
 	setupEmuBackground();
+	powerIsOn = true;
 
 	while (1) {
 		waitVBlank();
 //		checkTimeOut();
 		guiRunLoop();
-		if (!pauseEmulation) {
+		if (powerIsOn && !pauseEmulation) {
 			run();
 		}
 	}

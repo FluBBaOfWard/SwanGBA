@@ -119,6 +119,7 @@ bool loadGame(const RomHeader *rh) {
 		if (emuSettings & AUTOLOAD_STATE) {
 			loadState();
 		}
+		powerIsOn = true;
 		closeMenu();
 		return false;
 	}

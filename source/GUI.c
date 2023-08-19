@@ -14,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.5.2 2023-08-05"
+#define EMUVERSION "V0.6.1 2023-08-19"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -29,10 +29,11 @@ static void headphonesSet(void);
 static void speedHackSet(void);
 static void cpuHalfSet(void);
 static void languageSet(void);
+static void stepFrame(void);
 
 static void uiDebug(void);
 static void uiMachine(void);
-static void updateGameInfo(void);
+static void updateGameInfo(char *buffer);
 
 const fptr fnMain[] = {nullUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI};
 
@@ -54,7 +55,8 @@ const fptr drawUIX[] = {uiNullNormal, uiMainMenu, uiFile, uiController, uiDispla
 u8 gGammaValue = 0;
 u8 gContrastValue = 3;
 u8 gBorderEnable = 1;
-char gameInfoString[32];
+u8 serialPos = 0;
+char serialOut[32];
 
 const char *const autoTxt[]  = {"Off", "On", "With R"};
 const char *const speedTxt[] = {"Normal", "200%", "Max", "50%"};
@@ -122,12 +124,13 @@ void uiMainMenu() {
 
 void uiAbout() {
 	setupSubMenu("About");
-	updateGameInfo();
+	char gameInfoString[32];
+	updateGameInfo(gameInfoString);
 	drawText("B:        WS B Button", 3);
 	drawText("A:        WS A Button", 4);
 	drawText("Start:    WS Start Button", 5);
-	drawText("Select:   Sound Button", 6);
-	drawText("DPad:     Joystick", 7);
+	drawText("Select:   WS Sound Button", 6);
+	drawText("DPad:     WS X1-X4", 7);
 
 	drawText(gameInfoString, 9);
 
@@ -190,14 +193,15 @@ void nullUIDebug(int key) {
 }
 
 void resetGame() {
+	powerIsOn = true;
 	loadCart();
 	setupEmuBackground();
 }
 
-void updateGameInfo() {
+void updateGameInfo(char *buffer) {
 	char catalog[8];
-//	char2HexStr(catalog, gGameID);
-	strlMerge(gameInfoString, " Game #: 0x", catalog, sizeof(gameInfoString));
+	char2HexStr(catalog, gGameID);
+	strlMerge(buffer, "Game #: 0x", catalog, 32);
 }
 //---------------------------------------------------------------------------------
 void debugIO(u8 port, u8 val, const char *message) {
@@ -223,6 +227,15 @@ void debugIOUnmappedR(u8 port) {
 void debugIOUnmappedW(u8 port, u8 val) {
 	debugIO(port, val, "Unmapped W port:");
 }
+void debugSerialOutW(u8 val) {
+	if (val < 0x80) {
+		serialOut[serialPos++] = val;
+		if (serialPos >= 32 || val == 0) {
+			serialPos = 0;
+			debugOutput(serialOut);
+		}
+	}
+}
 void debugDivideError() {
 	debugOutput("Divide Error.");
 }
@@ -231,6 +244,11 @@ void debugUndefinedInstruction() {
 }
 void debugCrashInstruction() {
 	debugOutput("CPU Crash! (0xF1)");
+}
+
+void stepFrame() {
+	runFrame();
+	setupMenuPalette();
 }
 //---------------------------------------------------------------------------------
 /// Swap A & B buttons

@@ -28,6 +28,7 @@ void debugIOUnmappedR(u8 port);
 void debugIOUnmappedW(u8 port, u8 val);
 void debugIOUnimplR(u8 port);
 void debugIOUnimplW(u8 port, u8 val);
+void debugSerialOutW(u8 val);
 void debugDivideError(void);
 void debugUndefinedInstruction(void);
 void debugCrashInstruction(void);
