@@ -24,7 +24,9 @@ void paletteInit(u8 gammaVal, u8 contrast);
 void paletteTxAll(void);
 void gfxRefresh(void);
 u8 v30ReadPort(u16 port);
-void v30WritePort(u16 port, u8 value);
+u16 v30ReadPort16(u16 port);
+void v30WritePort(u8 value, u16 port);
+void v30WritePort16(u16 value, u16 port);
 
 void setHeadphones(bool enable);
 

@@ -24,10 +24,10 @@ void uiDisplay(void);
 void uiAbout(void);
 void uiLoadGame(void);
 
-void debugIOUnmappedR(u8 port);
-void debugIOUnmappedW(u8 port, u8 val);
-void debugIOUnimplR(u8 port);
-void debugIOUnimplW(u8 port, u8 val);
+void debugIOUnmappedR(u16 port);
+void debugIOUnmappedW(u8 val, u16 port);
+void debugIOUnimplR(u16 port);
+void debugIOUnimplW(u8 val, u16 port);
 void debugSerialOutW(u8 val);
 void debugDivideError(void);
 void debugUndefinedInstruction(void);
