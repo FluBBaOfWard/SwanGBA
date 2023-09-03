@@ -30,7 +30,7 @@
 	.global GFX_BG0CNT
 	.global GFX_BG1CNT
 	.global EMUPALBUFF
-	.global tmpOamBuffer
+	.global frameTotal
 
 
 	.global sphinx0
@@ -52,7 +52,7 @@ gfxInit:					;@ Called from machineInit
 
 	ldr r0,=OAM_BUFFER1			;@ No stray sprites please
 	mov r1,#0x200+SCREEN_HEIGHT
-	mov r2,#0x100
+	mov r2,#0x100*3				;@ 3 buffers
 	bl memset_
 
 	bl wsVideoInit
@@ -143,7 +143,8 @@ gfxWinInit:
 
 	ldr lr,=WININOUTBUFF1
 	mov r0,#SCREEN_HEIGHT
-gfxWinLoop:
+gfxWinLoop:						;@ 3 buffers
+	stmia lr!,{r1-r3}
 	stmia lr!,{r1-r3}
 	stmia lr!,{r1-r3}
 	subs r0,r0,#1
@@ -553,7 +554,7 @@ gfxRefresh:					;@ Called from C when changing scaling.
 ;@----------------------------------------------------------------------------
 gfxEndFrame:				;@ Called just after screen end (line 144)	(r0-r3 safe to use)
 ;@----------------------------------------------------------------------------
-	stmfd sp!,{lr}
+	stmfd sp!,{r4-r8,lr}
 
 	ldr r0,tmpScroll			;@ Destination
 	bl copyScrollValues
@@ -564,35 +565,39 @@ gfxEndFrame:				;@ Called just after screen end (line 144)	(r0-r3 safe to use)
 	bl paletteTxAll
 ;@--------------------------
 
-	ldr r0,dmaOamBuffer
-	ldr r1,tmpOamBuffer
-	str r0,tmpOamBuffer
-	str r1,dmaOamBuffer
-
-	ldr r0,dmaScroll
-	ldr r1,tmpScroll
-	str r0,tmpScroll
-	str r1,dmaScroll
-
-	ldr r0,tmpWinInOut
-	ldr r1,dmaWinInOut
-	str r0,dmaWinInOut
-	str r1,tmpWinInOut
+	adr r0,tmpOamBuffer
+	ldmia r0,{r1-r8,lr}
+	stmia r0!,{r7,r8,lr}
+	stmia r0,{r1-r6}
 
 	mov r0,#1
 	strb r0,frameDone
 	bl updateSlowIO				;@ RTC/Alarm and more
 
-	ldmfd sp!,{lr}
+	ldr r1,=fpsValue
+	ldr r0,[r1]
+	add r0,r0,#1
+	str r0,[r1]
+
+	ldr r1,frameTotal
+	add r1,r1,#1
+	str r1,frameTotal
+
+	ldmfd sp!,{r4-r8,lr}
 	bx lr
 
 ;@----------------------------------------------------------------------------
+frameTotal:		.long 0			;@ Let Gui.c see frame count for savestates
+
 tmpOamBuffer:	.long OAM_BUFFER1
-dmaOamBuffer:	.long OAM_BUFFER2
 tmpScroll:		.long SCROLLBUFF1
-dmaScroll:		.long SCROLLBUFF2
 tmpWinInOut:	.long WININOUTBUFF1
+dmaOamBuffer:	.long OAM_BUFFER2
+dmaScroll:		.long SCROLLBUFF2
 dmaWinInOut:	.long WININOUTBUFF2
+xtrOamBuffer:	.long OAM_BUFFER3
+xtrScroll:		.long SCROLLBUFF3
+xtrWinInOut:	.long WININOUTBUFF3
 
 
 gFlicker:		.byte 1
@@ -685,13 +690,19 @@ OAM_BUFFER1:
 	.space 0x400
 OAM_BUFFER2:
 	.space 0x400
+OAM_BUFFER3:
+	.space 0x400
 SCROLLBUFF1:
 	.space SCREEN_HEIGHT*8		;@ Scrollbuffer.
 SCROLLBUFF2:
 	.space SCREEN_HEIGHT*8		;@ Scrollbuffer.
+SCROLLBUFF3:
+	.space SCREEN_HEIGHT*8		;@ Scrollbuffer.
 WININOUTBUFF1:
 	.space SCREEN_HEIGHT*12		;@ Scrollbuffer.
 WININOUTBUFF2:
+	.space SCREEN_HEIGHT*12		;@ Scrollbuffer.
+WININOUTBUFF3:
 	.space SCREEN_HEIGHT*12		;@ Scrollbuffer.
 DISP_CTRL_LUT:
 	.space 64*4					;@ Convert from WS DispCtrl to NDS/GBA WinCtrl

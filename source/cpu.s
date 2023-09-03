@@ -11,7 +11,6 @@
 	.global runFrame
 	.global cpuInit
 	.global cpuReset
-	.global frameTotal
 	.global waitMaskIn
 	.global waitMaskOut
 
@@ -60,20 +59,16 @@ wsFrameLoop:
 	bl V30RunXCycles
 	ldr spxptr,=sphinx0
 	bl wsvDoScanline
+	ldr r1,scanLineCountGBA
 	cmp r0,#0
+	cmpeq r1,#2
+	subnes r1,r1,#1
+	moveq r1,#199
+	str r1,scanLineCountGBA
 	bne wsFrameLoop
-
 ;@----------------------------------------------------------------------------
 	add r0,v30ptr,#v30PrefixBase
 	stmia r0,{v30csr-v30cyc}	;@ Save V30MZ state
-	ldr r1,=fpsValue
-	ldr r0,[r1]
-	add r0,r0,#1
-	str r0,[r1]
-
-	ldr r1,frameTotal
-	add r1,r1,#1
-	str r1,frameTotal
 
 	ldrh r0,waitCountOut
 	add r0,r0,#1
@@ -85,8 +80,8 @@ wsFrameLoop:
 
 ;@----------------------------------------------------------------------------
 v30MZCyclesPerScanline:	.long 0
+scanLineCountGBA:	.long 199
 joyClick:			.long 0
-frameTotal:			.long 0		;@ Let Gui.c see frame count for savestates
 waitCountIn:		.byte 0
 waitMaskIn:			.byte 0
 waitCountOut:		.byte 0
@@ -128,10 +123,6 @@ wsStepLoop:
 ;@----------------------------------------------------------------------------
 	add r0,v30ptr,#v30PrefixBase
 	stmia r0,{v30csr-v30cyc}	;@ Save V30MZ state
-
-	ldr r1,frameTotal
-	add r1,r1,#1
-	str r1,frameTotal
 
 	ldmfd sp!,{r4-r11,lr}
 	bx lr
