@@ -4,6 +4,7 @@
 #include "WonderSwan.h"
 #include "WSBorder.h"
 #include "WSCBorder.h"
+#include "PCV2Border.h"
 #include "Cart.h"
 #include "Gfx.h"
 #include "ARMV30MZ/ARMV30MZ.h"
@@ -60,8 +61,17 @@ void setupWSCBorderPalette() {
 	memcpy(EMUPALBUFF, WSCBorderPal, WSCBorderPalLen);
 }
 
+void setupPCV2Background() {
+	LZ77UnCompVram(PCV2BorderTiles, TILE_BASE_ADR(1));
+	LZ77UnCompVram(PCV2BorderMap, MAP_BASE_ADR(15));
+}
+
+void setupPCV2BorderPalette() {
+	memcpy(EMUPALBUFF, PCV2BorderPal, PCV2BorderPalLen);
+}
+
 void setupEmuBackground() {
-	if (gMachine == HW_WONDERSWANCOLOR) {
+	if (gMachine == HW_WONDERSWANCOLOR || gMachine == HW_SWANCRYSTAL) {
 		setupWSCBackground();
 		setupWSCBorderPalette();
 	}
@@ -69,13 +79,20 @@ void setupEmuBackground() {
 		setupWSBackground();
 		setupWSBorderPalette();
 	}
+	else {
+		setupPCV2Background();
+		setupPCV2BorderPalette();
+	}
 }
 
 void setupEmuBorderPalette() {
-	if (gMachine == HW_WONDERSWANCOLOR) {
+	if (gMachine == HW_WONDERSWANCOLOR || gMachine == HW_SWANCRYSTAL) {
 		setupWSCBorderPalette();
 	}
 	else if (gMachine == HW_WONDERSWAN) {
 		setupWSBorderPalette();
+	}
+	else {
+		setupPCV2BorderPalette();
 	}
 }

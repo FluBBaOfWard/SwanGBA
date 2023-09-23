@@ -22,6 +22,7 @@ void loadState(void);
 void saveState(void);
 void selectGame(void);
 void loadBioses(void);
+void clearIntEeproms(void);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -11,11 +11,46 @@
 #include "Cart.h"
 #include "Gfx.h"
 #include "io.h"
+#include "InternalEEPROM.h"
 
 EWRAM_BSS int selectedGame = 0;
 EWRAM_BSS ConfigData cfg;
 
 //---------------------------------------------------------------------------------
+bool updateSettingsFromWS() {
+	bool changed = false;
+	IntEEPROM *intProm = (IntEEPROM *)intEeprom.memory;
+
+	WSUserData *userData = &intProm->userData;
+	if (cfg.birthYear[0] != userData->birthYear[0]
+		|| cfg.birthYear[1] != userData->birthYear[1]) {
+		cfg.birthYear[0] = userData->birthYear[0];
+		cfg.birthYear[1] = userData->birthYear[1];
+		changed = true;
+	}
+	if (cfg.birthMonth != userData->birthMonth) {
+		cfg.birthMonth = userData->birthMonth;
+		changed = true;
+	}
+	if (cfg.birthDay != userData->birthDay) {
+		cfg.birthDay = userData->birthDay;
+		changed = true;
+	}
+	if (cfg.sex != userData->sex) {
+		cfg.sex = userData->sex;
+		changed = true;
+	}
+	if (cfg.bloodType != userData->bloodType) {
+		cfg.bloodType = userData->bloodType;
+		changed = true;
+	}
+	if (memcmp(cfg.name, userData->name, 16) != 0) {
+		memcpy(cfg.name, userData->name, 16);
+	}
+	settingsChanged |= changed;
+	return changed;
+}
+
 int loadSettings() {
 //	FILE *file;
 /*
@@ -82,6 +117,49 @@ void loadState(void) {
 void saveState(void) {
 //	packState(testState);
 	infoOutput("Saved state.");
+}
+
+static void initIntEepromWS(IntEEPROM *intProm) {
+	WSUserData *userData = &intProm->userData;
+	memcpy(userData->name, cfg.name, 16);
+	userData->birthYear[0] = cfg.birthYear[0];
+	userData->birthYear[1] = cfg.birthYear[1];
+	userData->birthMonth = cfg.birthMonth;
+	userData->birthDay = cfg.birthDay;
+	userData->sex = cfg.sex;
+	userData->bloodType = cfg.bloodType;
+}
+static void initIntEepromWSC(IntEEPROM *intProm) {
+	initIntEepromWS(intProm);
+	intProm->splashData.consoleFlags = 3;
+}
+
+
+static void clearIntEepromWS() {
+	memset(wsEepromMem, 0, sizeof(wsEepromMem));
+	initIntEepromWS((IntEEPROM *)wsEepromMem);
+}
+static void clearIntEepromWSC() {
+	memset(wscEepromMem, 0, sizeof(wscEepromMem));
+	initIntEepromWSC((IntEEPROM *)wscEepromMem);
+}
+static void clearIntEepromSC() {
+	memset(scEepromMem, 0, sizeof(scEepromMem));
+	initIntEepromWSC((IntEEPROM *)scEepromMem);
+}
+
+void clearIntEeproms() {
+	switch (gSOC) {
+		case SOC_ASWAN:
+			clearIntEepromWS();
+			break;
+		case SOC_SPHINX:
+			clearIntEepromWSC();
+			break;
+		case SOC_SPHINX2:
+			clearIntEepromSC();
+			break;
+	}
 }
 
 //---------------------------------------------------------------------------------

@@ -109,7 +109,7 @@ v30ReadDsIx:		;@
 	ldrsb r4,[v30ptr,#v30DF]
 	ldr v30ofs,[v30ptr,#v30RegIX]
 	TestSegmentPrefix
-	ldreq v30csr,[v30ptr,#v30SRegDS]
+	ldreq v30csr,[v30ptr,#v30SRegDS0]
 	add r0,v30ofs,r4,lsl#16
 	str r0,[v30ptr,#v30RegIX]
 ;@----------------------------------------------------------------------------

@@ -14,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.6.3 2023-09-03"
+#define EMUVERSION "V0.6.3 2023-09-23"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -43,7 +43,7 @@ const fptr fnList2[] = {selectGame, loadState, saveState, saveSettings, resetGam
 const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
 const fptr fnList4[] = {gammaSet, contrastSet, paletteChange};
 const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, ewramSet, sleepSet};
-const fptr fnList6[] = {machineSet, batteryChange, headphonesSet, speedHackSet, cpuHalfSet /*languageSet*/};
+const fptr fnList6[] = {machineSet, batteryChange, clearIntEeproms, headphonesSet, speedHackSet, cpuHalfSet /*languageSet*/};
 const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, stepFrame};
 const fptr fnList8[] = {uiDummy};
 const fptr fnList9[] = {quickSelectGame};
@@ -155,6 +155,7 @@ static void uiMachine() {
 	setupSubMenu("Machine Settings");
 	drawSubItem("Machine: ",machTxt[gMachineSet]);
 	drawMenuItem("Change Batteries");
+	drawMenuItem("Clear Internal EEPROM");
 	drawSubItem("Headphones:", autoTxt[(emuSettings&ENABLE_HEADPHONES)>>18]);
 	drawSubItem("Cpu Speed Hacks: ",autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
 	drawSubItem("Half Cpu Speed: ",autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
@@ -198,9 +199,13 @@ void resetGame() {
 
 void updateGameInfo(char *buffer) {
 	char catalog[8];
-	char2HexStr(catalog, gGameID);
-	strlMerge(buffer, "Game #: 0x", catalog, 32);
+	char2HexStr(catalog, gGameHeader->gameId);
+	strlMerge(buffer, "Game Id, Rev #: 0x", catalog, 32);
+	strlMerge(buffer, buffer, " 0x", 32);
+	char2HexStr(catalog, gGameHeader->gameRev);
+	strlMerge(buffer, buffer, catalog, 32);
 }
+
 //---------------------------------------------------------------------------------
 void debugIO(u16 port, u8 val, const char *message) {
 	char debugString[32];

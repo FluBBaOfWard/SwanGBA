@@ -37,6 +37,7 @@
 	.global gRomSize
 	.global maxRomSize
 	.global romMask
+	.global gGameHeader
 	.global gGameID
 	.global cartOrientation
 	.global gConfig
@@ -142,13 +143,13 @@ loadCart: 					;@ Called from C:
 	str r1,[v30ptr,#v30MemTblInv-0x1*4]		;@ 0 RAM
 	ldr r6,[v30ptr,#v30MemTblInv-0x10*4]	;@ MemMap
 
-	ldr r4,=0xFFFF7				;@ System
-	ldrb r2,[r6,r4]
-	add r4,r4,#1				;@ Game ID
-	ldrb r0,[r6,r4]
+	ldr r4,=0xFFFF0				;@ Header offset
+	add r4,r6,r4
+	str r4,gGameHeader
+	ldrb r2,[r4,#0x7]			;@ Color
+	ldrb r0,[r4,#0x8]			;@ Game ID
 	strb r0,gGameID
-	add r4,r4,#3				;@ NVRAM size
-	ldrb r3,[r6,r4]
+	ldrb r3,[r4,#0xB]			;@ NVRAM size
 	mov r0,#0					;@ r0 = sram size
 	mov r1,#0					;@ r1 = eeprom size
 	cmp r3,#0x01				;@ 64kbit sram
@@ -170,13 +171,11 @@ loadCart: 					;@ Called from C:
 	str r0,sramSize
 	str r1,eepromSize
 
-	add r4,r4,#1				;@ Orientation
-	ldrb r0,[r6,r4]
-	and r0,r0,#1
+	ldrb r0,[r4,#0xC]			;@ Flags
+	and r0,r0,#1				;@ Orientation
 	strb r0,cartOrientation
 
-	add r4,r4,#1				;@ RTC present
-	ldrb r0,[r6,r4]
+	ldrb r0,[r4,#0xD]			;@ Mapper? (RTC present)
 	strb r0,rtcPresent
 
 	ldrb r5,gMachineSet
@@ -201,9 +200,6 @@ noHWCheck:
 	ldreq r1,g_BIOSBASE_CRYSTAL
 	ldreq r2,=SC_BIOS_INTERNAL
 	moveq r4,#SOC_SPHINX2
-	cmp r5,#HW_POCKETCHALLENGEV2
-	moveq r0,#0					;@ Set boot rom overlay (none)
-	moveq r4,#SOC_ASWAN
 	strb r4,gSOC
 	cmp r1,#0
 	moveq r1,r2					;@ Use internal bios
@@ -623,6 +619,8 @@ cartOrientation:
 	.byte 0						;@ 1=Vertical, 0=Horizontal
 	.space 2					;@ alignment.
 
+gGameHeader:
+	.long 0						;@ Game ID
 allocatedRomMem:
 	.long 0
 romSpacePtr:
