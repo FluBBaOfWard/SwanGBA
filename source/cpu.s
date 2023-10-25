@@ -39,12 +39,12 @@ runStart:
 ;@----------------------------------------------------------------------------
 	ldr r0,=joy0State
 	ldr r0,[r0]
-	ldr r3,joyClick
-	eor r3,r3,r0
-	and r3,r3,r0
+	ldr r1,joyClick
+	eor r1,r1,r0
+	and r1,r1,r0
 	str r0,joyClick
 
-	tst r3,#0x10000				;@ WS Sound?
+	tst r1,#0x10000				;@ WS Sound?
 	blne pushVolumeButton
 
 	bl refreshEMUjoypads
@@ -140,9 +140,10 @@ cpuInit:					;@ Called by machineInit
 	ldmfd sp!,{v30ptr,lr}
 	bx lr
 ;@----------------------------------------------------------------------------
-cpuReset:					;@ Called by loadCart/resetGame
+cpuReset:					;@ Called by loadCart/resetGame, r0 = type
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{v30ptr,lr}
+	mov r1,r0
 	ldr v30ptr,=V30OpTable
 
 	mov r0,v30ptr

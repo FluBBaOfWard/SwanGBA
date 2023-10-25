@@ -235,6 +235,7 @@ noHWCheck:
 	bl resetCartridgeBanks
 	bl ioReset
 	bl soundReset
+	mov r0,r4					;@ SOC
 	bl cpuReset
 	ldmfd sp!,{r4-r11,lr}
 	bx lr

@@ -11,7 +11,7 @@ extern u8 waitMaskOut;
 void run(void);
 void runScanLine(void);
 void runFrame(void);
-void cpuReset(void);
+void cpuReset(int type);
 
 #ifdef __cplusplus
 } // extern "C"

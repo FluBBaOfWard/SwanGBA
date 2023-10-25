@@ -1,6 +1,13 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.6.4 - 2023-10-25 (FluBBa)
+	Fixed unsigned mul on ASWAN.
+	Fixed immediate mul.
+	Fixed 32/16 division.
+	Fixed IO register differences between mono/color mode.
+	Optimized 16-bit signed mul.
+
 V0.6.3 - 2023-09-20 (FluBBa)
 	Fixed value of SP when running without boot rom.
 	Fixed boot rom behavior for PCV2.

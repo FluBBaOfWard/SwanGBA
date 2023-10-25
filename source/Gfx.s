@@ -82,7 +82,7 @@ dispLutLoop:
 ;@----------------------------------------------------------------------------
 gfxReset:					;@ Called with CPU reset
 ;@----------------------------------------------------------------------------
-	stmfd sp!,{lr}
+	stmfd sp!,{r4,r5,lr}
 
 	ldr r0,=gfxState
 	mov r1,#5					;@ 5*4
@@ -122,7 +122,7 @@ gfxReset:					;@ Called with CPU reset
 	and r0,r0,#1<<18
 	bl setHeadphones
 
-	ldmfd sp!,{pc}
+	ldmfd sp!,{r4,r5,pc}
 
 ;@----------------------------------------------------------------------------
 gfxWinInit:

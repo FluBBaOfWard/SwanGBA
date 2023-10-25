@@ -1,8 +1,8 @@
-# SwanGBA V0.6.3
+# SwanGBA V0.6.4
 
 <img align="right" width="220" src="./logo.png" />
 
-This is a Bandai WonderSwan (Color/Crystal) & PocketChallenge V2 emulator for the Nintendo GBA.
+This is a Bandai WonderSwan (Color/Crystal) & Benesse PocketChallenge V2 emulator for the Nintendo GBA.
 
 ## How to use
 
@@ -85,7 +85,7 @@ In horizontal games:
 
 In vertical games:
 * D-pad is mapped to WS Y1-Y4.
-* A, B, X & Y are mapped to WS X1-X4.
+* A, B are mapped to WS X3,X4.
 
 ## Games
 
