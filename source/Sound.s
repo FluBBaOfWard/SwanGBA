@@ -5,6 +5,8 @@
 
 #define MIX_LEN (528)
 
+	.extern pauseEmulation
+
 	.global soundInit
 	.global soundReset
 	.global vblSound1
@@ -16,12 +18,6 @@
 	.global ym1DataW
 	.global ym1StatusR
 	.global ym1DataR
-	.global ym2IndexW
-	.global ym2DataW
-	.global ym2StatusR
-	.global ym2DataR
-
-	.extern pauseEmulation
 
 
 	.syntax unified
@@ -160,10 +156,10 @@ soundLatchW:
 	strb r0,soundLatch
 	bx lr
 ;@----------------------------------------------------------------------------
-ym2DataR:
+ym1DataR:
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r3,lr}
-//	ldr ymptr,=ym2
+//	ldr ymptr,=ym1
 //	bl ym2203DataR
 	ldmfd sp!,{r3,pc}
 

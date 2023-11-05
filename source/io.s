@@ -27,14 +27,20 @@
 #define PCV2_KEY_CIRCLE	(1<<10)
 #define PCV2_KEY_PASS	(1<<11)
 
+	.global joyCfg
+	.global EMUinput
+	.global joy0State
+	.global batteryLevel
+	.global wsEepromMem
+	.global wscEepromMem
+	.global scEepromMem
+	.global intEeprom
+
 	.global ioReset
 	.global refreshEMUjoypads
 	.global ioSaveState
 	.global ioLoadState
 	.global ioGetStateSize
-	.global initIntEeprom
-	.global initIntEepromColor
-
 	.global updateSlowIO
 	.global IOPortA_R
 
@@ -49,15 +55,6 @@
 	.global intEepromAdrLowW
 	.global intEepromAdrHighW
 	.global intEepromCommandW
-
-	.global joyCfg
-	.global EMUinput
-	.global joy0State
-	.global batteryLevel
-	.global wsEepromMem
-	.global wscEepromMem
-	.global scEepromMem
-	.global intEeprom
 
 	.syntax unified
 	.arm
@@ -76,30 +73,6 @@ ioReset:
 	bl intEepromReset
 
 	ldmfd sp!,{pc}
-;@----------------------------------------------------------------------------
-initIntEepromColor:			;@ r0 = eepromAdr
-	.type   initIntEepromColor STT_FUNC
-;@----------------------------------------------------------------------------
-	mov r1,#0x03
-	strb r1,[r0,#0x83]			;@ Default sound volume
-;@----------------------------------------------------------------------------
-initIntEeprom:				;@ r0 = eepromAdr
-	.type   initIntEeprom STT_FUNC
-;@----------------------------------------------------------------------------
-	add r0,r0,#0x60				;@ Name offset
-	ldr r1,=eepromDefault
-	mov r3,#16
-eepromLoop:
-	ldrb r2,[r1],#1
-	strb r2,[r0],#1
-	subs r3,r3,#1
-	bne eepromLoop
-	bx lr
-;@----------------------------------------------------------------------------
-eepromDefault: // From adr 0x60
-	// "@ SWANGBA @"
-	.byte 0x25, 0x00, 0x1D, 0x21, 0x0B, 0x18, 0x11, 0x0C, 0x0B, 0x00, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00
-
 ;@----------------------------------------------------------------------------
 ioSaveState:				;@ In r0=destination. Out r0=size.
 	.type   ioSaveState STT_FUNC

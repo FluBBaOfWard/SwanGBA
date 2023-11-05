@@ -5,21 +5,8 @@
 #include "Sphinx/Sphinx.i"
 #include "ARMV30MZ/ARMV30MZ.i"
 
-	.global machineInit
-	.global loadCart
-	.global romNum
-	.global cartFlags
-	.global romStart
-	.global reBankSwitchAll
-	.global reBankSwitch4_F
-	.global reBankSwitch1
-	.global reBankSwitch2
-	.global reBankSwitch3
-	.global clearDirtyTiles
-
 	.global romSpacePtr
 	.global allocatedRomMem
-
 	.global biosBase
 	.global biosSpace
 	.global biosSpaceColor
@@ -47,6 +34,17 @@
 	.global gLang
 	.global gPaletteBank
 
+	.global machineInit
+	.global loadCart
+	.global romNum
+	.global cartFlags
+	.global romStart
+	.global reBankSwitchAll
+	.global reBankSwitch4_F
+	.global reBankSwitch1
+	.global reBankSwitch2
+	.global reBankSwitch3
+	.global clearDirtyTiles
 	.global cartRtcUpdate
 
 	.syntax unified
@@ -83,6 +81,7 @@ ROM_Space:
 //	.incbin "wsroms/Nazo Ou Pocket (Japan).ws"
 //	.incbin "wsroms/Romancing Sa-Ga (Japan).wsc"
 //	.incbin "wsroms/SD Gundam - Operation U.C. (Japan).wsc"
+//	.incbin "wsroms/Shinkenzemi Chuugaku Kouza - Chuu1 Suugaku (Japan).pc2"
 //	.incbin "wsroms/Side Pocket for WonderSwan (Japan).ws"
 //	.incbin "wsroms/Tetris (Japan).wsc"
 //	.incbin "wsroms/Time Bokan Series - Bokan Densetsu - Butamo Odaterya Doronbou (Japan).ws"

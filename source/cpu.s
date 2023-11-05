@@ -6,13 +6,14 @@
 
 #define CYCLE_PSL (256)
 
+	.global waitMaskIn
+	.global waitMaskOut
+
 	.global run
 	.global runScanLine
 	.global runFrame
 	.global cpuInit
 	.global cpuReset
-	.global waitMaskIn
-	.global waitMaskOut
 
 	.syntax unified
 	.arm

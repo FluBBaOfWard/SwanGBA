@@ -13,10 +13,74 @@
 #include "io.h"
 #include "InternalEEPROM.h"
 
+static const char *const nitroSwanName = "@ SwanGBA @";
+
+char translateDSChar(u16 char16);
+
 EWRAM_BSS int selectedGame = 0;
 EWRAM_BSS ConfigData cfg;
 
 //---------------------------------------------------------------------------------
+int initSettings() {
+	cfg.config = 0;
+	cfg.palette = 0;
+	cfg.gammaValue = 0x30;
+	cfg.emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM;
+	cfg.sleepTime = 60*60*5;
+	cfg.controller = 0;					// Don't swap A/B
+	cfg.birthYear[0] = 0x19;
+	cfg.birthYear[1] = 0x99;
+//	cfg.birthMonth = bin2BCD(PersonalData->birthMonth);
+//	cfg.birthDay = bin2BCD(PersonalData->birthDay);
+	cfg.sex = 0;
+	cfg.bloodType = 0;
+//	cfg.language = (PersonalData->language == 0) ? 0 : 1;
+
+	int i;
+	for (i = 0; i < 11; i++) {
+		s16 char16 = nitroSwanName[i];
+		cfg.name[i] = translateDSChar(char16);
+	}
+	cfg.name[i] = 0;
+	return 0;
+}
+
+char translateDSChar(u16 char16) {
+	// Translate numbers.
+	if (char16 > 0x2F && char16 < 0x3A) {
+		return char16 - 0x2F;
+	}
+	// Translate normal chars.
+	if ((char16 > 0x40 && char16 < 0x5B) || (char16 > 0x60 && char16 < 0x7B)) {
+		return (char16 & 0x1F) + 10;
+	}
+	// Check for heart (♥︎).
+	if (char16 == 0xE017 || char16 == 0x0040) {
+		return 0x25;
+	}
+	// Check for note (♪).
+	if (char16 == 0x266A) {
+		return 0x26;
+	}
+	// Check for plus (+).
+	if (char16 == 0x002B) {
+		return 0x27;
+	}
+	// Check for minus/dash (-).
+	if (char16 == 0x002D || char16 == 0x30FC) {
+		return 0x28;
+	}
+	// Check for different question marks (?).
+	if (char16 == 0x003F || char16 == 0xFF1F || char16 == 0xE011) {
+		return 0x29;
+	}
+	// Check for different dots/full stop (.).
+	if (char16 == 0x002E || char16 == 0x3002) {
+		return 0x2A;
+	}
+	return 0; // Space
+}
+
 bool updateSettingsFromWS() {
 	bool changed = false;
 	IntEEPROM *intProm = (IntEEPROM *)intEeprom.memory;
@@ -119,6 +183,7 @@ void saveState(void) {
 	infoOutput("Saved state.");
 }
 
+//---------------------------------------------------------------------------------
 static void initIntEepromWS(IntEEPROM *intProm) {
 	WSUserData *userData = &intProm->userData;
 	memcpy(userData->name, cfg.name, 16);

@@ -57,15 +57,10 @@ int main(int argc, char **argv) {
 	setupGUI();
 	getInput();
 
-	memset(wsEepromMem, 0, sizeof(wsEepromMem));
-	initIntEeprom(wsEepromMem);
-	memset(wscEepromMem, 0, sizeof(wscEepromMem));
-	initIntEepromColor(wscEepromMem);
-	memset(scEepromMem, 0, sizeof(scEepromMem));
-	initIntEepromColor(scEepromMem);
-
+	initSettings();
 	machineInit();
 	loadCart();
+	clearIntEeproms();
 	initFileHelper(SMSID);
 	loadBioses();
 	setupEmuBackground();

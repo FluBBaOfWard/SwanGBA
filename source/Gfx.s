@@ -3,6 +3,16 @@
 #include "Shared/gba_asm.h"
 #include "Sphinx/Sphinx.i"
 
+	.global gFlicker
+	.global gTwitch
+	.global gGfxMask
+	.global GFX_DISPCNT
+	.global GFX_BG0CNT
+	.global GFX_BG1CNT
+	.global EMUPALBUFF
+	.global frameTotal
+	.global sphinx0
+
 	.global gfxInit
 	.global gfxReset
 	.global monoPalInit
@@ -21,19 +31,6 @@
 	.global setScreenRefresh
 	.global getInterruptVector
 	.global setInterruptExternal
-
-	.global gfxState
-	.global gFlicker
-	.global gTwitch
-	.global gGfxMask
-	.global GFX_DISPCNT
-	.global GFX_BG0CNT
-	.global GFX_BG1CNT
-	.global EMUPALBUFF
-	.global frameTotal
-
-
-	.global sphinx0
 
 
 	.syntax unified

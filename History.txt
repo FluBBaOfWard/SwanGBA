@@ -1,6 +1,8 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.6.5 - 2023-11-05 (FluBBa)
+
 V0.6.4 - 2023-10-25 (FluBBa)
 	Fixed unsigned mul on ASWAN.
 	Fixed immediate mul.
