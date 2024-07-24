@@ -1,7 +1,9 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
-V0.6.5 - 2023-11-05 (FluBBa)
+V0.6.5 - 2024-07-24 (FluBBa)
+	Fixed cache bug in tile map rendering.
+	Fixed EEPROM handling a bit.
 
 V0.6.4 - 2023-10-25 (FluBBa)
 	Fixed unsigned mul on ASWAN.

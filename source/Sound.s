@@ -18,7 +18,9 @@
 	.global ym1DataW
 	.global ym1StatusR
 	.global ym1DataR
+	.global mix8Vol
 
+#define SHIFTVAL (21)
 
 	.syntax unified
 	.arm
@@ -149,6 +151,22 @@ silenceLoop:
 	strpl r0,[r1],#4
 	bhi silenceLoop
 
+	bx lr
+;@----------------------------------------------------------------------------
+soundCopyBuffInt:			;@ Internal speaker, 8bit mono
+;@----------------------------------------------------------------------------
+sndCpyIntLoop:
+	subs r0,r0,#1
+	ldrpl r2,[r3,r4,lsr#SHIFTVAL-2]
+	add r2,r2,r2,lsr#16
+	and r2,r2,#0xFF00
+mix8Vol:
+	mov r2,r2,lsr#0				;@ Volume button shift
+	eor r2,r2,#0x8000
+	orr r2,r2,r2,lsl#16
+	strpl r2,[r1],#4
+	add r4,r4,#1<<SHIFTVAL
+	bhi sndCpyIntLoop
 	bx lr
 ;@----------------------------------------------------------------------------
 soundLatchW:

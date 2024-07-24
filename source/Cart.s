@@ -64,12 +64,14 @@ ROM_Space:
 //	.incbin "wsroms/dkd-vesilintu.wsc"
 //	.incbin "wsroms/Final Fantasy (Japan).wsc"
 //	.incbin "wsroms/Final Fantasy IV (Japan).wsc"
+//	.incbin "wsroms/Final Lap 2000 (Japan).ws"
 //	.incbin "wsroms/Finally.emu.wsc"
 //	.incbin "wsroms/Finally.hw.wsc"
 //	.incbin "wsroms/Front Mission (Japan).wsc"
 //	.incbin "wsroms/Guilty Gear Petit (J).wsc"
 //	.incbin "wsroms/GunPey (Japan).ws"
 //	.incbin "wsroms/Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan).wsc"
+	.incbin "wsroms/Hataraku Chocobo (Japan).wsc"
 //	.incbin "wsroms/Kaze no Klonoa - Moonlight Museum (Japan).ws"
 //	.incbin "wsroms/Macross - True Love Song (Japan).ws"
 //	.incbin "wsroms/Magical Drop for WonderSwan (Japan).ws"
@@ -94,12 +96,12 @@ ROM_Space:
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:
 WS_BIOS_INTERNAL:
-//	.incbin "wsroms/boot.rom"
-	.incbin "wsroms/ws_irom.bin"
+	.incbin "wsroms/boot.rom"
+//	.incbin "wsroms/ws_irom.bin"
 WSC_BIOS_INTERNAL:
 SC_BIOS_INTERNAL:
-//	.incbin "wsroms/boot1.rom"
-	.incbin "wsroms/wc_irom.bin"
+	.incbin "wsroms/boot1.rom"
+//	.incbin "wsroms/wc_irom.bin"
 //	.incbin "wsroms/wsc_irom.bin"
 
 	.section .ewram,"ax"
@@ -110,12 +112,12 @@ machineInit: 				;@ Called from C
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
 
-//	ldr r0,=romSize
-//	mov r1,#ROM_SpaceEnd-ROM_Space
-//	str r1,[r0]
-//	ldr r0,=romSpacePtr
-//	ldr r7,=ROM_Space
-//	str r7,[r0]
+	ldr r0,=romSize
+	mov r1,#ROM_SpaceEnd-ROM_Space
+	str r1,[r0]
+	ldr r0,=romSpacePtr
+	ldr r7,=ROM_Space
+	str r7,[r0]
 
 	bl gfxInit
 //	bl ioInit

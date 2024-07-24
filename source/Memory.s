@@ -58,7 +58,7 @@ rom_W:						;@ Write ROM address (error)
 	mov r0,#0xB0
 	bx lr
 ;@----------------------------------------------------------------------------
-setBootRomOverlay:			;@ r0=arg0, 0=remove overlay, 1=WS, 2=WSC
+setBootRomOverlay:			;@ r0=arg0, 0=remove overlay, 1=WS, 2=WSC/SC
 ;@----------------------------------------------------------------------------
 	cmp r0,#3
 	ldrmi r1,=bootRomSwitch
@@ -233,12 +233,12 @@ v30WriteEAW:		;@ In v30ofs=v30ptr+second byte of opcode.
 	adr r12,v30WriteSegOfsW		;@ Return reg for EA
 	ldr pc,[v30ofs,#v30EATable]
 ;@----------------------------------------------------------------------------
-v30PushW:		;@ In r1=value.
+v30PushW:			;@ In r1=value.
 ;@----------------------------------------------------------------------------
 	ldr v30ofs,[v30ptr,#v30RegSP]
 	ldr v30csr,[v30ptr,#v30SRegSS]
 ;@----------------------------------------------------------------------------
-v30PushLastW:	;@ In r1=value.
+v30PushLastW:		;@ In r1=value.
 ;@----------------------------------------------------------------------------
 	sub v30ofs,v30ofs,#0x20000
 	str v30ofs,[v30ptr,#v30RegSP]

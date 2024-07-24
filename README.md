@@ -1,4 +1,4 @@
-# SwanGBA V0.6.4
+# SwanGBA V0.6.5
 
 <img align="right" width="220" src="./logo.png" />
 
@@ -47,17 +47,14 @@ B to go back a step.
 * Overclock EWRAM: Changes the waitstates on EWRAM between 2 and 1, might damage your GBA and uses more power, around 10% speedgain. Use at your own risk!
 * Autosleep: Change the autosleep time, also see Sleep.
 
-### Machine Settings
+### Machine
 
 * Machine: Select the emulated machine.
-* Select WS Bios: Load a real WS Bios.
-* Select WS Color Bios: Load a real WS Color Bios.
-* Select WS Crystal Bios: Load a real WS Crystal Bios.
-* Import internal EEPROM: Load a special internal EEPROM.
-* Clear internal EEPROM: Reset internal EEPROM.
-* Cpu speed hacks: Allow speed hacks.
 * Change Battery: Change to a new main battery (AA/LR6).
-* Language: Select between Japanese and English.
+* Clear internal EEPROM: Reset internal EEPROM.
+* Headphones: Select whether heaphones are connected or not.
+* Cpu speed hacks: Allow speed hacks.
+* Half Cpu Speed: Just half the emulated cpu speed.
 
 ### Debug
 
