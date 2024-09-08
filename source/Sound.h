@@ -5,8 +5,9 @@
 extern "C" {
 #endif
 
+extern u8 soundMode;
+
 void soundInit(void);
-void soundSetFrequency(void);
 void setMuteSoundGUI(void);
 void vblSound1(void);
 void vblSound2(void);

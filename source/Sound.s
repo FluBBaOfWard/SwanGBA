@@ -3,23 +3,22 @@
 #include "Shared/gba_asm.h"
 #include "Sphinx/Sphinx.i"
 
-#define MIX_LEN (528)
-
-	.extern pauseEmulation
-
 	.global soundInit
 	.global soundReset
 	.global vblSound1
 	.global vblSound2
 	.global setMuteSoundGUI
 	.global setMuteSoundChip
-	.global soundLatchW
-	.global ym1IndexW
-	.global ym1DataW
-	.global ym1StatusR
-	.global ym1DataR
 	.global mix8Vol
 
+	.global soundMode
+
+	.extern pauseEmulation
+
+/// Low res
+#define MIX_LEN (304)
+/// High res
+//#define MIX_LEN (528)
 #define SHIFTVAL (21)
 
 	.syntax unified
@@ -31,7 +30,7 @@
 soundInit:
 	.type soundInit STT_FUNC
 ;@----------------------------------------------------------------------------
-	stmfd sp!,{r3-r5,lr}
+	stmfd sp!,{r4-r5,lr}
 	mov r5,#REG_BASE
 
 ;@	ldrh r0,[r5,#REG_SGBIAS]
@@ -39,8 +38,8 @@ soundInit:
 ;@	orr r0,r0,#0x8000			;@ PWM 7-bit 131.072kHz
 ;@	strh r0,[r5,#REG_SGBIAS]
 
-	ldrb r2,soundMode			;@ If r2=0, no sound.
-	cmp r2,#1
+	ldrb r4,soundMode
+	cmp r4,#1					;@ If r4=0, no sound.
 
 	movmi r0,#0
 	ldreq r0,=0x0b040000		;@ Stop all channels, output ratio=100% dsA.  use directsound A for L&R, timer 0
@@ -59,35 +58,28 @@ soundInit:
 	ldr r0,pcmPtr0
 	str r0,[r5,#REG_DMA1SAD]	;@ DMA1 src=..
 
-/*
-	ldr snptr,=SN76496_0
-	mov r1,#1
-	bl SN76496SetMixrate		;@ Sound, 0=low, 1=high mixrate
-	ldr r1,=1536000
-	bl SN76496SetFrequency		;@ Sound, chip frequency
-	ldr r1,=FREQTBL
-	bl SN76496Init				;@ Sound
-*/
+	cmp r4,#1					;@ If r4=0, no sound.
 
-	ldrb r2,soundMode			;@ If r2=0, no sound.
-	cmp r2,#1
+	mov r2,#0
+	str r2,[r5,#REG_TM0CNT_L]	;@ Timer 0 controls sample rate. Stop timer 0
+	moveq r1,#924				;@ 924=Low, 532=High.
+	rsbeq r2,r1,#0x810000		;@ Timer 0 on. Frequency = 0x1000000/r3 Hz
+	streq r2,[r5,#REG_TM0CNT_L]
 
-	add r1,r5,#REG_TM0CNT_L		;@ Timer 0 controls sample rate:
-	mov r4,#0
-	str r4,[r1]					;@ Stop timer 0
-//	ldreq r3,[snptr,#mixRate]	;@ 924=Low, 532=High.
-	rsbeq r4,r3,#0x810000		;@ Timer 0 on. Frequency = 0x1000000/r3 Hz
-	streq r4,[r1]
-
-	ldmfd sp!,{r3-r5,lr}
+	ldmfd sp!,{r4-r5,lr}
 	bx lr
 
 ;@----------------------------------------------------------------------------
 soundReset:
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{lr}
-//	ldr ymptr,=ym1
-//	bl ym2203Reset				;@ sound
+	ldr spxptr,=sphinx0
+	bl wsAudioReset				;@ sound
+	mov r0,#MIX_LEN
+	ldr r1,=WAVBUFFER
+	bl silenceMix
+	mov r0,#0
+	strb r0,muteSoundChip
 	ldmfd sp!,{lr}
 	bx lr
 
@@ -117,7 +109,7 @@ vblSound1:
 	ldr r2,pcmPtr0
 	str r2,[r1,#REG_DMA1SAD]	;@ DMA1 src=..
 	ldr r0,=0xB640				;@ noIRQ fifo 32bit repeat incsrc fixeddst
-//	strh r0,[r1,#REG_DMA1CNT_H]	;@ DMA1 go
+	strh r0,[r1,#REG_DMA1CNT_H]	;@ DMA1 go
 
 	ldr r1,pcmPtr1
 	str r1,pcmPtr0
@@ -133,22 +125,21 @@ vblSound2:
 	cmp r0,#0
 	bxeq lr
 
-	mov r2,#MIX_LEN
+	mov r0,#MIX_LEN
 	ldr r1,pcmPtr0
-	ldr r0,muteSound
-	cmp r0,#0
-//	b silenceMix
+	ldr r2,muteSound
+	cmp r2,#0
 
-//	ldreq ymptr,=ym1
-//	beq YM2203Mixer
+	ldreq spxptr,=sphinx0
+	beq wsAudioMixer
 
 ;@----------------------------------------------------------------------------
-silenceMix:					;@ r1=destination, r2=len
+silenceMix:					;@ r0=len, r1=destination
 ;@----------------------------------------------------------------------------
-	mov r0,#0
+	mov r2,#0
 silenceLoop:
-	subs r2,r2,#4
-	strpl r0,[r1],#4
+	subs r0,r0,#4
+	strpl r2,[r1],#4
 	bhi silenceLoop
 
 	bx lr
@@ -168,18 +159,6 @@ mix8Vol:
 	add r4,r4,#1<<SHIFTVAL
 	bhi sndCpyIntLoop
 	bx lr
-;@----------------------------------------------------------------------------
-soundLatchW:
-;@----------------------------------------------------------------------------
-	strb r0,soundLatch
-	bx lr
-;@----------------------------------------------------------------------------
-ym1DataR:
-;@----------------------------------------------------------------------------
-	stmfd sp!,{r3,lr}
-//	ldr ymptr,=ym1
-//	bl ym2203DataR
-	ldmfd sp!,{r3,pc}
 
 ;@----------------------------------------------------------------------------
 pcmPtr0:	.long WAVBUFFER
@@ -189,7 +168,7 @@ muteSound:
 muteSoundGUI:
 	.byte 0
 muteSoundChip:
-	.byte 0
+	.byte 1
 	.space 2
 soundMode:
 	.byte 0
@@ -199,9 +178,8 @@ soundLatch:
 
 	.section .sbss
 	.align 2
-//	.space ymSize
-FREQTBL:
-	.space 1024*2
+//FREQTBL:
+//	.space 1024*2
 WAVBUFFER:
 	.space MIX_LEN*2
 ;@----------------------------------------------------------------------------

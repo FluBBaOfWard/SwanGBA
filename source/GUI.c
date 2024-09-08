@@ -9,6 +9,7 @@
 #include "WonderSwan.h"
 #include "Cart.h"
 #include "Gfx.h"
+#include "Sound.h"
 #include "io.h"
 #include "cpu.h"
 #include "ARMV30MZ/Version.h"
@@ -29,6 +30,7 @@ static void headphonesSet(void);
 static void speedHackSet(void);
 static void cpuHalfSet(void);
 static void borderSet(void);
+static void soundSet(void);
 static void languageSet(void);
 static void stepFrame(void);
 
@@ -46,7 +48,7 @@ const fptr fnList2[] = {selectGame, loadNVRAM, saveNVRAM, saveSettings, resetGam
 const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
 const fptr fnList4[] = {gammaSet, contrastSet, paletteChange, borderSet};
 const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, ewramSet, sleepSet};
-const fptr fnList6[] = {machineSet, batteryChange, clearIntEeproms, headphonesSet, speedHackSet, cpuHalfSet /*languageSet*/};
+const fptr fnList6[] = {machineSet, batteryChange, clearIntEeproms, headphonesSet, speedHackSet, cpuHalfSet, soundSet /*languageSet*/};
 const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, winLayerSet, stepFrame};
 const fptr fnList8[] = {uiDummy};
 const fptr fnList9[] = {quickSelectGame};
@@ -158,7 +160,7 @@ void uiDisplay() {
 	drawSubItem("Gamma: ", brighTxt[gGammaValue]);
 	drawSubItem("Contrast:", brighTxt[gContrastValue]);
 	drawSubItem("B&W Palette: ", palTxt[gPaletteBank]);
-	drawSubItem("Border:", autoTxt[gBorderEnable]);
+	drawSubItem("Border: ", autoTxt[gBorderEnable]);
 }
 
 static void uiMachine() {
@@ -169,6 +171,7 @@ static void uiMachine() {
 	drawSubItem("Headphones:", autoTxt[(emuSettings&ENABLE_HEADPHONES)>>18]);
 	drawSubItem("Cpu Speed Hacks: ", autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
 	drawSubItem("Half Cpu Speed: ", autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
+	drawSubItem("Sound: ", autoTxt[soundMode&1]);
 //	drawSubItem("Language: ",langTxt[gLang]);
 }
 
@@ -370,6 +373,14 @@ void cpuHalfSet() {
 void headphonesSet() {
 	emuSettings ^= ENABLE_HEADPHONES;
 	setHeadphones(emuSettings & ENABLE_HEADPHONES);
+}
+
+void soundSet() {
+	soundMode++;
+	if (soundMode >= 2) {
+		soundMode = 0;
+	}
+	soundInit();
 }
 
 void batteryChange() {
