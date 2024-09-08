@@ -17,7 +17,7 @@ int loadSettings(void);
 void saveSettings(void);
 bool loadGame(const RomHeader *rh);
 void checkMachine(const RomHeader *rh);
-int loadNVRAM(void);
+void loadNVRAM(void);
 void saveNVRAM(void);
 void loadState(void);
 void saveState(void);

@@ -39,7 +39,7 @@ const fptr fnMain[] = {nullUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, 
 
 const fptr fnList0[] = {uiDummy};
 const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, ui8, gbaSleep, resetGame, ui10};
-const fptr fnList2[] = {selectGame, loadState, saveState, saveSettings, resetGame};
+const fptr fnList2[] = {selectGame, loadNVRAM, saveNVRAM, saveSettings, resetGame};
 const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
 const fptr fnList4[] = {gammaSet, contrastSet, paletteChange};
 const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, ewramSet, sleepSet};
@@ -98,8 +98,8 @@ void uiNullNormal() {
 void uiFile() {
 	setupSubMenu("File Handling");
 	drawMenuItem("Load Game->");
-	drawMenuItem("Load State");
-	drawMenuItem("Save State");
+	drawMenuItem("Load NVRAM");
+	drawMenuItem("Save NVRAM");
 	drawMenuItem("Save Settings");
 	drawMenuItem("Reset Game");
 }

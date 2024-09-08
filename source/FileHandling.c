@@ -7,6 +7,7 @@
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/FileHelper.h"
+#include "Shared/AsmExtra.h"
 #include "Gui.h"
 #include "Cart.h"
 #include "Gfx.h"
@@ -167,11 +168,42 @@ void saveSettings() {
 	infoOutput("Settings saved.");
 }
 
-int loadNVRAM() {
-	return 0;
+void loadNVRAM() {
+	int saveSize = 0;
+	void *nvMem = NULL;
+
+	if (sramSize > 0) {
+		saveSize = sizeof(wsSRAM);
+		nvMem = wsSRAM;
+	}
+	else if (eepromSize > 0) {
+		saveSize = eepromSize;
+		nvMem = extEepromMem;
+	}
+	else {
+		return;
+	}
+	bytecopy_(nvMem, (u8 *)SRAM, saveSize);
+	infoOutput("Loaded NVRAM.");
 }
 
 void saveNVRAM() {
+	int saveSize = 0;
+	void *nvMem = NULL;
+
+	if (sramSize > 0) {
+		saveSize = sizeof(wsSRAM);
+		nvMem = wsSRAM;
+	}
+	else if (eepromSize > 0) {
+		saveSize = eepromSize;
+		nvMem = extEepromMem;
+	}
+	else {
+		return;
+	}
+	bytecopy_((u8 *)SRAM, nvMem, saveSize);
+	infoOutput("Saved NVRAM.");
 }
 
 void loadState(void) {
