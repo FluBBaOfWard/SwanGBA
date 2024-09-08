@@ -1,4 +1,4 @@
-# SwanGBA V0.6.5
+# SwanGBA V0.6.6
 
 <img align="right" width="220" src="./logo.png" />
 
@@ -15,8 +15,6 @@ B to go back a step.
 ### File
 
 * Load Game: Select a game to load.
-* Load State: Load a previously saved state of the currently running game.
-* Save State: Save a state of the currently running game.
 * Load NVRAM: Load non volatile ram (EEPROM/SRAM) for the currently running game.
 * Save NVRAM: Save non volatile ram (EEPROM/SRAM) for the currently running game.
 * Save Settings: Save the current settings (and internal EEPROM).
@@ -55,6 +53,7 @@ B to go back a step.
 * Headphones: Select whether heaphones are connected or not.
 * Cpu speed hacks: Allow speed hacks.
 * Half Cpu Speed: Just half the emulated cpu speed.
+* Sound: Turn sound emulation on/off.
 
 ### Debug
 

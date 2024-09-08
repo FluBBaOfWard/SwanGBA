@@ -14,6 +14,8 @@
 		9C1A755128DB1F1D005F342E /* WonderSwan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = WonderSwan.c; sourceTree = "<group>"; };
 		9C1A755628DCDC96005F342E /* FileHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileHelper.h; sourceTree = "<group>"; };
 		9C1A755728DCDC96005F342E /* FileHelper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FileHelper.c; sourceTree = "<group>"; };
+		9C2DB3AE2C8C581F00467503 /* FlashCart.s */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; path = FlashCart.s; sourceTree = "<group>"; };
+		9C2DB3AF2C8CA2BD00467503 /* Formats.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Formats.txt; sourceTree = "<group>"; };
 		9C32295D2A7E78CE0063DD8F /* PCV2Border.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCV2Border.png; sourceTree = "<group>"; };
 		9C32295E2A7E78CE0063DD8F /* PCV2Border.grit */ = {isa = PBXFileReference; lastKnownFileType = text; path = PCV2Border.grit; sourceTree = "<group>"; };
 		9C42400D27E21F200042454B /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				9C4C21D926E53C40007D0280 /* SwanGBA_todo.txt */,
 				A4AA02141B04077F0043E4D4 /* History.txt */,
 				9CBC0C8E26DD7C2A0039D17E /* README.md */,
+				9C2DB3AF2C8CA2BD00467503 /* Formats.txt */,
 				A42D0269205FEC6E00515C72 /* Docs */,
 				746D78E014ED9A6D00CC738F /* makefile */,
 				A48CC0251618E65200465E20 /* source */,
@@ -206,6 +209,7 @@
 				9C1A755728DCDC96005F342E /* FileHelper.c */,
 				9C42403427E225620042454B /* AsmExtra.h */,
 				9C42403727E225620042454B /* AsmExtra.s */,
+				9C2DB3AE2C8C581F00467503 /* FlashCart.s */,
 			);
 			path = Shared;
 			sourceTree = "<group>";

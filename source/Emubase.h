@@ -6,10 +6,9 @@ extern "C" {
 #endif
 
 #define BWSID 0x1A535742		// "BWS",0x1A - Bandai WonderSwan
-#define SMSID 0x1A534D53		// "SMS",0x1A
 
 typedef struct {
-	const u32 identifier;
+	const u32 identifier;		// BWSID
 	const u32 filesize;
 	const u32 flags;			// Bit 1 = PCV2, Bit 2 = WSC, Bit 3 = SwanCrystal.
 	const u32 spritefollow;

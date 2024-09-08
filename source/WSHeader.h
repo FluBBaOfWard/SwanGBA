@@ -1,21 +1,9 @@
 #ifndef WSHEADER
 #define WSHEADER
 
-/// WsHeader
-typedef struct
-{
-	const u8  resetCode[5];		// 0x00 - 0x04
-	const u8  maintenace;		// 0x05, bit 7 skip custom boot.
-	const u8  publisher;		// 0x06
-	const u8  color;			// 0x07, 0x00 = B&W, 0x01 = Color.
-	const u8  gameId;			// 0x08
-	const u8  gameRev;			// 0x09, bit 0-6 rev, bit 7 = don't set the internal EEPROM into write-protected mode.
-	const u8  romSize;			// 0x0A
-	const u8  nvramSize;		// 0x0B
-	const u8  flags;			// 0x0C, bit 0=orientation, bit 1=8bit bus, bit 2=3 cyc Rom access.
-	const u8  rtc;				// 0x0D, 0x01 = RTC.
-	const u16 checksum;			// 0x0E - 0x0F
-} WsHeader;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum {
 	ROM_SIZE_1MBIT = 0,
@@ -39,8 +27,39 @@ typedef enum {
 	SRAM_2MBIT,
 	SRAM_4MBIT,
 	EEPROM_1KBIT = 0x10,
-	EEPROM_16BIT = 0x20,
-	EEPROM_8BIT = 0x50,
+	EEPROM_16KBIT = 0x20,
+	EEPROM_8KBIT = 0x50,
 } SAVE_TYPE;
+
+/// WsHeader
+typedef struct
+{
+	/// 0x00 - 0x04
+	const u8 resetCode[5];
+	/// 0x05, bit 7 skip custom boot.
+	const u8 maintenace;
+	/// 0x06 Publisher ID
+	const u8 publisher;
+	/// 0x07, 0x00 = B&W, 0x01 = Color.
+	const u8 color;
+	/// 0x08
+	const u8 gameId;
+	/// 0x09, bit 0-6 rev, bit 7 = don't set the internal EEPROM into write-protected mode.
+	const u8 gameRev;
+	/// 0x0A
+	const WsRomSize romSize;
+	/// 0x0B
+	const SAVE_TYPE nvramSize;
+	/// 0x0C, bit 0=orientation, bit 1=8bit bus, bit 2= cyc Rom access.
+	const u8 flags;
+	/// 0x0D, 0x01 = Luxsor2003 (RTC).
+	const u8 mapper;
+	/// 0x0E - 0x0F
+	const u16 checksum;
+} WsHeader;
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif	// WSHEADER

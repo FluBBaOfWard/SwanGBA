@@ -14,7 +14,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.6.5 2024-05-05"
+#define EMUVERSION "V0.6.6 2024-09-08"
 
 #define HALF_CPU_SPEED		(1<<16)
 #define ALLOW_SPEED_HACKS	(1<<17)
@@ -28,12 +28,15 @@ static void batteryChange(void);
 static void headphonesSet(void);
 static void speedHackSet(void);
 static void cpuHalfSet(void);
+static void borderSet(void);
 static void languageSet(void);
 static void stepFrame(void);
 
 static void uiDebug(void);
 static void uiMachine(void);
-static void updateGameInfo(char *buffer);
+static void updateGameId(char *buffer);
+static void updateCartInfo(char *buffer);
+static void updateMapperInfo(char *buffer);
 
 const fptr fnMain[] = {nullUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI, subUI};
 
@@ -41,10 +44,10 @@ const fptr fnList0[] = {uiDummy};
 const fptr fnList1[] = {ui2, ui3, ui4, ui5, ui6, ui7, ui8, gbaSleep, resetGame, ui10};
 const fptr fnList2[] = {selectGame, loadNVRAM, saveNVRAM, saveSettings, resetGame};
 const fptr fnList3[] = {autoBSet, autoASet, swapABSet};
-const fptr fnList4[] = {gammaSet, contrastSet, paletteChange};
+const fptr fnList4[] = {gammaSet, contrastSet, paletteChange, borderSet};
 const fptr fnList5[] = {speedSet, autoStateSet, autoSettingsSet, autoPauseGameSet, ewramSet, sleepSet};
 const fptr fnList6[] = {machineSet, batteryChange, clearIntEeproms, headphonesSet, speedHackSet, cpuHalfSet /*languageSet*/};
-const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, stepFrame};
+const fptr fnList7[] = {debugTextSet, fgrLayerSet, bgrLayerSet, sprLayerSet, winLayerSet, stepFrame};
 const fptr fnList8[] = {uiDummy};
 const fptr fnList9[] = {quickSelectGame};
 const fptr fnList10[] = {exitEmulator, backOutOfMenu};
@@ -121,16 +124,22 @@ void uiMainMenu() {
 }
 
 void uiAbout() {
-	setupSubMenu("About");
 	char gameInfoString[32];
-	updateGameInfo(gameInfoString);
+	setupSubMenu("About");
 	drawText("B:        WS B Button", 3);
 	drawText("A:        WS A Button", 4);
 	drawText("Start:    WS Start Button", 5);
 	drawText("Select:   WS Sound Button", 6);
 	drawText("DPad:     WS X1-X4", 7);
 
+	updateGameId(gameInfoString);
 	drawText(gameInfoString, 9);
+
+	updateCartInfo(gameInfoString);
+	drawText(gameInfoString, 10);
+
+	updateMapperInfo(gameInfoString);
+	drawText(gameInfoString, 11);
 
 	drawText("SwanGBA    " EMUVERSION, 17);
 	drawText("Sphinx     " SPHINXVERSION, 18);
@@ -149,16 +158,17 @@ void uiDisplay() {
 	drawSubItem("Gamma: ", brighTxt[gGammaValue]);
 	drawSubItem("Contrast:", brighTxt[gContrastValue]);
 	drawSubItem("B&W Palette: ", palTxt[gPaletteBank]);
+	drawSubItem("Border:", autoTxt[gBorderEnable]);
 }
 
 static void uiMachine() {
 	setupSubMenu("Machine Settings");
-	drawSubItem("Machine: ",machTxt[gMachineSet]);
+	drawSubItem("Machine: ", machTxt[gMachineSet]);
 	drawMenuItem("Change Batteries");
 	drawMenuItem("Clear Internal EEPROM");
 	drawSubItem("Headphones:", autoTxt[(emuSettings&ENABLE_HEADPHONES)>>18]);
-	drawSubItem("Cpu Speed Hacks: ",autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
-	drawSubItem("Half Cpu Speed: ",autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
+	drawSubItem("Cpu Speed Hacks: ", autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
+	drawSubItem("Half Cpu Speed: ", autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
 //	drawSubItem("Language: ",langTxt[gLang]);
 }
 
@@ -178,7 +188,8 @@ void uiDebug() {
 	drawSubItem("Disable Foreground: ", autoTxt[(gGfxMask>>1)&1]);
 	drawSubItem("Disable Background: ", autoTxt[gGfxMask&1]);
 	drawSubItem("Disable Sprites: ", autoTxt[(gGfxMask>>4)&1]);
-	drawSubItem("Step Frame ", NULL);
+	drawSubItem("Disable Windows:", autoTxt[(gGfxMask>>5)&1]);
+	drawSubItem("Step Frame", NULL);
 }
 
 void uiLoadGame() {
@@ -197,12 +208,30 @@ void resetGame() {
 	setupEmuBackground();
 }
 
-void updateGameInfo(char *buffer) {
+void updateGameId(char *buffer) {
 	char catalog[8];
 	char2HexStr(catalog, gGameHeader->gameId);
-	strlMerge(buffer, "Game Id, Rev #: 0x", catalog, 32);
+	strlMerge(buffer, "Game Id, Rev    #: 0x", catalog, 32);
 	strlMerge(buffer, buffer, " 0x", 32);
 	char2HexStr(catalog, gGameHeader->gameRev);
+	strlMerge(buffer, buffer, catalog, 32);
+}
+
+void updateCartInfo(char *buffer) {
+	char catalog[8];
+	char2HexStr(catalog, gGameHeader->romSize);
+	strlMerge(buffer, "ROM Size, Save  #: 0x", catalog, 32);
+	strlMerge(buffer, buffer, " 0x", 32);
+	char2HexStr(catalog, gGameHeader->nvramSize);
+	strlMerge(buffer, buffer, catalog, 32);
+}
+
+void updateMapperInfo(char *buffer) {
+	char catalog[8];
+	char2HexStr(catalog, gGameHeader->flags);
+	strlMerge(buffer, "Flags, Mapper   #: 0x", catalog, 32);
+	strlMerge(buffer, buffer, " 0x", 32);
+	char2HexStr(catalog, gGameHeader->mapper);
 	strlMerge(buffer, buffer, catalog, 32);
 }
 
@@ -294,6 +323,10 @@ void bgrLayerSet() {
 void sprLayerSet() {
 	gGfxMask ^= 0x10;
 }
+/// Turn on/off windows
+void winLayerSet() {
+	gGfxMask ^= 0x20;
+}
 
 void paletteChange() {
 	gPaletteBank++;
@@ -308,7 +341,8 @@ void paletteChange() {
 
 void borderSet() {
 	gBorderEnable ^= 0x01;
-//	setupEmuBorderPalette();
+	setupEmuBorderPalette();
+	setupMenuPalette();
 }
 
 void languageSet() {

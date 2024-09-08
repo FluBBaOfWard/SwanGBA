@@ -1,12 +1,14 @@
 #ifdef __arm__
 
+//#define EMBEDDED_ROM
+
 #include "WSEEPROM/WSEEPROM.i"
 #include "WSRTC/WSRTC.i"
 #include "Sphinx/Sphinx.i"
 #include "ARMV30MZ/ARMV30MZ.i"
 
+	.global cartFlags
 	.global romSpacePtr
-	.global allocatedRomMem
 	.global biosBase
 	.global biosSpace
 	.global biosSpaceColor
@@ -36,14 +38,7 @@
 
 	.global machineInit
 	.global loadCart
-	.global romNum
-	.global cartFlags
-	.global romStart
 	.global reBankSwitchAll
-	.global reBankSwitch4_F
-	.global reBankSwitch1
-	.global reBankSwitch2
-	.global reBankSwitch3
 	.global clearDirtyTiles
 	.global cartRtcUpdate
 
@@ -53,6 +48,7 @@
 	.section .rodata
 	.align 2
 
+#ifdef EMBEDDED_ROM
 ROM_Space:
 //	.incbin "wsroms/Anchorz Field (Japan).ws"
 //	.incbin "wsroms/Beat Mania (J) [M][!].ws"
@@ -71,7 +67,7 @@ ROM_Space:
 //	.incbin "wsroms/Guilty Gear Petit (J).wsc"
 //	.incbin "wsroms/GunPey (Japan).ws"
 //	.incbin "wsroms/Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan).wsc"
-	.incbin "wsroms/Hataraku Chocobo (Japan).wsc"
+//	.incbin "wsroms/Hataraku Chocobo (Japan).wsc"
 //	.incbin "wsroms/Kaze no Klonoa - Moonlight Museum (Japan).ws"
 //	.incbin "wsroms/Macross - True Love Song (Japan).ws"
 //	.incbin "wsroms/Magical Drop for WonderSwan (Japan).ws"
@@ -95,13 +91,14 @@ ROM_Space:
 //	.incbin "wsroms/WSHWTest.wsc"
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:
+#endif
 WS_BIOS_INTERNAL:
-	.incbin "wsroms/boot.rom"
-//	.incbin "wsroms/ws_irom.bin"
+//	.incbin "wsroms/boot.rom"
+	.incbin "wsroms/ws_irom.bin"
 WSC_BIOS_INTERNAL:
 SC_BIOS_INTERNAL:
-	.incbin "wsroms/boot1.rom"
-//	.incbin "wsroms/wc_irom.bin"
+//	.incbin "wsroms/boot1.rom"
+	.incbin "wsroms/wc_irom.bin"
 //	.incbin "wsroms/wsc_irom.bin"
 
 	.section .ewram,"ax"
@@ -112,12 +109,13 @@ machineInit: 				;@ Called from C
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
 
+#ifdef EMBEDDED_ROM
 	ldr r0,=romSize
 	mov r1,#ROM_SpaceEnd-ROM_Space
 	str r1,[r0]
-	ldr r0,=romSpacePtr
 	ldr r7,=ROM_Space
-	str r7,[r0]
+	str r7,romSpacePtr
+#endif
 
 	bl gfxInit
 //	bl ioInit
@@ -182,7 +180,7 @@ loadCart: 					;@ Called from C:
 	ldrb r5,gMachineSet
 	cmp r5,#HW_AUTO
 	bne noHWCheck
-	tst r2,#1
+	tst r2,#1					;@ Color from header
 	moveq r5,#HW_WONDERSWAN
 	movne r5,#HW_WONDERSWANCOLOR
 noHWCheck:
@@ -445,7 +443,7 @@ cartGPIODataR:				;@ 0xCD General Purpose I/O data, bit 3-0.
 ;@----------------------------------------------------------------------------
 cartWWFlashR:				;@ 0xCE WonderWitch Flash/SRAM select
 ;@----------------------------------------------------------------------------
-	ldrb r0,[spxptr,wsvWWitch]
+	ldrb r0,[spxptr,wsvBank1Map]
 	bx lr
 ;@----------------------------------------------------------------------------
 cartUnmR:
@@ -467,7 +465,7 @@ cartGPIODataW:				;@ 0xCD General Purpose I/O data, bit 3-0.
 cartWWFlashW:				;@ 0xCE WonderWitch flash
 ;@----------------------------------------------------------------------------
 	and r0,r0,#1
-	strb r0,[spxptr,wsvWWitch]
+	strb r0,[spxptr,wsvBank1Map]
 	bx lr
 ;@----------------------------------------------------------------------------
 cartUnmW:
@@ -588,11 +586,38 @@ cartRtcUpdate:				;@ r0=rtcptr. Call every second.
 	adr rtcptr,cartRtc
 	b wsRtcUpdate
 ;@----------------------------------------------------------------------------
+cartTimerR:					;@ 0xD6
+;@----------------------------------------------------------------------------
+	ldrb r0,[spxptr,#wsvCartTimer]
+	bx lr
+;@----------------------------------------------------------------------------
+cartADPCMR:					;@ 0xD9
+;@----------------------------------------------------------------------------
+	strb r0,[spxptr,#wsvADPCMR]
+	bx lr
+;@----------------------------------------------------------------------------
+cartTimerW:					;@ 0xD6
+;@ ((period + 1) * 2) cartridge clocks, where "one cartridge clock" = 384KHz = 1/8th CPU clock.
+;@----------------------------------------------------------------------------
+	strb r0,[spxptr,#wsvCartTimer]
+	bx lr
+;@----------------------------------------------------------------------------
+cartADPCMW:					;@ 0xD8
+;@----------------------------------------------------------------------------
+	strb r0,[spxptr,#wsvADPCMW]
+	bx lr
+;@----------------------------------------------------------------------------
+cartTimerReset:
+;@----------------------------------------------------------------------------
+//	ldrb r0,cartTimerPresent
+	cmp r0,#0
+	bxeq lr
+	ldr r1,=setInterruptExternal
+	bx lr
+;@----------------------------------------------------------------------------
 cartRtc:
 	.space wsRtcSize
 
-romNum:
-	.long 0						;@ romnumber
 romInfo:						;@
 emuFlags:
 	.byte 0						;@ emuflags      (label this so GUI.C can take a peek) see EmuSettings.h for bitfields
@@ -626,7 +651,7 @@ gGameHeader:
 allocatedRomMem:
 	.long 0
 romSpacePtr:
-	.long 0
+	.long 0x08000000
 romPtr:
 	.long 0
 romPtr2:
@@ -797,10 +822,10 @@ KarnakR:
 	.long BankSwitch2_H_R		;@ 0xD3 2 more bits for 0xC2
 	.long BankSwitch3_R			;@ 0xD4 Alias to 0xC3
 	.long BankSwitch3_H_R		;@ 0xD5 2 more bits for 0xC3
-	.long cartUnmR				;@ 0xD6 Programmable Interval Timer
+	.long cartTimerR			;@ 0xD6 Programmable Interval Timer
 	.long cartUnmR				;@ 0xD7
 	.long cartUnmR				;@ 0xD8 ADPCM input
-	.long cartUnmR				;@ 0xD9 ADPCM output
+	.long cartADPCMR			;@ 0xD9 ADPCM output
 	;@ 0xDA-0xDF
 	.long cartUnmR,cartUnmR,cartUnmR,cartUnmR,cartUnmR,cartUnmR
 	;@ 0xE0-0xEF
@@ -834,9 +859,9 @@ KarnakW:
 	.long BankSwitch2_H_W		;@ 0xD3 2 more bits for 0xC2
 	.long BankSwitch3_L_W		;@ 0xD4 Alias to 0xC3
 	.long BankSwitch3_H_W		;@ 0xD5 2 more bits for 0xC3
-	.long cartUnmW				;@ 0xD6 Programmable Interval Timer
+	.long cartTimerW			;@ 0xD6 Programmable Interval Timer
 	.long cartUnmW				;@ 0xD7
-	.long cartUnmW				;@ 0xD8 ADPCM input
+	.long cartADPCMW			;@ 0xD8 ADPCM input
 	.long cartUnmW				;@ 0xD9 ADPCM output
 	;@ 0xDA-0xDF
 	.long cartUnmW,cartUnmW,cartUnmW,cartUnmW,cartUnmW,cartUnmW

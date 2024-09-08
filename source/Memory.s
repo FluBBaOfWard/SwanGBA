@@ -15,6 +15,7 @@
 	.global v30ReadStack
 	.global v30ReadDsIx
 	.global v30ReadSegOfs
+	.global v30ReadEAWF7
 	.global v30ReadEAW1
 	.global v30ReadEAW
 	.global v30ReadEAW_noAdd
@@ -32,6 +33,7 @@
 	.global v30PushLastW
 	.global v30WriteSegOfsW
 	.global setBootRomOverlay
+	.global setSRamArea
 
 
 	.syntax unified
@@ -61,8 +63,8 @@ rom_W:						;@ Write ROM address (error)
 setBootRomOverlay:			;@ r0=arg0, 0=remove overlay, 1=WS, 2=WSC/SC
 ;@----------------------------------------------------------------------------
 	cmp r0,#3
-	ldrmi r1,=bootRomSwitch
-	ldrmi r2,=bootRomSwitch2
+	ldrmi r1,=bootRomSwitchB
+	ldrmi r2,=bootRomSwitchW
 	adr r3,commandList
 	ldrmi r0,[r3,r0,lsl#2]
 	strmi r0,[r1]
@@ -71,6 +73,20 @@ commandList:
 	bx lr
 	subs r2,r2,#0xFF000
 	subs r2,r2,#0xFE000
+;@----------------------------------------------------------------------------
+setSRamArea:			;@ r0=arg0, 0=SRAM, 1=ROM/Flash
+;@----------------------------------------------------------------------------
+	cmp r0,#2
+	ldrmi r1,=sram_WB
+	ldrmi r2,=sram_WW
+	adr r3,sramCmdList
+	ldrmi r0,[r3,r0,lsl#2]
+	strmi r0,[r1]
+	strmi r0,[r2]
+	bx lr
+sramCmdList:
+	ldreq r2,[v30ptr,#v30MemTblInv-2*4]
+	cmp r2,#0
 
 ;@----------------------------------------------------------------------------
 
@@ -124,7 +140,7 @@ cpuReadMem20:		;@ In r0=address set in top 20 bits. Out r0=val, r1=phyAdr
 	ldr r1,[v30ptr,r2,lsl#2]
 	mov r2,r0,lsr#12
 	ldrb r0,[r1,r0,lsr#12]!
-bootRomSwitch:
+bootRomSwitchB:
 	subs r2,r2,#0xFE000
 	bxcc lr
 	ldr r1,=biosBase
@@ -132,6 +148,10 @@ bootRomSwitch:
 	ldrb r0,[r1,r2]!
 	bx lr
 
+;@----------------------------------------------------------------------------
+v30ReadEAWF7:			;@ In r0=second byte of opcode.
+;@----------------------------------------------------------------------------
+	add v30ofs,v30ptr,r0,lsl#2
 ;@----------------------------------------------------------------------------
 v30ReadEAW1:		;@ In v30ofs=v30ptr+second byte of opcode.
 ;@----------------------------------------------------------------------------
@@ -164,7 +184,7 @@ dmaReadMem20W:
 	ldr r1,[v30ptr,r2,lsl#2]
 	mov r2,r0,lsr#12
 	ldrh r0,[r1,r2]!
-bootRomSwitch2:
+bootRomSwitchW:
 	subs r2,r2,#0xFE000
 	bxcc lr
 	ldr r1,=biosBase
@@ -188,6 +208,10 @@ v30WriteEA:				;@ In v30ofs=v30ptr+second byte of opcode.
 ;@----------------------------------------------------------------------------
 	adr r12,v30WriteSegOfs		;@ Return reg for EA
 	ldr pc,[v30ofs,#v30EATable]
+;@----------------------------------------------------------------------------
+;@v30WriteEsIy:		;@
+;@----------------------------------------------------------------------------
+;@	ldrsb r4,[v30ptr,#v30DF]
 ;@----------------------------------------------------------------------------
 v30WriteEsIy:		;@
 ;@----------------------------------------------------------------------------
@@ -270,10 +294,10 @@ tstSRAM_WW:
 ;@----------------------------------------------------------------------------
 sram_WW:			;@ Write sram ($10000-$1FFFF)
 ;@----------------------------------------------------------------------------
-	subeq v30cyc,v30cyc,#1*CYCLE
 	ldreq r2,[v30ptr,#v30MemTblInv-2*4]
 	moveq r0,r0,lsr#12
 	strheq r1,[r2,r0]
+	subeq v30cyc,v30cyc,#1*CYCLE
 	bxeq lr
 	b rom_W
 ;@----------------------------------------------------------------------------

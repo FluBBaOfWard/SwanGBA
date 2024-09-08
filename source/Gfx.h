@@ -13,6 +13,7 @@ extern u8 gGfxMask;
 
 extern Sphinx sphinx0;
 extern u16 EMUPALBUFF[0x200];
+extern u16 MAPPED_BNW[0x10];
 extern u32 GFX_DISPCNT;
 extern u16 GFX_BG0CNT;
 extern u16 GFX_BG1CNT;
@@ -29,6 +30,7 @@ void v30WritePort(u8 value, u16 port);
 void v30WritePort16(u16 value, u16 port);
 
 void setHeadphones(bool enable);
+void setSerialByteIn(u8 value);
 
 #ifdef __cplusplus
 } // extern "C"

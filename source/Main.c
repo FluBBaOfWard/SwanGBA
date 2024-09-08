@@ -59,12 +59,17 @@ int main(int argc, char **argv) {
 
 	initSettings();
 	machineInit();
-	loadCart();
-	clearIntEeproms();
-	initFileHelper(SMSID);
-	loadBioses();
-	setupEmuBackground();
-	powerIsOn = true;
+	bool fsOk = initFileHelper(BWSID);
+	loadSettings();
+	loadIntEeproms();
+	if (fsOk) {
+		loadBioses();
+		const RomHeader *rh = findRom(0);
+		loadGame(rh);
+	}
+	else {
+		infoOutput("No roms found.");
+	}
 
 	while (1) {
 		waitVBlank();
@@ -108,7 +113,7 @@ static void checkTimeOut() {
 //---------------------------------------------------------------------------------
 void setEmuSpeed(int speed) {
 //---------------------------------------------------------------------------------
-	if (speed == 0) {			// Normal Speed
+	if (speed == 0) {		// Normal Speed
 		waitMaskIn = 0x00;
 		waitMaskOut = 0x00;
 	}
@@ -152,13 +157,14 @@ static void setupGraphics() {
 	REG_BG2HOFS = 8;	// Center border
 	REG_BG2VOFS = 16;
 
-	REG_WIN0H = 0x0000+SCREEN_WIDTH;		// Horizontal start-end
-	REG_WIN0V = 0x0000+SCREEN_HEIGHT;		// Vertical start-end
-	REG_WINOUT = 0;
+//	REG_WIN0H = 0x0000+SCREEN_WIDTH;		// Horizontal start-end
+//	REG_WIN0V = 0x0000+SCREEN_HEIGHT;		// Vertical start-end
 
 	// Set up background 3 for menu
 	REG_BG3CNT = TEXTBG_SIZE_512x256 | BG_MAP_BASE(6) | BG_TILE_BASE(0) | BG_PRIORITY(0);
 	menuMap = MAP_BASE_ADR(6);
+
+	setupEmuBackground();
 
 	LZ77UnCompVram(EmuFontTiles, (void *)VRAM+0x2400);
 	setupMenuPalette();

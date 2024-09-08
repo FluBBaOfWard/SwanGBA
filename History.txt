@@ -1,6 +1,12 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.6.6 - 2024-09-08 (FluBBa)
+	Added old, hacked builder for Windows.
+	Fixed some small bugs in the DMA.
+	Fixed cpu prefix handling.
+	Optimized some opcodes.
+
 V0.6.5 - 2024-07-24 (FluBBa)
 	Fixed cache bug in tile map rendering.
 	Fixed EEPROM handling a bit.

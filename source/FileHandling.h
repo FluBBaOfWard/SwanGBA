@@ -23,6 +23,7 @@ void loadState(void);
 void saveState(void);
 void selectGame(void);
 void loadBioses(void);
+int loadIntEeproms(void);
 void clearIntEeproms(void);
 
 #ifdef __cplusplus

@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 extern u8 gGammaValue;
+extern u8 gContrastValue;
+extern u8 gBorderEnable;
 
 void setupGUI(void);
 void enterGUI(void);
@@ -41,6 +43,7 @@ void contrastSet(void);
 void fgrLayerSet(void);
 void bgrLayerSet(void);
 void sprLayerSet(void);
+void winLayerSet(void);
 
 #ifdef __cplusplus
 } // extern "C"

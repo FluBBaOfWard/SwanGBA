@@ -5,6 +5,7 @@
 #include "WSBorder.h"
 #include "WSCBorder.h"
 #include "PCV2Border.h"
+#include "Gui.h"
 #include "Cart.h"
 #include "Gfx.h"
 #include "ARMV30MZ/ARMV30MZ.h"
@@ -43,13 +44,24 @@ int getStateSize() {
 	return size;
 }
 
+static void setupBorderPalette(const void *palette, int len) {
+//	monoPalInit(gGammaValue, gContrastValue);
+	if (gBorderEnable == 0) {
+		memset(EMUPALBUFF, 0, len);
+	}
+	else {
+		memcpy(EMUPALBUFF, palette, len);
+	}
+//	paletteTxAll();					// Make new palette visible
+}
+
 void setupWSBackground() {
 	LZ77UnCompVram(WSBorderTiles, TILE_BASE_ADR(1));
 	LZ77UnCompVram(WSBorderMap, MAP_BASE_ADR(15));
 }
 
 void setupWSBorderPalette() {
-	memcpy(EMUPALBUFF, WSBorderPal, WSBorderPalLen);
+	setupBorderPalette(WSBorderPal, WSBorderPalLen);
 }
 
 void setupWSCBackground() {
@@ -58,7 +70,7 @@ void setupWSCBackground() {
 }
 
 void setupWSCBorderPalette() {
-	memcpy(EMUPALBUFF, WSCBorderPal, WSCBorderPalLen);
+	setupBorderPalette(WSCBorderPal, WSCBorderPalLen);
 }
 
 void setupPCV2Background() {
@@ -67,7 +79,7 @@ void setupPCV2Background() {
 }
 
 void setupPCV2BorderPalette() {
-	memcpy(EMUPALBUFF, PCV2BorderPal, PCV2BorderPalLen);
+	setupBorderPalette(PCV2BorderPal, PCV2BorderPalLen);
 }
 
 void setupEmuBackground() {

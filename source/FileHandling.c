@@ -14,7 +14,7 @@
 #include "io.h"
 #include "InternalEEPROM.h"
 
-static const char *const nitroSwanName = "@ SwanGBA @";
+static const char *const swanGBAName = "@ SwanGBA @";
 
 char translateDSChar(u16 char16);
 
@@ -39,7 +39,7 @@ int initSettings() {
 
 	int i;
 	for (i = 0; i < 11; i++) {
-		s16 char16 = nitroSwanName[i];
+		s16 char16 = swanGBAName[i];
 		cfg.name[i] = translateDSChar(char16);
 	}
 	cfg.name[i] = 0;
@@ -135,10 +135,13 @@ int loadSettings() {
 		return 1;
 	}
 */
-	gGammaValue = cfg.gammaValue;
-	emuSettings  = cfg.emuSettings & ~EMUSPEED_MASK;	// Clear speed setting.
-	sleepTime    = cfg.sleepTime;
-	joyCfg       = (joyCfg&~0x400)|((cfg.controller&1)<<10);
+	gBorderEnable = (cfg.config & 1) ^ 1;
+	gPaletteBank  = cfg.palette;
+	gGammaValue   = cfg.gammaValue & 0xF;
+	gContrastValue = (cfg.gammaValue>>4) & 0xF;
+	emuSettings = cfg.emuSettings & ~EMUSPEED_MASK;	// Clear speed setting.
+	sleepTime   = cfg.sleepTime;
+	joyCfg      = (joyCfg&~0x400)|((cfg.controller&1)<<10);
 //	strlcpy(currentDir, cfg.currentPath, sizeof(currentDir));
 
 	infoOutput("Settings loaded.");
@@ -245,6 +248,19 @@ static void clearIntEepromSC() {
 	initIntEepromWSC((IntEEPROM *)scEepromMem);
 }
 
+int loadIntEeproms() {
+	int status = 0;
+	clearIntEepromWS();
+	clearIntEepromWSC();
+	clearIntEepromSC();
+//	if (!findFolder(folderName)) {
+//		status = loadIntEeprom(wsEepromName, wsEepromMem, sizeof(wsEepromMem));
+//		status |= loadIntEeprom(wscEepromName, wscEepromMem, sizeof(wscEepromMem));
+//		status |= loadIntEeprom(scEepromName, scEepromMem, sizeof(scEepromMem));
+//	}
+	return status;
+}
+
 void clearIntEeproms() {
 	switch (gSOC) {
 		case SOC_ASWAN:
@@ -312,8 +328,11 @@ void selectGame() {
 
 void checkMachine(const RomHeader *rh) {
 	if (gMachineSet == HW_AUTO) {
-		if (romSpacePtr[gRomSize - 9] != 0 || rh->flags & 4) {
+		if (romSpacePtr[gRomSize - 9] != 0 || rh->flags & 0xC) {
 			gMachine = HW_WONDERSWANCOLOR;
+			if (rh->flags & 0x4) {
+				gMachine = HW_SWANCRYSTAL;
+			}
 		}
 		else if (rh->flags & 2) {
 			gMachine = HW_POCKETCHALLENGEV2;
