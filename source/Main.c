@@ -50,10 +50,11 @@ void myVBlank(void) {
 int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
 	irqInit();
+	irqEnable(IRQ_VBLANK);
+	showSplash(getSplashScreen(BWSID));
 
 	setupGraphics();
 	irqSet(IRQ_VBLANK, myVBlank);
-	irqEnable(IRQ_VBLANK);
 	setupGUI();
 	getInput();
 
@@ -129,7 +130,6 @@ void setEmuSpeed(int speed) {
 		waitMaskIn = 0x01;
 		waitMaskOut = 0x00;
 	}
-
 }
 
 //---------------------------------------------------------------------------------
@@ -156,9 +156,6 @@ static void setupGraphics() {
 	REG_BG2CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(15) | BG_256_COLOR | BG_TILE_BASE(1) | BG_PRIORITY(3);
 	REG_BG2HOFS = 8;	// Center border
 	REG_BG2VOFS = 16;
-
-//	REG_WIN0H = 0x0000+SCREEN_WIDTH;		// Horizontal start-end
-//	REG_WIN0V = 0x0000+SCREEN_HEIGHT;		// Vertical start-end
 
 	// Set up background 3 for menu
 	REG_BG3CNT = TEXTBG_SIZE_512x256 | BG_MAP_BASE(6) | BG_TILE_BASE(0) | BG_PRIORITY(0);
