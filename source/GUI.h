@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+#define HALF_CPU_SPEED		(1<<16)
+#define ALLOW_SPEED_HACKS	(1<<17)
+#define ENABLE_HEADPHONES	(1<<18)
+
 extern u8 gGammaValue;
 extern u8 gContrastValue;
 extern u8 gBorderEnable;
@@ -20,9 +24,6 @@ void resetGame(void);
 void uiNullNormal(void);
 void uiMainMenu(void);
 void uiFile(void);
-void uiSettings(void);
-void uiController(void);
-void uiDisplay(void);
 void uiAbout(void);
 void uiLoadGame(void);
 

@@ -26,7 +26,7 @@ int initSettings() {
 	cfg.config = 0;
 	cfg.palette = 0;
 	cfg.gammaValue = 0x30;
-	cfg.emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM;
+	cfg.emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM | ALLOW_SPEED_HACKS;
 	cfg.sleepTime = 60*60*5;
 	cfg.controller = 0;					// Don't swap A/B
 	cfg.birthYear[0] = 0x19;

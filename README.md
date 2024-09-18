@@ -1,6 +1,6 @@
 # SwanGBA V0.6.6
 
-<img align="right" width="220" src="./logo.png" />
+<img align="right" width="220" src="./logo.png" alt="The WonderSwan logo"/>
 
 This is a Bandai WonderSwan (Color/Crystal) & Benesse PocketChallenge V2 emulator for the Nintendo GBA.
 
@@ -70,16 +70,21 @@ Some info about the emulator and game...
 ### Sleep
 
 Put the GBA into sleepmode. START+SELECT wakes up from sleep mode (activated
- from this menu or from	5/10/30	minutes of inactivity).
+ from this menu or from 5/10/30 minutes of inactivity).
 
 ## Controls
 
+Start is mapped to WS Start.
+Select is mapped to WS Sound.
+
 In horizontal games:
+
 * D-pad is mapped to WS X1-X4.
 * A & B buttons are mapped to WS A & B.
 * Holding L maps the D-pad to WS Y1-Y4.
 
 In vertical games:
+
 * D-pad is mapped to WS Y1-Y4.
 * A, B are mapped to WS X3,X4.
 
@@ -122,4 +127,4 @@ Fredrik Ahlström
 
 Twitter @TheRealFluBBa
 
-http://www.github.com/FluBBaOfWard
+<http://www.github.com/FluBBaOfWard>

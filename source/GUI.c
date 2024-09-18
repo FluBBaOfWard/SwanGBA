@@ -17,66 +17,113 @@
 
 #define EMUVERSION "V0.6.6 2024-09-11"
 
-#define HALF_CPU_SPEED		(1<<16)
-#define ALLOW_SPEED_HACKS	(1<<17)
-#define ENABLE_HEADPHONES	(1<<18)
-
 void hacksInit(void);
 
 static void paletteChange(void);
+static const char *getPaletteText(void);
 static void machineSet(void);
-static void batteryChange(void);
+static const char *getMachineText(void);
 static void headphonesSet(void);
+static const char *getHeadphonesText(void);
 static void speedHackSet(void);
+static const char *getSpeedHackText(void);
 static void cpuHalfSet(void);
 static void borderSet(void);
+static const char *getBorderText();
 static void soundSet(void);
 static void languageSet(void);
+static void batteryChange(void);
 static void stepFrame(void);
+//static const char *getControllerText(void);
+//static const char *getJoyMappingText(void);
+static const char *getSwapABText(void);
+static const char *getGammaText(void);
+static const char *getContrastText(void);
+static const char *getFgrLayerText(void);
+static const char *getBgrLayerText(void);
+static const char *getSprLayerText(void);
+static const char *getWinLayerText(void);
 
-static void uiDebug(void);
 static void uiMachine(void);
 static void updateGameId(char *buffer);
 static void updateCartInfo(char *buffer);
 static void updateMapperInfo(char *buffer);
 
-const MItem fnList0[] = {{"",uiDummy}};
-const MItem fnList1[] = {
-	{"File->",ui2},
-	{"Controller->",ui3},
-	{"Display->",ui4},
-	{"Settings->",ui5},
-	{"Machine->",ui6},
-	{"Debug->",ui7},
-	{"About->",ui8},
-	{"Sleep",gbaSleep},
-	{"Reset Console",resetGame},
-	{"Quit Emulator",ui10}};
-const MItem fnList2[] = {
-	{"Load Game->",selectGame},
-	{"Load NVRAM",loadNVRAM},
-	{"Save NVRAM",saveNVRAM},
-	{"Save Settings",saveSettings},
-	{"Reset Game",resetGame}};
-const MItem fnList3[] = {{"",autoBSet}, {"",autoASet}, {"",swapABSet}};
-const MItem fnList4[] = {{"",gammaSet}, {"",contrastSet}, {"",paletteChange}, {"",borderSet}};
-const MItem fnList5[] = {{"",speedSet}, {"",autoStateSet}, {"",autoSettingsSet}, {"",autoPauseGameSet}, {"",ewramSet}, {"",sleepSet}};
-const MItem fnList6[] = {{"",machineSet}, {"",batteryChange}, {"",clearIntEeproms}, {"",headphonesSet}, {"",speedHackSet}, {"",cpuHalfSet}, {"",soundSet} /*,{"",languageSet}*/};
-const MItem fnList7[] = {{"",debugTextSet}, {"",fgrLayerSet}, {"",bgrLayerSet}, {"",sprLayerSet}, {"",winLayerSet}, {"",stepFrame}};
-const MItem fnList9[] = {{"",quickSelectGame}};
-const MItem fnList10[] = {{"Yes",exitEmulator}, {"No",backOutOfMenu}};
+const MItem dummyItems[] = {
+	{"", uiDummy}};
+const MItem mainItems[] = {
+	{"File->", ui2},
+	{"Controller->", ui3},
+	{"Display->", ui4},
+	{"Settings->", ui5},
+	{"Machine->", ui6},
+	{"Debug->", ui7},
+	{"About->", ui8},
+	{"Sleep", gbaSleep},
+	{"Reset Console", resetGame},
+	{"Quit Emulator", ui10}};
 
-const Menu menu0 = MENU_M("", uiNullNormal, fnList0);
-Menu menu1 = MENU_M("Main Menu", uiAuto, fnList1);
-const Menu menu2 = MENU_M("File Handling", uiAuto, fnList2);
-const Menu menu3 = MENU_M("Controller Settings", uiController, fnList3);
-const Menu menu4 = MENU_M("Display Settings", uiDisplay, fnList4);
-const Menu menu5 = MENU_M("Other Settings", uiSettings, fnList5);
-const Menu menu6 = MENU_M("Machine Settings", uiMachine, fnList6);
-const Menu menu7 = MENU_M("Debug", uiDebug, fnList7);
-const Menu menu8 = MENU_M("About", uiAbout, fnList0);
+const MItem fileItems[] = {
+	{"Load Game->", selectGame},
+	{"Load NVRAM", loadNVRAM},
+	{"Save NVRAM", saveNVRAM},
+	{"Save Settings", saveSettings},
+	{"Reset Game", resetGame}};
+
+const MItem ctrlItems[] = {
+	{"B Autofire: ", autoBSet, getAutoBText},
+	{"A Autofire: ", autoASet, getAutoAText},
+	{"Swap A-B:   ", swapABSet, getSwapABText}};
+
+const MItem displayItems[] = {
+	{"Gamma: ", gammaSet, getGammaText},
+	{"Contrast: ", contrastSet, getContrastText},
+	{"B&W Palette: ", paletteChange, getPaletteText},
+	{"Border: ", borderSet, getBorderText}};
+
+const MItem setItems[] = {
+	{"Speed: ", speedSet, getSpeedText},
+	{"Autoload State: ", autoStateSet, getAutoStateText},
+	{"Autosave Settings: ", autoSettingsSet, getAutoSettingsText},
+	{"Autopause Game: ", autoPauseGameSet, getAutoPauseGameText},
+	{"EWRAM Overclock: ", ewramSet, getEWRAMText},
+	{"Autosleep: ", sleepSet, getSleepText}};
+
+const MItem machineItems[] = {
+	{"Machine: ", machineSet, getMachineText},
+	{"Change Batteries", batteryChange},
+	{"Clear Internal EEPROM", clearIntEeproms},
+	{"Headphones: ", headphonesSet, getHeadphonesText},
+	{"Cpu Speed Hacks: ", speedHackSet, getSpeedHackText},
+	{"Half Cpu Speed: ", cpuHalfSet},
+	{"Sound: ", soundSet}
+	/*,{"", languageSet}*/};
+
+const MItem debugItems[] = {
+	{"Debug Output:", debugTextSet, getDebugText},
+	{"Disable Foreground:", fgrLayerSet, getFgrLayerText},
+	{"Disable Background:", bgrLayerSet, getBgrLayerText},
+	{"Disable Sprites:", sprLayerSet, getSprLayerText},
+	{"Disable Windows:", winLayerSet, getWinLayerText},
+	{"Step Frame", stepFrame}};
+
+const MItem fnList9[] = {
+	{"", quickSelectGame}};
+const MItem quitItems[] = {
+	{"Yes", exitEmulator},
+	{"No", backOutOfMenu}};
+
+const Menu menu0 = MENU_M("", uiNullNormal, dummyItems);
+Menu menu1 = MENU_M("Main Menu", uiAuto, mainItems);
+const Menu menu2 = MENU_M("File Handling", uiAuto, fileItems);
+const Menu menu3 = MENU_M("Controller Settings", uiAuto, ctrlItems);
+const Menu menu4 = MENU_M("Display Settings", uiAuto, displayItems);
+const Menu menu5 = MENU_M("Other Settings", uiAuto, setItems);
+const Menu menu6 = MENU_M("Machine Settings", uiMachine, machineItems);
+const Menu menu7 = MENU_M("Debug", uiAuto, debugItems);
+const Menu menu8 = MENU_M("About", uiAbout, dummyItems);
 const Menu menu9 = MENU_M("Load game", uiLoadGame, fnList9);
-const Menu menu10 = MENU_M("Quit Emulator?", uiAuto, fnList10);
+const Menu menu10 = MENU_M("Quit Emulator?", uiAuto, quitItems);
 
 const Menu *const menus[] = {&menu0, &menu1, &menu2, &menu3, &menu4, &menu5, &menu6, &menu7, &menu8, &menu9, &menu10 };
 
@@ -98,9 +145,8 @@ const char *const langTxt[]  = {"Japanese", "English"};
 
 /// This is called at the start of the emulator
 void setupGUI() {
-	emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM | ALLOW_SPEED_HACKS;
 //	keysSetRepeat(25, 4);	// Delay, repeat.
-	menu1.itemCount = ARRSIZE(fnList1) - (enableExit?0:1);
+	menu1.itemCount = ARRSIZE(mainItems) - (enableExit?0:1);
 	closeMenu();
 }
 
@@ -146,51 +192,16 @@ void uiAbout() {
 	drawText("ARMV30MZ   " ARMV30MZVERSION, 19);
 }
 
-void uiController() {
-	setupSubMenuText();
-	drawSubItem("B Autofire: ", autoTxt[autoB]);
-	drawSubItem("A Autofire: ", autoTxt[autoA]);
-	drawSubItem("Swap A-B:   ", autoTxt[(joyCfg>>10)&1]);
-}
-
-void uiDisplay() {
-	setupSubMenuText();
-	drawSubItem("Gamma: ", brighTxt[gGammaValue]);
-	drawSubItem("Contrast:", brighTxt[gContrastValue]);
-	drawSubItem("B&W Palette: ", palTxt[gPaletteBank]);
-	drawSubItem("Border: ", autoTxt[gBorderEnable]);
-}
-
 static void uiMachine() {
 	setupSubMenuText();
-	drawSubItem("Machine: ", machTxt[gMachineSet]);
+	drawSubItem("Machine: ", getMachineText());
 	drawMenuItem("Change Batteries");
 	drawMenuItem("Clear Internal EEPROM");
-	drawSubItem("Headphones:", autoTxt[(emuSettings&ENABLE_HEADPHONES)>>18]);
-	drawSubItem("Cpu Speed Hacks: ", autoTxt[(emuSettings&ALLOW_SPEED_HACKS)>>17]);
+	drawSubItem("Headphones: ", getHeadphonesText());
+	drawSubItem("Cpu Speed Hacks: ", getSpeedHackText());
 	drawSubItem("Half Cpu Speed: ", autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
 	drawSubItem("Sound: ", autoTxt[soundMode&1]);
 //	drawSubItem("Language: ",langTxt[gLang]);
-}
-
-void uiSettings() {
-	setupSubMenuText();
-	drawSubItem("Speed: ", speedTxt[(emuSettings>>6)&3]);
-	drawSubItem("Autoload State: ", autoTxt[(emuSettings>>2)&1]);
-	drawSubItem("Autosave Settings: ", autoTxt[(emuSettings>>1)&1]);
-	drawSubItem("Autopause Game: ", autoTxt[emuSettings&1]);
-	drawSubItem("EWRAM Overclock: ", autoTxt[ewram&1]);
-	drawSubItem("Autosleep: ", sleepTxt[(emuSettings>>8)&3]);
-}
-
-void uiDebug() {
-	setupSubMenuText();
-	drawSubItem("Debug Output: ", autoTxt[gDebugSet&1]);
-	drawSubItem("Disable Foreground: ", autoTxt[(gGfxMask>>1)&1]);
-	drawSubItem("Disable Background: ", autoTxt[gGfxMask&1]);
-	drawSubItem("Disable Sprites: ", autoTxt[(gGfxMask>>4)&1]);
-	drawSubItem("Disable Windows:", autoTxt[(gGfxMask>>5)&1]);
-	drawSubItem("Step Frame", NULL);
 }
 
 void uiLoadGame() {
@@ -288,6 +299,9 @@ void stepFrame() {
 void swapABSet() {
 	joyCfg ^= 0x400;
 }
+const char *getSwapABText() {
+	return autoTxt[(joyCfg>>10)&1];
+}
 
 /// Change gamma (brightness)
 void gammaSet() {
@@ -298,6 +312,9 @@ void gammaSet() {
 	paletteTxAll();					// Make new palette visible
 	setupMenuPalette();
 	settingsChanged = true;
+}
+const char *getGammaText() {
+	return brighTxt[gGammaValue];
 }
 
 /// Change contrast
@@ -311,22 +328,37 @@ void contrastSet() {
 	setupMenuPalette();
 	settingsChanged = true;
 }
+const char *getContrastText() {
+	return brighTxt[gContrastValue];
+}
 
 /// Turn on/off rendering of foreground
 void fgrLayerSet() {
 	gGfxMask ^= 0x02;
 }
+const char *getFgrLayerText() {
+	return autoTxt[(gGfxMask>>1)&1];
+}
 /// Turn on/off rendering of background
 void bgrLayerSet() {
 	gGfxMask ^= 0x01;
+}
+const char *getBgrLayerText() {
+	return autoTxt[gGfxMask&1];
 }
 /// Turn on/off rendering of sprites
 void sprLayerSet() {
 	gGfxMask ^= 0x10;
 }
+const char *getSprLayerText() {
+	return autoTxt[(gGfxMask>>4)&1];
+}
 /// Turn on/off windows
 void winLayerSet() {
 	gGfxMask ^= 0x20;
+}
+const char *getWinLayerText() {
+	return autoTxt[(gGfxMask>>5)&1];
 }
 
 void paletteChange() {
@@ -339,11 +371,17 @@ void paletteChange() {
 	setupMenuPalette();
 	settingsChanged = true;
 }
+const char *getPaletteText() {
+	return palTxt[gPaletteBank];
+}
 
 void borderSet() {
 	gBorderEnable ^= 0x01;
 	setupEmuBorderPalette();
 	setupMenuPalette();
+}
+const char *getBorderText() {
+	return autoTxt[gBorderEnable];
 }
 
 void languageSet() {
@@ -356,11 +394,17 @@ void machineSet() {
 		gMachineSet = 0;
 	}
 }
+const char *getMachineText() {
+	return machTxt[gMachineSet];
+}
 
 void speedHackSet() {
 	emuSettings ^= ALLOW_SPEED_HACKS;
 	emuSettings &= ~HALF_CPU_SPEED;
 	hacksInit();
+}
+const char *getSpeedHackText() {
+	return autoTxt[(emuSettings & ALLOW_SPEED_HACKS)>>17];
 }
 void cpuHalfSet() {
 	emuSettings ^= HALF_CPU_SPEED;
@@ -371,6 +415,9 @@ void cpuHalfSet() {
 void headphonesSet() {
 	emuSettings ^= ENABLE_HEADPHONES;
 	setHeadphones(emuSettings & ENABLE_HEADPHONES);
+}
+const char *getHeadphonesText() {
+	return autoTxt[(emuSettings & ENABLE_HEADPHONES)>>18];
 }
 
 void soundSet() {
