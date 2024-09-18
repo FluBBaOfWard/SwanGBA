@@ -20,7 +20,7 @@ typedef struct {
 typedef struct {				//(config struct)
 	char magic[4];				//="CFG",0
 	int emuSettings;
-	int sleepTime;				// autoSleepTime
+	int sleepTime;				// autoSleepTime in frames
 	u8 gammaValue;				// from gfx.s
 	u8 config;					// from cart.s
 	u8 controller;				// from io.s
