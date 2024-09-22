@@ -44,7 +44,7 @@ int getStateSize() {
 	return size;
 }
 
-static void setupBorderPalette(const void *palette, int len) {
+static void setupBorderPalette(const unsigned short *palette, int len) {
 //	monoPalInit(gGammaValue, gContrastValue);
 	if (gBorderEnable == 0) {
 		memset(EMUPALBUFF, 0, len);

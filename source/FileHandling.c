@@ -25,7 +25,7 @@ EWRAM_BSS ConfigData cfg;
 int initSettings() {
 	cfg.config = 0;
 	cfg.palette = 0;
-	cfg.gammaValue = 0x30;
+	cfg.gammaValue = 0x20;
 	cfg.emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM | ALLOW_SPEED_HACKS;
 	cfg.sleepTime = 60*60*5;
 	cfg.controller = 0;					// Don't swap A/B
@@ -151,7 +151,7 @@ void saveSettings() {
 //	FILE *file;
 
 	strcpy(cfg.magic,"cfg");
-	cfg.gammaValue  = gGammaValue;
+	cfg.gammaValue  = (gGammaValue & 0xF) | (gContrastValue<<4);
 	cfg.emuSettings = emuSettings & ~EMUSPEED_MASK;	// Clear speed setting.
 	cfg.sleepTime   = sleepTime;
 	cfg.controller  = (joyCfg>>10)&1;

@@ -143,7 +143,7 @@ u8 serialPos = 0;
 EWRAM_BSS char serialOut[32];
 
 const char *const machTxt[]  = {"Auto", "WonderSwan", "WonderSwan Color", "SwanCrystal", "Pocket Challenge V2"};
-const char *const bordTxt[]  = {"Black", "Border Color", "None"};
+const char *const bordTxt[]  = {"Black", "Frame", "BG Color", "None"};
 const char *const palTxt[]   = {"Classic", "Black & White", "Red", "Green", "Blue", "Green-Blue", "Blue-Green", "Puyo Puyo Tsu"};
 const char *const langTxt[]  = {"Japanese", "English"};
 
@@ -382,7 +382,7 @@ void borderSet() {
 	setupMenuPalette();
 }
 const char *getBorderText() {
-	return autoTxt[gBorderEnable];
+	return bordTxt[gBorderEnable];
 }
 
 void languageSet() {
