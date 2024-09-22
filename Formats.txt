@@ -8,6 +8,7 @@ Format of SwanGBA (v1) GBA images:
 4 bytes:  Identifier = "BWS",0x1A
 4 bytes:  ROM size
 4 bytes:  ROM flags, Bit 1 = PCV2, Bit 2 = WSC, Bit 3 = SwanCrystal.
+4 bytes:  Reserved (set to 0)
 1 byte:   BIOS flag, bit0=1 for BIOS rom.
 15 bytes: Reserved (set to 0)
 32 bytes: ROM title (NULL terminated)

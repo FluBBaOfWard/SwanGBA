@@ -15,10 +15,11 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.6.6 2024-09-18"
+#define EMUVERSION "V0.6.7 2024-09-22"
 
 void hacksInit(void);
 
+static void gammaChange(void);
 static void paletteChange(void);
 static const char *getPaletteText(void);
 static void machineSet(void);
@@ -29,19 +30,24 @@ static void speedHackSet(void);
 static const char *getSpeedHackText(void);
 static void cpuHalfSet(void);
 static void borderSet(void);
-static const char *getBorderText();
+static const char *getBorderText(void);
 static void soundSet(void);
 static void languageSet(void);
 static void batteryChange(void);
-static void stepFrame(void);
+static void stepFrameUI(void);
 //static const char *getControllerText(void);
 //static const char *getJoyMappingText(void);
+static void swapABSet(void);
 static const char *getSwapABText(void);
-static const char *getGammaText(void);
+static void contrastSet(void);
 static const char *getContrastText(void);
+static void fgrLayerSet(void);
 static const char *getFgrLayerText(void);
+static void bgrLayerSet(void);
 static const char *getBgrLayerText(void);
+static void sprLayerSet(void);
 static const char *getSprLayerText(void);
+static void winLayerSet(void);
 static const char *getWinLayerText(void);
 
 static void uiMachine(void);
@@ -50,7 +56,8 @@ static void updateCartInfo(char *buffer);
 static void updateMapperInfo(char *buffer);
 
 const MItem dummyItems[] = {
-	{"", uiDummy}};
+	{"", uiDummy},
+};
 const MItem mainItems[] = {
 	{"File->", ui2},
 	{"Controller->", ui3},
@@ -61,34 +68,34 @@ const MItem mainItems[] = {
 	{"About->", ui8},
 	{"Sleep", gbaSleep},
 	{"Reset Console", resetGame},
-	{"Quit Emulator", ui10}};
-
+	{"Quit Emulator", ui10},
+};
 const MItem fileItems[] = {
 	{"Load Game->", selectGame},
 	{"Load NVRAM", loadNVRAM},
 	{"Save NVRAM", saveNVRAM},
 	{"Save Settings", saveSettings},
-	{"Reset Game", resetGame}};
-
+	{"Reset Game", resetGame},
+};
 const MItem ctrlItems[] = {
 	{"B Autofire: ", autoBSet, getAutoBText},
 	{"A Autofire: ", autoASet, getAutoAText},
-	{"Swap A-B:   ", swapABSet, getSwapABText}};
-
+	{"Swap A-B:   ", swapABSet, getSwapABText},
+};
 const MItem displayItems[] = {
-	{"Gamma: ", gammaSet, getGammaText},
+	{"Gamma: ", gammaChange, getGammaText},
 	{"Contrast: ", contrastSet, getContrastText},
 	{"B&W Palette: ", paletteChange, getPaletteText},
-	{"Border: ", borderSet, getBorderText}};
-
+	{"Border: ", borderSet, getBorderText},
+};
 const MItem setItems[] = {
 	{"Speed: ", speedSet, getSpeedText},
 	{"Autoload State: ", autoStateSet, getAutoStateText},
 	{"Autosave Settings: ", autoSettingsSet, getAutoSettingsText},
 	{"Autopause Game: ", autoPauseGameSet, getAutoPauseGameText},
 	{"EWRAM Overclock: ", ewramSet, getEWRAMText},
-	{"Autosleep: ", sleepSet, getSleepText}};
-
+	{"Autosleep: ", sleepSet, getSleepText},
+};
 const MItem machineItems[] = {
 	{"Machine: ", machineSet, getMachineText},
 	{"Change Batteries", batteryChange},
@@ -96,22 +103,24 @@ const MItem machineItems[] = {
 	{"Headphones: ", headphonesSet, getHeadphonesText},
 	{"Cpu Speed Hacks: ", speedHackSet, getSpeedHackText},
 	{"Half Cpu Speed: ", cpuHalfSet},
-	{"Sound: ", soundSet}
-	/*,{"", languageSet}*/};
-
+	{"Sound: ", soundSet, getSoundEnableText},
+	//{"", languageSet},
+};
 const MItem debugItems[] = {
 	{"Debug Output:", debugTextSet, getDebugText},
 	{"Disable Foreground:", fgrLayerSet, getFgrLayerText},
 	{"Disable Background:", bgrLayerSet, getBgrLayerText},
 	{"Disable Sprites:", sprLayerSet, getSprLayerText},
 	{"Disable Windows:", winLayerSet, getWinLayerText},
-	{"Step Frame", stepFrame}};
-
+	{"Step Frame", stepFrameUI},
+};
 const MItem fnList9[] = {
-	{"", quickSelectGame}};
+	{"", quickSelectGame},
+};
 const MItem quitItems[] = {
 	{"Yes", exitEmulator},
-	{"No", backOutOfMenu}};
+	{"No", backOutOfMenu},
+};
 
 const Menu menu0 = MENU_M("", uiNullNormal, dummyItems);
 Menu menu1 = MENU_M("Main Menu", uiAuto, mainItems);
@@ -132,11 +141,6 @@ u8 gContrastValue = 3;
 u8 gBorderEnable = 1;
 u8 serialPos = 0;
 EWRAM_BSS char serialOut[32];
-
-const char *const autoTxt[]  = {"Off", "On", "With R"};
-const char *const speedTxt[] = {"Normal", "200%", "Max", "50%"};
-const char *const brighTxt[] = {"I", "II", "III", "IIII", "IIIII"};
-const char *const sleepTxt[] = {"5min", "10min", "30min", "Off"};
 
 const char *const machTxt[]  = {"Auto", "WonderSwan", "WonderSwan Color", "SwanCrystal", "Pocket Challenge V2"};
 const char *const bordTxt[]  = {"Black", "Border Color", "None"};
@@ -215,9 +219,10 @@ void nullUIDebug(int key) {
 }
 
 void resetGame() {
-	powerIsOn = true;
 	loadCart();
 	setupEmuBackground();
+	setupMenuPalette();
+	powerIsOn = true;
 }
 
 void updateGameId(char *buffer) {
@@ -290,8 +295,8 @@ void debugCrashInstruction() {
 	debugOutput("CPU Crash! (0xF1)");
 }
 
-void stepFrame() {
-	runFrame();
+void stepFrameUI() {
+	stepFrame();
 	setupMenuPalette();
 }
 //---------------------------------------------------------------------------------
@@ -304,17 +309,13 @@ const char *getSwapABText() {
 }
 
 /// Change gamma (brightness)
-void gammaSet() {
-	gGammaValue++;
-	if (gGammaValue > 4) gGammaValue=0;
+void gammaChange() {
+	gammaSet();
 	paletteInit(gGammaValue, gContrastValue);
 	monoPalInit(gGammaValue, gContrastValue);
 	paletteTxAll();					// Make new palette visible
+//	setupEmuBorderPalette();
 	setupMenuPalette();
-	settingsChanged = true;
-}
-const char *getGammaText() {
-	return brighTxt[gGammaValue];
 }
 
 /// Change contrast
@@ -421,10 +422,8 @@ const char *getHeadphonesText() {
 }
 
 void soundSet() {
-	soundMode++;
-	if (soundMode >= 2) {
-		soundMode = 0;
-	}
+	soundEnableSet();
+	soundMode = (emuSettings & SOUND_ENABLE)>>10;
 	soundInit();
 }
 

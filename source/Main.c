@@ -57,11 +57,12 @@ int main(int argc, char **argv) {
 	irqSet(IRQ_VBLANK, myVBlank);
 	setupGUI();
 	getInput();
-
 	initSettings();
-	machineInit();
 	bool fsOk = initFileHelper(BWSID);
 	loadSettings();
+	machineInit();
+	loadCart();
+	setupEmuBackground();
 	loadIntEeproms();
 	if (fsOk) {
 		loadBioses();
@@ -160,8 +161,6 @@ static void setupGraphics() {
 	// Set up background 3 for menu
 	REG_BG3CNT = TEXTBG_SIZE_512x256 | BG_MAP_BASE(6) | BG_TILE_BASE(0) | BG_PRIORITY(0);
 	menuMap = MAP_BASE_ADR(6);
-
-	setupEmuBackground();
 
 	LZ77UnCompVram(EmuFontTiles, (void *)VRAM+0x2400);
 	setupMenuPalette();

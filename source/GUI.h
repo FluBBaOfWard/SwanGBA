@@ -36,16 +36,6 @@ void debugDivideError(void);
 void debugUndefinedInstruction(void);
 void debugCrashInstruction(void);
 
-void controllerSet(void);
-void swapABSet(void);
-
-void gammaSet(void);
-void contrastSet(void);
-void fgrLayerSet(void);
-void bgrLayerSet(void);
-void sprLayerSet(void);
-void winLayerSet(void);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif

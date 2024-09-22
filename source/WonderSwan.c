@@ -52,7 +52,7 @@ static void setupBorderPalette(const void *palette, int len) {
 	else {
 		memcpy(EMUPALBUFF, palette, len);
 	}
-//	paletteTxAll();					// Make new palette visible
+	paletteTxAll();					// Make new palette visible
 }
 
 void setupWSBackground() {

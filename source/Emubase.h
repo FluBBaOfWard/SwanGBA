@@ -11,7 +11,7 @@ typedef struct {
 	const u32 identifier;		// BWSID
 	const u32 filesize;
 	const u32 flags;			// Bit 1 = PCV2, Bit 2 = WSC, Bit 3 = SwanCrystal.
-	const u32 spritefollow;
+	const u32 undefined;
 	const u8 bios;				// Bit 0 = Bios,
 	const u8 reserved[15];
 	const char name[32];

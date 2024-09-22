@@ -10,8 +10,8 @@
 	.global waitMaskOut
 
 	.global run
-	.global runScanLine
-	.global runFrame
+	.global stepFrame
+	.global stepScanLine
 	.global cpuInit
 	.global cpuReset
 
@@ -68,6 +68,7 @@ wsFrameLoop:
 	str r1,scanLineCountGBA
 	bne wsFrameLoop
 ;@----------------------------------------------------------------------------
+wsFrameLoopEnd:
 	add r0,v30ptr,#v30PrefixBase
 	stmia r0,{v30csr-v30cyc}	;@ Save V30MZ state
 
@@ -89,8 +90,8 @@ waitCountOut:		.byte 0
 waitMaskOut:		.byte 0
 
 ;@----------------------------------------------------------------------------
-runScanLine:				;@ Return after 1 scanline
-	.type runScanLine STT_FUNC
+stepScanLine:				;@ Return after 1 scanline
+	.type stepScanLine STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
 	ldr v30ptr,=V30OpTable
@@ -109,8 +110,8 @@ wsScanLine:
 	ldr spxptr,=sphinx0
 	b wsvDoScanline
 ;@----------------------------------------------------------------------------
-runFrame:					;@ Return after 1 frame
-	.type runFrame STT_FUNC
+stepFrame:					;@ Return after 1 frame
+	.type stepFrame STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
 	ldr v30ptr,=V30OpTable
@@ -122,8 +123,6 @@ wsStepLoop:
 	bne wsStepLoop
 	bl wsScanLine
 ;@----------------------------------------------------------------------------
-	add r0,v30ptr,#v30PrefixBase
-	stmia r0,{v30csr-v30cyc}	;@ Save V30MZ state
 
 	ldmfd sp!,{r4-r11,lr}
 	bx lr

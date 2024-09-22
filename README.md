@@ -1,4 +1,4 @@
-# SwanGBA V0.6.6
+# SwanGBA V0.6.7
 
 <img align="right" width="220" src="./logo.png" alt="The WonderSwan logo"/>
 

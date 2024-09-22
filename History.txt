@@ -1,6 +1,9 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.6.7 - 2024-09-22 (FluBBa)
+	Added...
+
 V0.6.6 - 2024-09-18 (FluBBa)
 	Added old, hacked builder for Windows.
 	Added sound.
