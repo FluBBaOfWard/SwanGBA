@@ -97,12 +97,15 @@ There are 2 games that I know of that has serious problems.
 
 There are a couple of games that have visual glitches.
 
+* Dicing Knight. shadows are in front of player.
 * Digimon - Anode Tamer & Cathode Tamer, missing background gradient in battles.
 * Final Fantasy, Sprites show in dialog windows.
 * Final Lap 2000, incorrect road colors.
 * Final Lap Special - GT & Formula Machine, incorrect road colors.
 * From TV Animation One Piece - Grand Battle Swan Colosseum, incorrect sky color.
 * Makaimura, first boss sprites are glitchy, gargoyles in intro should not show up on the right.
+* Neon Genesis Evangelion - Shito Ikusei, sprites overlap avatar images.
+* Rockman & Forte - Mirai Kara no Chousensha, no background fade in intro.
 * Romancing Sa-Ga, sprites overlap text boxes.
 * Sorobang, needs all 1024 tiles in 4color mode.
 * WonderSwanColor BIOS, needs all 1024 tiles in 4color mode.
@@ -125,6 +128,8 @@ Dwedit for help and inspiration with a lot of things.
 
 Fredrik Ahlström
 
-Twitter @TheRealFluBBa
+<https://bsky.app/profile/therealflubba.bsky.social>
 
-<http://www.github.com/FluBBaOfWard>
+<https://www.github.com/FluBBaOfWard>
+
+Twitter @TheRealFluBBa

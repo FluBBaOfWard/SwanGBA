@@ -15,7 +15,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.6.7 2024-09-22"
+#define EMUVERSION "V0.6.7 2025-02-18"
 
 void hacksInit(void);
 
@@ -29,6 +29,7 @@ static const char *getHeadphonesText(void);
 static void speedHackSet(void);
 static const char *getSpeedHackText(void);
 static void cpuHalfSet(void);
+static const char *getCPUHalfText(void);
 static void borderSet(void);
 static const char *getBorderText(void);
 static void soundSet(void);
@@ -50,7 +51,6 @@ static const char *getSprLayerText(void);
 static void winLayerSet(void);
 static const char *getWinLayerText(void);
 
-static void uiMachine(void);
 static void updateGameId(char *buffer);
 static void updateCartInfo(char *buffer);
 static void updateMapperInfo(char *buffer);
@@ -102,9 +102,9 @@ const MItem machineItems[] = {
 	{"Clear Internal EEPROM", clearIntEeproms},
 	{"Headphones: ", headphonesSet, getHeadphonesText},
 	{"Cpu Speed Hacks: ", speedHackSet, getSpeedHackText},
-	{"Half Cpu Speed: ", cpuHalfSet},
+	{"Half Cpu Speed: ", cpuHalfSet, getCPUHalfText},
 	{"Sound: ", soundSet, getSoundEnableText},
-	//{"", languageSet},
+	//{"Language", languageSet},
 };
 const MItem debugItems[] = {
 	{"Debug Output:", debugTextSet, getDebugText},
@@ -128,7 +128,7 @@ const Menu menu2 = MENU_M("File Handling", uiAuto, fileItems);
 const Menu menu3 = MENU_M("Controller Settings", uiAuto, ctrlItems);
 const Menu menu4 = MENU_M("Display Settings", uiAuto, displayItems);
 const Menu menu5 = MENU_M("Other Settings", uiAuto, setItems);
-const Menu menu6 = MENU_M("Machine Settings", uiMachine, machineItems);
+const Menu menu6 = MENU_M("Machine Settings", uiAuto, machineItems);
 const Menu menu7 = MENU_M("Debug", uiAuto, debugItems);
 const Menu menu8 = MENU_M("About", uiAbout, dummyItems);
 const Menu menu9 = MENU_M("Load game", uiLoadGame, fnList9);
@@ -194,18 +194,6 @@ void uiAbout() {
 	drawText("SwanGBA    " EMUVERSION, 17);
 	drawText("Sphinx     " SPHINXVERSION, 18);
 	drawText("ARMV30MZ   " ARMV30MZVERSION, 19);
-}
-
-static void uiMachine() {
-	setupSubMenuText();
-	drawSubItem("Machine: ", getMachineText());
-	drawMenuItem("Change Batteries");
-	drawMenuItem("Clear Internal EEPROM");
-	drawSubItem("Headphones: ", getHeadphonesText());
-	drawSubItem("Cpu Speed Hacks: ", getSpeedHackText());
-	drawSubItem("Half Cpu Speed: ", autoTxt[(emuSettings&HALF_CPU_SPEED)>>16]);
-	drawSubItem("Sound: ", autoTxt[soundMode&1]);
-//	drawSubItem("Language: ",langTxt[gLang]);
 }
 
 void uiLoadGame() {
@@ -411,6 +399,9 @@ void cpuHalfSet() {
 	emuSettings ^= HALF_CPU_SPEED;
 	emuSettings &= ~ALLOW_SPEED_HACKS;
 //	tweakCpuSpeed(emuSettings & HALF_CPU_SPEED);
+}
+const char *getCPUHalfText() {
+	return autoTxt[(emuSettings & HALF_CPU_SPEED)>>16];
 }
 
 void headphonesSet() {
