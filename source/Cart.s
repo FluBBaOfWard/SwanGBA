@@ -91,15 +91,19 @@ ROM_Space:
 //	.incbin "wsroms/WSHWTest.wsc"
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:
-#endif
 WS_BIOS_INTERNAL:
-//	.incbin "wsroms/boot.rom"
+	.incbin "wsroms/boot.rom"
+WSC_BIOS_INTERNAL:
+	.incbin "wsroms/boot1.rom"
+SC_BIOS_INTERNAL:
+	.incbin "wsroms/boot2.rom"
+#else
+WS_BIOS_INTERNAL:
 	.incbin "wsroms/ws_irom.bin"
 WSC_BIOS_INTERNAL:
 SC_BIOS_INTERNAL:
-//	.incbin "wsroms/boot1.rom"
 	.incbin "wsroms/wc_irom.bin"
-//	.incbin "wsroms/wsc_irom.bin"
+#endif
 
 	.section .ewram,"ax"
 	.align 2
@@ -877,7 +881,7 @@ KarnakW:
 #else
 	.section .bss
 #endif
-	.align 2
+	.align 4
 wsRAM:
 	.space 0x10000
 DIRTYTILES:

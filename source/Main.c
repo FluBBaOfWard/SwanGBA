@@ -77,8 +77,13 @@ int main(int argc, char **argv) {
 		waitVBlank();
 //		checkTimeOut();
 		guiRunLoop();
-		if (powerIsOn && !pauseEmulation) {
-			run();
+		if (!pauseEmulation) {
+			if (powerIsOn) {
+				run();
+			}
+			else {
+				shutDownLCD();
+			}
 		}
 	}
 }
@@ -154,7 +159,7 @@ static void setupGraphics() {
 	REG_BG0CNT = GFX_BG0CNT;
 	REG_BG1CNT = GFX_BG1CNT;
 	// Background 2 for border
-	REG_BG2CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(15) | BG_256_COLOR | BG_TILE_BASE(1) | BG_PRIORITY(3);
+	REG_BG2CNT = TEXTBG_SIZE_256x256 | BG_MAP_BASE(15) | BG_256_COLOR | BG_TILE_BASE(1) | BG_PRIORITY(1);
 	REG_BG2HOFS = 8;	// Center border
 	REG_BG2VOFS = 16;
 

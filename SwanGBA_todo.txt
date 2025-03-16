@@ -1,5 +1,6 @@
 SwanGBA Todo
 
+	Make better WS border, can use 128 colors.
 	Fix identification of BnW/Color roms.
 	Fix better sound!
 	Find speed hacks.
