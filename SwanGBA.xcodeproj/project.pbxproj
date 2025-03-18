@@ -40,17 +40,10 @@
 		9C42402227E21F410042454B /* WSEEPROM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSEEPROM.h; sourceTree = "<group>"; };
 		9C42402327E21F410042454B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9C42402427E21F410042454B /* History.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = History.txt; sourceTree = "<group>"; };
-		9C42402627E21F4B0042454B /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
-		9C42402727E21F4B0042454B /* WSRTC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSRTC.h; sourceTree = "<group>"; };
-		9C42402827E21F4B0042454B /* WSRTC.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = WSRTC.s; sourceTree = "<group>"; };
-		9C42402927E21F4B0042454B /* WSRTC.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = WSRTC.i; sourceTree = "<group>"; };
-		9C42402A27E21F4B0042454B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		9C42402B27E21F4B0042454B /* History.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = History.txt; sourceTree = "<group>"; };
 		9C42402C27E21FA30042454B /* WSBorder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WSBorder.png; sourceTree = "<group>"; };
 		9C42402D27E21FA30042454B /* WSCBorder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WSCBorder.png; sourceTree = "<group>"; };
 		9C42402E27E21FA30042454B /* WSCBorder.grit */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WSCBorder.grit; sourceTree = "<group>"; };
 		9C42402F27E21FA30042454B /* WSBorder.grit */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WSBorder.grit; sourceTree = "<group>"; };
-		9C42403027E224520042454B /* WSHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSHeader.h; sourceTree = "<group>"; };
 		9C42403127E224730042454B /* InternalEEPROM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InternalEEPROM.h; sourceTree = "<group>"; };
 		9C42403227E225620042454B /* EmuMenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = EmuMenu.c; sourceTree = "<group>"; };
 		9C42403327E225620042454B /* EmuMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmuMenu.h; sourceTree = "<group>"; };
@@ -80,6 +73,19 @@
 		9C715146265661CE0084BE99 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
 		9CBC0C8E26DD7C2A0039D17E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9CC013FC2668FDD9005714F7 /* Emubase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emubase.h; sourceTree = "<group>"; };
+		9CD081572D889E950072CDB1 /* FlashMemory.s */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; path = FlashMemory.s; sourceTree = "<group>"; };
+		9CD081582D889E950072CDB1 /* History.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = History.txt; sourceTree = "<group>"; };
+		9CD081592D889E950072CDB1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9CD0815A2D889E950072CDB1 /* Version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
+		9CD0815B2D889E950072CDB1 /* WSCart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSCart.h; sourceTree = "<group>"; };
+		9CD0815C2D889E950072CDB1 /* WSCart.s */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; path = WSCart.s; sourceTree = "<group>"; };
+		9CD0815D2D889E950072CDB1 /* WSHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSHeader.h; sourceTree = "<group>"; };
+		9CD0817D2D89DDE60072CDB1 /* History.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = History.txt; sourceTree = "<group>"; };
+		9CD0817E2D89DDE60072CDB1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9CD0817F2D89DDE60072CDB1 /* Version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
+		9CD081802D89DDE60072CDB1 /* WSRTC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSRTC.h; sourceTree = "<group>"; };
+		9CD081812D89DDE60072CDB1 /* WSRTC.i */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c.preprocessed; path = WSRTC.i; sourceTree = "<group>"; };
+		9CD081822D89DDE60072CDB1 /* WSRTC.s */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; path = WSRTC.s; sourceTree = "<group>"; };
 		A49D34381757E54900BD9B4B /* cpu.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = cpu.s; sourceTree = "<group>"; };
 		A49D34401757E54900BD9B4B /* io.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = io.s; sourceTree = "<group>"; };
 		A4AA02141B04077F0043E4D4 /* History.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = History.txt; sourceTree = "<group>"; };
@@ -166,15 +172,30 @@
 			path = WSEEPROM;
 			sourceTree = "<group>";
 		};
-		9C42402527E21F4B0042454B /* WSRTC */ = {
+		9CD0815E2D889E950072CDB1 /* WSCart */ = {
 			isa = PBXGroup;
 			children = (
-				9C42402A27E21F4B0042454B /* README.md */,
-				9C42402B27E21F4B0042454B /* History.txt */,
-				9C42402627E21F4B0042454B /* Version.h */,
-				9C42402727E21F4B0042454B /* WSRTC.h */,
-				9C42402927E21F4B0042454B /* WSRTC.i */,
-				9C42402827E21F4B0042454B /* WSRTC.s */,
+				9CD0816E2D89D32B0072CDB1 /* WSRTC */,
+				9CD081592D889E950072CDB1 /* README.md */,
+				9CD081582D889E950072CDB1 /* History.txt */,
+				9CD0815A2D889E950072CDB1 /* Version.h */,
+				9CD0815B2D889E950072CDB1 /* WSCart.h */,
+				9CD0815C2D889E950072CDB1 /* WSCart.s */,
+				9CD0815D2D889E950072CDB1 /* WSHeader.h */,
+				9CD081572D889E950072CDB1 /* FlashMemory.s */,
+			);
+			path = WSCart;
+			sourceTree = "<group>";
+		};
+		9CD0816E2D89D32B0072CDB1 /* WSRTC */ = {
+			isa = PBXGroup;
+			children = (
+				9CD0817E2D89DDE60072CDB1 /* README.md */,
+				9CD0817D2D89DDE60072CDB1 /* History.txt */,
+				9CD0817F2D89DDE60072CDB1 /* Version.h */,
+				9CD081802D89DDE60072CDB1 /* WSRTC.h */,
+				9CD081812D89DDE60072CDB1 /* WSRTC.i */,
+				9CD081822D89DDE60072CDB1 /* WSRTC.s */,
 			);
 			path = WSRTC;
 			sourceTree = "<group>";
@@ -220,7 +241,7 @@
 				9C42400C27E21F200042454B /* ARMV30MZ */,
 				9C42401527E21F2C0042454B /* Sphinx */,
 				9C42401E27E21F410042454B /* WSEEPROM */,
-				9C42402527E21F4B0042454B /* WSRTC */,
+				9CD0815E2D889E950072CDB1 /* WSCart */,
 				A47F092A20863AF5004E1DA6 /* Shared */,
 				9CC013FC2668FDD9005714F7 /* Emubase.h */,
 				9C50820725D45A9A00A8E1BA /* Main.h */,
@@ -231,7 +252,6 @@
 				9C4C21DE26E54754007D0280 /* FileHandling.c */,
 				9C1A755028DB1F1D005F342E /* WonderSwan.h */,
 				9C1A755128DB1F1D005F342E /* WonderSwan.c */,
-				9C42403027E224520042454B /* WSHeader.h */,
 				9C42403127E224730042454B /* InternalEEPROM.h */,
 				9C50820525D45A9A00A8E1BA /* Cart.h */,
 				9C50820F25D45A9B00A8E1BA /* Cart.s */,

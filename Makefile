@@ -29,8 +29,9 @@ SOURCES		:=	source \
 				source/Shared \
 				source/ARMV30MZ \
 				source/Sphinx \
-				source/WSEEPROM \
-				source/WSRTC
+				source/WSCart \
+				source/WSCart/WSRTC \
+				source/WSEEPROM
 DATA		:=	data
 INCLUDES	:=	include
 GRAPHICS	:=	graphics \

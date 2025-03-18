@@ -34,6 +34,9 @@
 	.global v30WriteSegOfsW
 	.global setBootRomOverlay
 	.global setSRamArea
+	.global setFlashRead
+	.global bootRomSwitchB
+	.global bootRomSwitchW
 
 
 	.syntax unified
@@ -87,6 +90,22 @@ setSRamArea:			;@ r0=arg0, 0=SRAM, 1=ROM/Flash
 sramCmdList:
 	ldreq r2,[v30ptr,#v30MemTblInv-2*4]
 	cmp r2,#0
+;@----------------------------------------------------------------------------
+setFlashRead:			;@ r0=arg0, 0=Normal, 1=Flash info
+;@----------------------------------------------------------------------------
+	cmp r0,#2
+	ldrcc r1,=cpuReadMem20
+//	ldrcc r2,=cpuReadMem20W
+	adr r3,flashCmdList
+	ldrcc r0,[r3,r0,lsl#2]
+	strcc r0,[r1]
+//	strcc r0,[r2]
+	bx lr
+flashCmdList:
+	mvn r2,r0,lsr#28
+	//This is "b always flashReadMem20"
+	.long 0xEA000000 // + ((flashReadMem20 - cpuReadMem20)>>2) & 0xFFFFFF
+//	.long 0xEA000000 + ((flashCmdList - setFlashRead)>>2) & 0xFFFFFF
 
 ;@----------------------------------------------------------------------------
 

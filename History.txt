@@ -1,6 +1,9 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.7.1 - 2025-03-17 (FluBBa)
+	Fixed a regression in the noise.
+
 V0.7.0 - 2025-03-16 (FluBBa)
 	Fixed sound output control (0x91) register.
 	Fixed latched icons (0x1A) register.

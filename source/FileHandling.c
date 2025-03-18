@@ -13,6 +13,7 @@
 #include "Gfx.h"
 #include "io.h"
 #include "InternalEEPROM.h"
+#include "WSCart/WSCart.h"
 
 static const char *const swanGBAName = "@ SwanGBA @";
 
