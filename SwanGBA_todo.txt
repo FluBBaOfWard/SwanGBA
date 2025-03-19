@@ -36,6 +36,8 @@ Games Not Working Fixed:
 	Bakusou Dekotora Densetsu. Unzip craps out.
 	Chou Denki Card Game, crashes.
 		* Needs initialization, last item on first page.
+	ClockTower, doesn't start.
+		* Needs noise calculation even if ch4 noise is disabled.
 	Hanjuku Hero, crashes.
 		* Reads mapper register 0xC0 which was not reset correctly.
 	Kurupara, crashes. Crashes because of LineCompareIRQ on line 0.
@@ -49,30 +51,40 @@ Games Not Working Fixed:
 		* Fixing interrupt handling in Sphinx fixed it.
 	With You - Mitsumete Itai, halts at black screen.
 		* Waiting for EEPROM ready.
-	Xi Little, Can't start.
+	Xi Little. Can't start.
 		* Waiting on sample playing.
 
 Games With Glitches:
-	Battle Spirits, missing status bar.
-		* Changes tilemap address.
-	From TV Animation One Piece - Grand Battle Swan Colosseum, missing status bar.
-		* Changes tilemap address.
-	Front Mission, missing some text boxes.
-		* Changes tilemap address.
+	Dicing Knight. shadows are in front of player.
+		* Sprite priority is wrong for sprites that are above FG.
+	Digimon - Anode Tamer & Cathode Tamer, missing background gradient in battles.
+		* Changes palette per line.
+	Final Fantasy, Sprites show in dialog windows.
+		* Sprite windows.
+	Final Lap 2000, road colors incorrect.
+		* Changes palette per line.
+	Final Lap Special, road colors incorrect.
+		* Changes palette per line.
+	From TV Animation One Piece - Grand Battle Swan Colosseum, incorrect sky color.
+		* Changes palette per line.
 	Mahjong Touryuumon, speed too fast.
-		* Apparently it sets the ROM waitstate to 3(?).
-	Makaimura, first boss sprites are glitchy.
-	Makai Toushi Sa-Ga, textboxes overlap sprites and background.
-		* Changes tilemap address.
+		* Apparently it sets the ROM waitstate to 1(?).
+	Makaimura, gargoyles in intro should not show up on the right, first boss sprites are glitchy.
+		* Sprite Window and...?
+	Neon Genesis Evangelion, sprites overlap avatar images.
+		* Sprite windows and sprite priority.
+	Rockman & Forte - Mirai Kara no Chousensha, no background fade in intro.
+		* Changes palette per line?
 	Romancing Sa-Ga, sprites overlap text boxes.
 		* Sprite windows and sprite priority.
-	SD Gundam Operation U.C, missing status bar.
-		* Changes tilemap address.
 	Sorobang, incorrect tiles.
 		* Needs all 1024 tiles in 4color mode.
 	WonderSwanColor BIOS, incorrect tiles.
 		* Needs all 1024 tiles in 4color mode.
+
 Games With Glitches Fixed:
+	Battle Spirits, missing status bar.
+		* Changes tilemap address.
 	Cardcaptor Sakura, book dissolve in intro glitches the second time.
 		* Requires "correct" noise calculation.
 	Chaos Gear, Intro not showing.
@@ -81,10 +93,18 @@ Games With Glitches Fixed:
 	Final Fantasy. Characters when inputing name can glitch.
 		* Depending on which scan line VBlank is and how many total scan lines.
 		* Interrupts were not acknowledged during rep instructions.
+	From TV Animation One Piece - Grand Battle Swan Colosseum, missing status bar.
+		* Changes tilemap address.
+	Front Mission, missing some text boxes.
+		* Changes tilemap address.
 	Magical Drop, playfield flickers horizontaly. Sensitive to interrupt (and IRET, HALT) timing.
 		* Fix: Sprite DMA consumes cycles?
 	Mahjong Touryuumon, no sound.
 		* Sound fix by emulating serial out buffer empty irq.
+	Makai Toushi Sa-Ga, textboxes overlap sprites and background.
+		* Changes tilemap address.
+	SD Gundam Operation U.C, missing status bar.
+		* Changes tilemap address.
 	Ultraman, Logo slide down doesn't reach top of screen as on real HW.
 		* Interrupts were not acknowledged during rep instructions.
 

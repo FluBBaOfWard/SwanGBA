@@ -18,9 +18,9 @@ int packState(void *statePtr) {
 	size += sizeof(wsRAM);
 	size += sphinxSaveState(statePtr+size, &sphinx0);
 	size += V30SaveState(statePtr+size, &V30OpTable);
-	memcpy(statePtr+size, wsSRAM, sizeof(wsSRAM));
-	size += sizeof(wsSRAM);
-	size += wsEepromSaveState(statePtr+size, &extEeprom);
+	memcpy(statePtr+size, cartSRAM, sizeof(cartSRAM));
+	size += sizeof(cartSRAM);
+	size += wsEepromSaveState(statePtr+size, &cartEeprom);
 	return size;
 }
 
@@ -30,9 +30,9 @@ void unpackState(const void *statePtr) {
 	size += sizeof(wsRAM);
 	size += sphinxLoadState(&sphinx0, statePtr+size);
 	size += V30LoadState(&V30OpTable, statePtr+size);
-	memcpy(wsSRAM, statePtr+size, sizeof(wsSRAM));
-	size += sizeof(wsSRAM);
-	size += wsEepromLoadState(&extEeprom, statePtr+size);
+	memcpy(cartSRAM, statePtr+size, sizeof(cartSRAM));
+	size += sizeof(cartSRAM);
+	size += wsEepromLoadState(&cartEeprom, statePtr+size);
 }
 
 int getStateSize() {
@@ -40,7 +40,7 @@ int getStateSize() {
 	size += sizeof(wsRAM);
 	size += sphinxGetStateSize();
 	size += V30GetStateSize();
-	size += sizeof(wsSRAM);
+	size += sizeof(cartSRAM);
 	size += wsEepromGetStateSize();
 	return size;
 }

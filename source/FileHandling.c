@@ -177,12 +177,12 @@ void loadNVRAM() {
 	void *nvMem = NULL;
 
 	if (sramSize > 0) {
-		saveSize = sizeof(wsSRAM);
-		nvMem = wsSRAM;
+		saveSize = sizeof(cartSRAM);
+		nvMem = cartSRAM;
 	}
 	else if (eepromSize > 0) {
 		saveSize = eepromSize;
-		nvMem = extEepromMem;
+		nvMem = cartEepromMem;
 	}
 	else {
 		return;
@@ -196,12 +196,12 @@ void saveNVRAM() {
 	void *nvMem = NULL;
 
 	if (sramSize > 0) {
-		saveSize = sizeof(wsSRAM);
-		nvMem = wsSRAM;
+		saveSize = sizeof(cartSRAM);
+		nvMem = cartSRAM;
 	}
 	else if (eepromSize > 0) {
 		saveSize = eepromSize;
-		nvMem = extEepromMem;
+		nvMem = cartEepromMem;
 	}
 	else {
 		return;

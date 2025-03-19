@@ -1,4 +1,4 @@
-# SwanGBA V0.7.0
+# SwanGBA V0.7.2
 
 <img align="right" width="220" src="./logo.png" alt="The WonderSwan logo"/>
 
@@ -119,7 +119,7 @@ Ed Mandy (Flavor) for WonderSwan info & flashcart. https://www.flashmasta.com
 Koyote for WonderSwan info.
 Alex Marshall (trap15) for WonderSwan info. http://daifukkat.su/docs/wsman/
 Guy Perfect for WonderSwan info http://perfectkiosk.net/stsws.html
-asie for info and inspiration.
+asie for info and inspiration. https://ws.nesdev.org/wiki/WSdev_Wiki
 Godzil for the boot rom stubs. https://github.com/Godzil/NewOswan
 lidnariq for RTC info.
 plasturion for some BnW palettes.

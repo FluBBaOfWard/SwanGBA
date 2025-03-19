@@ -12,10 +12,11 @@
 #include "Sound.h"
 #include "io.h"
 #include "cpu.h"
+#include "WSCart/WSCart.h"
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.7.0 2025-03-16"
+#define EMUVERSION "V0.7.2 2025-03-19"
 
 void hacksInit(void);
 
@@ -263,6 +264,9 @@ void debugIOUnmappedR(u16 port) {
 }
 void debugIOUnmappedW(u8 val, u16 port) {
 	debugIO(port, val, "Unmapped W port:");
+}
+void debugROMW(u8 val, u16 adr) {
+	debugIO(adr, val, "Rom W:");
 }
 void debugSerialOutW(u8 val) {
 	if (val < 0x80) {
