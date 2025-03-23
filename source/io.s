@@ -87,10 +87,10 @@ refreshEMUjoypads:			;@ Call every frame
 	ldrb r1,[r1]
 	cmp r1,#HW_POCKETCHALLENGEV2
 	beq pcv2Joypad
+	mov r3,r4
 		ldr r1,=frameTotal
 		ldr r1,[r1]
 		movs r1,r1,lsr#2		;@ C=frame&2 (autofire alternates every 4:th frame)
-	mov r3,r4
 		ldr r2,joyCfg
 		andcs r3,r3,r2
 		tstcs r3,r3,lsr#10		;@ NDS L?
@@ -146,7 +146,7 @@ pcv2Joypad:
 	ldrb r0,[r1,r0,lsr#4]
 	and r3,r4,#0xf00
 	adr r1,rlxy2pcv2
-	ldrb r1,[r1,r3]
+	ldrb r1,[r1,r3,lsr#8]
 	orr r0,r0,r1,lsl#4
 
 	tst r4,#0x01				;@ NDS A
@@ -178,9 +178,11 @@ updateSlowIO:				;@ Call once every frame, updates rtc and battery levels.
 ;@----------------------------------------------------------------------------
 	ldrb r0,slowTimer
 	subs r0,r0,#1
-	movmi r0,#74
+	strbhi r0,slowTimer
+	bxhi lr
+	ldr r0,=fpsTarget
+	ldrb r0,[r0]
 	strb r0,slowTimer
-	bxpl lr
 
 	stmfd sp!,{r12,lr}
 //	blx getBatteryLevel
@@ -194,7 +196,7 @@ updateSlowIO:				;@ Call once every frame, updates rtc and battery levels.
 	bl setLowBattery
 	ldmfd sp!,{r12,lr}
 
-	ldr r1,=384000				;@ 1 Second in cart clocks (cyc/8).
+	ldr r0,=(3072000/8)			;@ 1 Second in cart clocks (384000).
 	b cartUpdate
 
 ;@----------------------------------------------------------------------------

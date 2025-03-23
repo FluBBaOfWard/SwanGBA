@@ -41,6 +41,7 @@ ROM_Space:
 //	.incbin "wsroms/Chaos Gear - Michibikareshi Mono (Japan).ws"
 //	.incbin "wsroms/Dicing Knight. (J).wsc"
 //	.incbin "wsroms/dkd-vesilintu.wsc"
+//	.incbin "wsroms/English2.pcv2"
 //	.incbin "wsroms/Final Fantasy (Japan).wsc"
 //	.incbin "wsroms/Final Fantasy IV (Japan).wsc"
 //	.incbin "wsroms/Final Lap 2000 (Japan).ws"

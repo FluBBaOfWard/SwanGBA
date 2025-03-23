@@ -507,6 +507,15 @@ doColorShutDown:
 ;@----------------------------------------------------------------------------
 setScreenRefresh:			;@ r0 in = WS scan line count.
 ;@----------------------------------------------------------------------------
+	stmfd sp!,{spxptr,lr}
+	mov r1,r0
+	ldr r0,=12000*2				;@ WS scanline frequency = 12kHz
+	swi 0x060000				;@ Division r0/r1, r0=result, r1=remainder.
+	movs r0,r0,lsr#1
+	adc r0,r0,#0
+	bl setTargetFPS
+
+	ldmfd sp!,{spxptr,lr}
 	bx lr
 
 ;@----------------------------------------------------------------------------

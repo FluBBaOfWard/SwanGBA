@@ -7,7 +7,7 @@ Format of SwanGBA (v1) GBA images:
 ----
 4 bytes:  Identifier = "BWS",0x1A
 4 bytes:  ROM size
-4 bytes:  ROM flags, Bit 1 = PCV2, Bit 2 = WSC, Bit 3 = SwanCrystal.
+4 bytes:  ROM flags.
 4 bytes:  Reserved (set to 0)
 1 byte:   BIOS flag, bit0=1 for BIOS rom.
 15 bytes: Reserved (set to 0)
@@ -19,16 +19,9 @@ etc etc...
 ----
 
 ROM flags:
-    Bit 0: Use PAL timing
-           (0=NTSC, 1=PAL)
-    Bit 1: Domestic bit
-           (0=Usa/Europe, 1=Japan)
-    Bit 2: GameGear
-           (0=SMS, 1=GG)
-    Bit 3: SMS2
-           (0=SMS, 1=SMS2)
+	Bit 1: PCV2
+	Bit 2: WSC
+	Bit 3: SwanCrystal
     Bit 4: Enable CPU speed hack
            (Enables the branch hacks)
     Everything else:  Reserved (set to 0)
-
-

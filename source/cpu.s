@@ -55,7 +55,7 @@ wsFrameLoop:
 	cmp r0,#0
 	cmpeq r1,#2
 	subnes r1,r1,#1
-	moveq r1,#199
+	moveq r1,#200				;@ (159 * 75.47) / 60 = 199.9955
 	str r1,scanLineCountGBA
 	bne wsFrameLoop
 ;@----------------------------------------------------------------------------
@@ -73,7 +73,7 @@ wsFrameLoopEnd:
 
 ;@----------------------------------------------------------------------------
 v30MZCyclesPerScanline:	.long 0
-scanLineCountGBA:	.long 199
+scanLineCountGBA:	.long 200
 joyClick:			.long 0
 waitCountIn:		.byte 0
 waitMaskIn:			.byte 0
