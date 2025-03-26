@@ -174,7 +174,7 @@ rlxy2pcv2:	.byte 0x00,0x01,0x04,0x05, 0x01,0x01,0x05,0x05, 0x80,0x81,0x84,0x85, 
 EMUinput:	.long 0				;@ This label here for Main.c to use
 
 ;@----------------------------------------------------------------------------
-updateSlowIO:				;@ Call once every frame, updates rtc and battery levels.
+updateSlowIO:				;@ Call once every frame, updates battery levels and rtc.
 ;@----------------------------------------------------------------------------
 	ldrb r0,slowTimer
 	subs r0,r0,#1

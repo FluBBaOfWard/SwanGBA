@@ -86,6 +86,7 @@
 		9CD081802D89DDE60072CDB1 /* WSRTC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSRTC.h; sourceTree = "<group>"; };
 		9CD081812D89DDE60072CDB1 /* WSRTC.i */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c.preprocessed; path = WSRTC.i; sourceTree = "<group>"; };
 		9CD081822D89DDE60072CDB1 /* WSRTC.s */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; path = WSRTC.s; sourceTree = "<group>"; };
+		9CD081842D9029200072CDB1 /* Karnak.s */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; path = Karnak.s; sourceTree = "<group>"; };
 		A49D34381757E54900BD9B4B /* cpu.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = cpu.s; sourceTree = "<group>"; };
 		A49D34401757E54900BD9B4B /* io.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = io.s; sourceTree = "<group>"; };
 		A4AA02141B04077F0043E4D4 /* History.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = History.txt; sourceTree = "<group>"; };
@@ -179,6 +180,7 @@
 				9CD081592D889E950072CDB1 /* README.md */,
 				9CD081582D889E950072CDB1 /* History.txt */,
 				9CD0815A2D889E950072CDB1 /* Version.h */,
+				9CD081842D9029200072CDB1 /* Karnak.s */,
 				9CD0815B2D889E950072CDB1 /* WSCart.h */,
 				9CD0815C2D889E950072CDB1 /* WSCart.s */,
 				9CD0815D2D889E950072CDB1 /* WSHeader.h */,

@@ -122,6 +122,9 @@ loadCart: 					;@ Called from C:
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
 
+	ldrb r0,gMachineSet
+	strb r0,gMachine
+
 	bl wsCartReset
 
 	ldr v30ptr,=V30OpTable
