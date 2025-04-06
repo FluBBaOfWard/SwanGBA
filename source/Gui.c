@@ -16,7 +16,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.7.2 2025-03-23"
+#define EMUVERSION "V0.7.2 2025-04-06"
 
 void hacksInit(void);
 
@@ -409,11 +409,13 @@ const char *getCPUHalfText() {
 }
 
 void headphonesSet() {
-	emuSettings ^= ENABLE_HEADPHONES;
-	setHeadphones(emuSettings & ENABLE_HEADPHONES);
+	if (gMachine != HW_POCKETCHALLENGEV2) {
+		emuSettings ^= ENABLE_HEADPHONES;
+		setHeadphones(emuSettings & ENABLE_HEADPHONES);
+	}
 }
 const char *getHeadphonesText() {
-	return autoTxt[(emuSettings & ENABLE_HEADPHONES)>>18];
+	return autoTxt[getHeadphones()];
 }
 
 void soundSet() {

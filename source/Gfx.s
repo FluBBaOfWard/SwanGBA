@@ -29,6 +29,7 @@
 	.global shutDownLCD
 	.global setScreenRefresh
 	.global pushVolumeButton
+	.global getHeadphones
 	.global setHeadphones
 	.global setLowBattery
 	.global setSerialByteIn
@@ -127,6 +128,10 @@ gfxReset:					;@ Called with CPU reset
 	ldr r0,=emuSettings
 	ldr r0,[r0]
 	and r0,r0,#1<<18
+	ldr r1,=gMachine
+	ldrb r1,[r1]
+	cmp r1,#HW_POCKETCHALLENGEV2
+	moveq r0,#1					;@ PCV2 has headphones always.
 	bl setHeadphones
 
 	ldmfd sp!,{r4,r5,pc}
@@ -725,6 +730,12 @@ pushVolumeButton:
 ;@----------------------------------------------------------------------------
 	adr spxptr,sphinx0
 	b wsvPushVolumeButton
+;@----------------------------------------------------------------------------
+getHeadphones:				;@ out r0 = on/off
+	.type getHeadphones STT_FUNC
+;@----------------------------------------------------------------------------
+	adr spxptr,sphinx0
+	b wsvGetHeadphones
 ;@----------------------------------------------------------------------------
 setHeadphones:				;@ r0 = on/off
 	.type setHeadphones STT_FUNC
