@@ -72,6 +72,7 @@ ROM_Space:
 //	.incbin "wsroms/Ultraman - Hikari no Kuni no Shisha (Japan).wsc"
 //	.incbin "wsroms/With You - Mitsumete Itai (Japan).wsc"
 //	.incbin "wsroms/WONDERPR.WSC"
+//	.incbin "wsroms/WSCPUTest.wsc"
 //	.incbin "wsroms/WSHWTest.wsc"
 //	.incbin "wsroms/XI Little (Japan).wsc"
 ROM_SpaceEnd:

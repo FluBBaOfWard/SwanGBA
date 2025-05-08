@@ -1,8 +1,10 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
-V0.7.2 - 2025-03-23 (FluBBa)
-	Fixed.
+V0.7.2 - 2025-05-08 (FluBBa)
+	Fixed IO registers startup values.
+	Fixed IO registers writable bits.
+	Optimized some opcodes.
 
 V0.7.1 - 2025-03-17 (FluBBa)
 	Fixed a regression in the noise.

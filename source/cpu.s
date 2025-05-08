@@ -42,8 +42,8 @@ runStart:
 
 	bl refreshEMUjoypads
 
-	add r1,v30ptr,#v30PrefixBase
-	ldmia r1,{v30csr-v30cyc}	;@ Restore V30MZ state
+	add r1,v30ptr,#v30Flags
+	ldmia r1,{v30f-v30cyc}		;@ Restore V30MZ state
 ;@----------------------------------------------------------------------------
 wsFrameLoop:
 ;@----------------------------------------------------------------------------
@@ -60,8 +60,8 @@ wsFrameLoop:
 	bne wsFrameLoop
 ;@----------------------------------------------------------------------------
 wsFrameLoopEnd:
-	add r0,v30ptr,#v30PrefixBase
-	stmia r0,{v30csr-v30cyc}	;@ Save V30MZ state
+	add r0,v30ptr,#v30Flags
+	stmia r0,{v30f-v30cyc}		;@ Save V30MZ state
 
 	ldrh r0,waitCountOut
 	add r0,r0,#1
@@ -95,8 +95,8 @@ wsScanLine:
 	stmfd sp!,{lr}
 	mov r0,#CYCLE_PSL
 	bl V30RestoreAndRunXCycles
-	add r0,v30ptr,#v30PrefixBase
-	stmia r0,{v30csr-v30cyc}	;@ Save V30MZ state
+	add r0,v30ptr,#v30Flags
+	stmia r0,{v30f-v30cyc}		;@ Save V30MZ state
 	ldmfd sp!,{lr}
 	ldr spxptr,=sphinx0
 	b wsvDoScanline
