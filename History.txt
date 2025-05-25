@@ -1,9 +1,12 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
-V0.7.2 - 2025-05-08 (FluBBa)
+V0.7.2 - 2025-05-25 (FluBBa)
+	Fixed serial port read.
 	Fixed IO registers startup values.
 	Fixed IO registers writable bits.
+	Fixed a glitch on the small dot icon.
+	Fixed Branch Far & Call Far.
 	Optimized some opcodes.
 
 V0.7.1 - 2025-03-17 (FluBBa)

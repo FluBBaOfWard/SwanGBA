@@ -93,7 +93,7 @@ In vertical games:
 There are 2 games that I know of that has serious problems.
 
 * Chou Denki Card Game: You need to initialize NVRAM, this is the last item on the first page (初期化).
-* Mahjong Touryuumon, speed too fast.
+* Mahjong Touryuumon, emulated speed too fast.
 
 There are a couple of games that have visual glitches.
 

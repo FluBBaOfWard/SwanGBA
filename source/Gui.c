@@ -16,7 +16,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.7.2 2025-05-08"
+#define EMUVERSION "V0.7.2 2025-05-25"
 
 void hacksInit(void);
 
