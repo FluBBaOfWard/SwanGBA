@@ -1,4 +1,4 @@
-# SwanGBA V0.7.2
+# SwanGBA V0.7.4
 
 <img align="right" width="220" src="./logo.png" alt="The WonderSwan logo"/>
 
@@ -35,7 +35,7 @@ B to go back a step.
 
 * Speed: Switch between speed modes.
   * Normal: Game runs at it's normal speed.
-  * 200%: Game runs at double speed.
+  * 200%: Game can run up to double speed.
   * Max: Games can run up to 4 times normal speed (might change).
   * 50%: Game runs at half speed.
 * Autoload State: Toggle Savestate autoloading. Automagically load the savestate associated with the selected game.
@@ -118,11 +118,12 @@ I've made a few test programs for the WonderSwan to be able to really make sure
 * [WSCPUTest](https://github.com/FluBBaOfWard/WSCpuTest) - Tests functions of the NEC V30MZ CPU instructions.
 * [WSTimingTest](https://github.com/FluBBaOfWard/WSTimingTest) - Tests timing of the NEC V30MZ CPU instruction.
 * [WSHWTest](https://github.com/FluBBaOfWard/WSHWTest) - Tests other HW of the WS SOC.
+* [KarnakTest](https://github.com/FluBBaOfWard/KarnakTest) - Tests the Karnak mapper in certain cartridges.
 
 Other test programs I have used to get better accuracy.
 
 * [WS-Test-Suite](https://github.com/asiekierka/ws-test-suite) - Lots of small tests.
-* [RTC Test](https://forums.nesdev.org/viewtopic.php?t=21513) Test the RTC in certain cartridges.
+* [RTC Test](https://forums.nesdev.org/viewtopic.php?t=21513) Tests the RTC in certain cartridges.
 
 ## Credits
 

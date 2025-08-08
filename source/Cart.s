@@ -75,6 +75,7 @@ ROM_Space:
 //	.incbin "wsroms/WSCPUTest.wsc"
 //	.incbin "wsroms/WSHWTest.wsc"
 //	.incbin "wsroms/XI Little (Japan).wsc"
+//	.incbin "wsroms/Test suite/color/dma/sound_dma.wsc"
 ROM_SpaceEnd:
 WS_BIOS_INTERNAL:
 	.incbin "wsroms/boot.rom"
