@@ -24,7 +24,7 @@
 	.syntax unified
 	.arm
 
-	.section .ewram,"ax"
+	.section .ewram, "ax", %progbits
 	.align 2
 ;@----------------------------------------------------------------------------
 soundInit:
@@ -176,7 +176,7 @@ soundLatch:
 	.byte 0
 	.space 2
 
-	.section .sbss
+	.section .sbss				;@ This is EWRAM on GBA with devkitARM
 	.align 2
 //FREQTBL:
 //	.space 1024*2

@@ -9,6 +9,7 @@ build
 *.wsc
 *.rom
 *.pc2
+*.pcv2
 *.eeprom
 *.ram
 *.sav

@@ -91,7 +91,7 @@ SC_BIOS_INTERNAL:
 	.incbin "wsroms/wc_irom.bin"
 #endif
 
-	.section .ewram,"ax"
+	.section .ewram, "ax", %progbits
 	.align 2
 ;@----------------------------------------------------------------------------
 machineInit: 				;@ Called from C
@@ -116,7 +116,7 @@ machineInit: 				;@ Called from C
 	ldmfd sp!,{r4-r11,lr}
 	bx lr
 
-	.section .ewram,"ax"
+	.section .ewram, "ax", %progbits
 	.align 2
 ;@----------------------------------------------------------------------------
 loadCart: 					;@ Called from C:
@@ -226,7 +226,7 @@ biosBase:
 
 ;@----------------------------------------------------------------------------
 #ifdef GBA
-	.section .sbss				;@ For the GBA
+	.section .sbss				;@ This is EWRAM on GBA with devkitARM
 #else
 	.section .bss
 #endif

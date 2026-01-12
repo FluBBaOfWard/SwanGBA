@@ -123,14 +123,15 @@ int loadSettings() {
 	if (findFolder(folderName)) {
 		return 1;
 	}
-	if ( (file = fopen(settingName, "r")) ) {
+	if ((file = fopen(settingName, "r"))) {
 		fread(&cfg, 1, sizeof(configdata), file);
 		fclose(file);
 		if (!strstr(cfg.magic,"cfg")) {
 			infoOutput("Error in settings file.");
 			return 1;
 		}
-	} else {
+	}
+	else {
 		infoOutput("Couldn't open file:");
 		infoOutput(settingName);
 		return 1;
@@ -161,11 +162,12 @@ void saveSettings() {
 	if (findFolder(folderName)) {
 		return;
 	}
-	if ( (file = fopen(settingName, "w")) ) {
+	if ((file = fopen(settingName, "w"))) {
 		fwrite(&cfg, 1, sizeof(configdata), file);
 		fclose(file);
 		infoOutput("Settings saved.");
-	} else {
+	}
+	else {
 		infoOutput("Couldn't open file:");
 		infoOutput(settingName);
 	}*/

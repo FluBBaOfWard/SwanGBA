@@ -9,7 +9,6 @@ extern "C" {
 #define ALLOW_SPEED_HACKS	(1<<17)
 #define ENABLE_HEADPHONES	(1<<18)
 
-extern u8 gGammaValue;
 extern u8 gContrastValue;
 extern u8 gBorderEnable;
 

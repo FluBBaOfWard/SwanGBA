@@ -1,5 +1,7 @@
 SwanGBA Todo
 
+	Fix speaker volume select.
+	Add saving of settings.
 	Make better WS border, can use 128 colors.
 	Fix identification of BnW/Color roms.
 	Fix better sound!

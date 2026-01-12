@@ -1,4 +1,4 @@
-# SwanGBA V0.7.5
+# SwanGBA V0.7.6
 
 <img align="right" width="220" src="./logo.png" alt="The WonderSwan logo"/>
 
@@ -147,4 +147,4 @@ Fredrik Ahlström
 
 <https://www.github.com/FluBBaOfWard>
 
-Twitter @TheRealFluBBa
+X/Twitter @TheRealFluBBa

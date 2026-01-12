@@ -778,7 +778,7 @@ setPowerOff:
 sphinx0:
 	.space sphinxSize
 ;@----------------------------------------------------------------------------
-	.section .ewram, "ax"
+	.section .ewram, "ax", %progbits
 
 gfxState:
 	.long 0
@@ -794,7 +794,7 @@ GFX_BG1CNT:
 	.short 0
 
 #ifdef GBA
-	.section .sbss				;@ For the GBA
+	.section .sbss				;@ This is EWRAM on GBA with devkitARM
 #else
 	.section .bss
 #endif
