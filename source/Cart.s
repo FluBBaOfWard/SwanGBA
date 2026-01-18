@@ -1,9 +1,9 @@
 #ifdef __arm__
 
-//#define EMBEDDED_ROM
-
 #include "Sphinx/Sphinx.i"
 #include "ARMV30MZ/ARMV30MZ.i"
+
+//#define EMBEDDED_ROM
 
 	.global biosBase
 	.global biosSpace
@@ -97,15 +97,15 @@ SC_BIOS_INTERNAL:
 machineInit: 				;@ Called from C
 	.type   machineInit STT_FUNC
 ;@----------------------------------------------------------------------------
-	stmfd sp!,{r4-r11,lr}
+	stmfd sp!,{lr}
 
 #ifdef EMBEDDED_ROM
 	ldr r0,=romSize
 	mov r1,#ROM_SpaceEnd-ROM_Space
 	str r1,[r0]
 	ldr r0,=romSpacePtr
-	ldr r7,=ROM_Space
-	str r7,[r0]
+	ldr r1,=ROM_Space
+	str r1,[r0]
 #endif
 
 	bl gfxInit
@@ -113,7 +113,7 @@ machineInit: 				;@ Called from C
 	bl soundInit
 	bl cpuInit
 
-	ldmfd sp!,{r4-r11,lr}
+	ldmfd sp!,{lr}
 	bx lr
 
 	.section .ewram, "ax", %progbits
@@ -123,9 +123,6 @@ loadCart: 					;@ Called from C:
 	.type   loadCart STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
-
-	ldrb r0,gMachineSet
-	strb r0,gMachine
 
 	bl wsCartReset
 
@@ -164,7 +161,6 @@ noHWCheck:
 	str r1,biosBase
 	bl setBootRomOverlay
 
-
 	ldr r0,=wsRAM				;@ Clear RAM
 	str r0,[v30ptr,#v30MemTblInv-0x1*4]		;@ 0 RAM
 	mov r1,#0x10000/4
@@ -190,9 +186,10 @@ noHWCheck:
 ;@----------------------------------------------------------------------------
 clearDirtyTiles:
 ;@----------------------------------------------------------------------------
-	ldr r0,=DIRTYTILES			;@ Clear RAM
+	ldr r0,=DIRTYTILES			;@ Clear DirtyTiles
 	mov r1,#0x800/4
 	b memclr_
+;@----------------------------------------------------------------------------
 
 romInfo:						;@
 emuFlags:
@@ -230,7 +227,7 @@ biosBase:
 #else
 	.section .bss
 #endif
-	.align 4
+	.align 4					;@ Align to 16 bytes, required for sound mixer.
 wsRAM:
 	.space 0x10000
 DIRTYTILES:

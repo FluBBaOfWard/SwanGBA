@@ -31,20 +31,6 @@ B to go back a step.
 * Contrast: Lets you change the contrast.
 * B&W Palette: Here you can select the palette for B & W games.
 
-### Settings
-
-* Speed: Switch between speed modes.
-  * Normal: Game runs at it's normal speed.
-  * 200%: Game can run up to double speed.
-  * Max: Games can run up to 4 times normal speed (might change).
-  * 50%: Game runs at half speed.
-* Autoload State: Toggle Savestate autoloading. Automagically load the savestate associated with the selected game.
-* Autoload NVRAM: Toggle EEPROM/SRAM autoloading. Automagically load the EEPROM/SRAM associated with the selected game.
-* Autosave Settings: This will save settings when leaving menu if any changes are made.
-* Autopause Game: Toggle if the game should pause when opening the menu.
-* Overclock EWRAM: Changes the waitstates on EWRAM between 2 and 1, might damage your GBA and uses more power, around 10% speedgain. Use at your own risk!
-* Autosleep: Change the autosleep time, also see Sleep.
-
 ### Machine
 
 * Machine: Select the emulated machine.
@@ -54,6 +40,24 @@ B to go back a step.
 * Cpu speed hacks: Allow speed hacks.
 * Half Cpu Speed: Just half the emulated cpu speed.
 * Sound: Turn sound emulation on/off.
+
+### Settings
+
+* Speed: Switch between speed modes.
+  * Normal: Game runs at it's normal speed.
+  * 200%: Game can run up to double speed.
+  * Max: Games can run up to 4 times normal speed.
+  * 50%: Game runs at half speed.
+* Autoload State: Toggle Savestate autoloading. Automagically load the
+ savestate associated with the selected game.
+* Autoload NVRAM: Toggle EEPROM/SRAM autoloading. Automagically load the
+ EEPROM/SRAM associated with the selected game.
+* Autosave Settings: This will save settings when leaving menu if any changes are made.
+* Autopause Game: Toggle if the game should pause when opening the menu.
+* Overclock EWRAM: Changes the waitstates on EWRAM between 2 and 1, might
+ damage your GBA and uses more power, around 10% speedgain. Doesn't work on
+ Gameboy Micro. Use at your own risk!
+* Autosleep: Change the autosleep time, also see Sleep.
 
 ### Debug
 
@@ -71,6 +75,10 @@ Some info about the emulator and game...
 
 Put the GBA into sleepmode. START+SELECT wakes up from sleep mode (activated
  from this menu or from 5/10/30 minutes of inactivity).
+
+### Quit Emulator
+
+Tries to reset the Flashcart and reboots the GBA.
 
 ## Controls
 

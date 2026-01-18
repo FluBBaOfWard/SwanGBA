@@ -1,9 +1,13 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
-V0.7.6 - 2026-01-12 (FluBBa)
+V0.7.6 - 2026-01-18 (FluBBa)
 	Fixed register 0x14 initialization in built-in BIOS.
+	Fixed sound pitch.
+	Fixed sound button (Select).
+	Fixed saving of settings.
 	Added scrolling to menus.
+	Added splashscreen support.
 
 V0.7.5 - 2025-08-08 (FluBBa)
 	Fixed reading of ch3 frequency for real.

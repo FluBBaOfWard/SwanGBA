@@ -18,7 +18,6 @@
 	.global ioLoadState
 	.global ioGetStateSize
 	.global updateSlowIO
-	.global IOPortA_R
 
 	.global intEepromSetSize
 	.global intEepromDataLowR
@@ -274,6 +273,7 @@ intEepromReset:
 	ldreq r2,=wscEepromMem
 	ldrhi r2,=scEepromMem
 	mov r1,#0x080				;@  1kbit, 16kbit is switched to for Color _Games_.
+	mov r3,#1					;@ Allow protect
 	adr eeptr,intEeprom
 	b wsEepromReset
 ;@----------------------------------------------------------------------------
@@ -288,6 +288,13 @@ intEepromSetSize:			;@ r0 = size, 0=1kbit, !0=16kbit
 	.pool
 intEeprom:
 	.space wsEepromSize
+
+#ifdef GBA
+	.section .sbss				;@ This is EWRAM on GBA with devkitARM
+#else
+	.section .bss
+#endif
+	.align 2
 wsEepromMem:
 	.space 0x80
 wscEepromMem:

@@ -49,12 +49,13 @@ void myVBlank(void) {
 //---------------------------------------------------------------------------------
 int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
+	enableExit = true;
 	irqInit();
 	irqEnable(IRQ_VBLANK);
 	showSplash(getSplashScreen(BWSID));
+	irqSet(IRQ_VBLANK, myVBlank);
 
 	setupGraphics();
-	irqSet(IRQ_VBLANK, myVBlank);
 	setupGUI();
 	getInput();
 	initSettings();
@@ -75,7 +76,6 @@ int main(int argc, char **argv) {
 
 	while (1) {
 		waitVBlank();
-//		checkTimeOut();
 		guiRunLoop();
 		if (!pauseEmulation) {
 			if (powerIsOn) {
@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
 				shutDownLCD();
 			}
 		}
+//		checkTimeOut();
 	}
 }
 

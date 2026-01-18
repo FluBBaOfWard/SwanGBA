@@ -11,9 +11,13 @@
 #include "Gui.h"
 #include "Cart.h"
 #include "Gfx.h"
+#include "Sound.h"
 #include "io.h"
 #include "InternalEEPROM.h"
 #include "WSCart/WSCart.h"
+
+/// Used for emulators or flashcarts to choose save type.
+const char *const sramTag = "SRAM_Vnnn";
 
 static const char *const swanGBAName = "@ SwanGBA @";
 
@@ -23,20 +27,38 @@ EWRAM_BSS int selectedGame = 0;
 EWRAM_BSS ConfigData cfg;
 
 //---------------------------------------------------------------------------------
-int initSettings() {
-	cfg.config = 0;
-	cfg.palette = 0;
-	cfg.gammaValue = 0x20;
+void applyConfigData(void) {
+	emuSettings   = cfg.emuSettings & ~EMUSPEED_MASK; // Clear speed setting.
+	gBorderEnable = (cfg.config & 1) ^ 1;
+	gPaletteBank  = cfg.palette;
+	gGammaValue   = cfg.gammaValue & 0xF;
+	gContrastValue = (cfg.gammaValue >> 4) & 0xF;
+	soundMode     = (emuSettings & SOUND_ENABLE) >> 10;
+	sleepTime     = cfg.sleepTime;
+	joyCfg        = (joyCfg & ~0x400) | ((cfg.controller & 1) << 10);
+	gMachineSet   = (cfg.machine >> 1) & 0x7;
+}
+
+void updateConfigData(void) {
+	strcpy(cfg.magic, "cfg");
+	cfg.emuSettings = emuSettings & ~EMUSPEED_MASK; // Clear speed setting.
+	cfg.config      = (gBorderEnable & 1) ^ 1;
+	cfg.palette     = gPaletteBank;
+	cfg.gammaValue  = (gGammaValue & 0xF) | (gContrastValue<<4);
+	cfg.sleepTime   = sleepTime;
+	cfg.controller  = (joyCfg >> 10) & 1;
+	cfg.machine     = (gMachineSet & 7) << 1;
+}
+
+void initSettings() {
+	memset(&cfg, 0, sizeof(ConfigData));
 	cfg.emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM | ALLOW_SPEED_HACKS;
-	cfg.sleepTime = 60*60*5;
-	cfg.controller = 0;					// Don't swap A/B
+	cfg.gammaValue  = 0x20;
+	cfg.sleepTime   = 60*60*5;
 	cfg.birthYear[0] = 0x19;
 	cfg.birthYear[1] = 0x99;
 //	cfg.birthMonth = bin2BCD(PersonalData->birthMonth);
 //	cfg.birthDay = bin2BCD(PersonalData->birthDay);
-	cfg.sex = 0;
-	cfg.bloodType = 0;
-//	cfg.language = (PersonalData->language == 0) ? 0 : 1;
 
 	int i;
 	for (i = 0; i < 11; i++) {
@@ -44,7 +66,8 @@ int initSettings() {
 		cfg.name[i] = translateDSChar(char16);
 	}
 	cfg.name[i] = 0;
-	return 0;
+
+	applyConfigData();
 }
 
 char translateDSChar(u16 char16) {
@@ -112,65 +135,29 @@ bool updateSettingsFromWS() {
 	}
 	if (memcmp(cfg.name, userData->name, 16) != 0) {
 		memcpy(cfg.name, userData->name, 16);
+		changed = true;
 	}
 	settingsChanged |= changed;
 	return changed;
 }
 
 int loadSettings() {
-//	FILE *file;
-/*
-	if (findFolder(folderName)) {
-		return 1;
-	}
-	if ((file = fopen(settingName, "r"))) {
-		fread(&cfg, 1, sizeof(configdata), file);
-		fclose(file);
-		if (!strstr(cfg.magic,"cfg")) {
-			infoOutput("Error in settings file.");
-			return 1;
-		}
+	bytecopy_((u8 *)&cfg, (u8 *)SRAM+0x10000-sizeof(ConfigData), sizeof(ConfigData));
+	if (strstr(cfg.magic, "cfg")) {
+		applyConfigData();
+		infoOutput("Settings loaded.");
+		return 0;
 	}
 	else {
-		infoOutput("Couldn't open file:");
-		infoOutput(settingName);
-		return 1;
+		updateConfigData();
+		infoOutput("Error in settings file.");
 	}
-*/
-	gBorderEnable = (cfg.config & 1) ^ 1;
-	gPaletteBank  = cfg.palette;
-	gGammaValue   = cfg.gammaValue & 0xF;
-	gContrastValue = (cfg.gammaValue>>4) & 0xF;
-	emuSettings = cfg.emuSettings & ~EMUSPEED_MASK;	// Clear speed setting.
-	sleepTime   = cfg.sleepTime;
-	joyCfg      = (joyCfg&~0x400)|((cfg.controller&1)<<10);
-//	strlcpy(currentDir, cfg.currentPath, sizeof(currentDir));
-
-	infoOutput("Settings loaded.");
-	return 0;
+	return 1;
 }
 void saveSettings() {
-//	FILE *file;
+	updateConfigData();
 
-	strcpy(cfg.magic,"cfg");
-	cfg.gammaValue  = (gGammaValue & 0xF) | (gContrastValue<<4);
-	cfg.emuSettings = emuSettings & ~EMUSPEED_MASK;	// Clear speed setting.
-	cfg.sleepTime   = sleepTime;
-	cfg.controller  = (joyCfg>>10)&1;
-//	strlcpy(cfg.currentPath, currentDir, sizeof(currentDir));
-/*
-	if (findFolder(folderName)) {
-		return;
-	}
-	if ((file = fopen(settingName, "w"))) {
-		fwrite(&cfg, 1, sizeof(configdata), file);
-		fclose(file);
-		infoOutput("Settings saved.");
-	}
-	else {
-		infoOutput("Couldn't open file:");
-		infoOutput(settingName);
-	}*/
+	bytecopy_((u8 *)SRAM+0x10000-sizeof(ConfigData), (u8 *)&cfg, sizeof(ConfigData));
 	infoOutput("Settings saved.");
 }
 
@@ -179,7 +166,7 @@ void loadNVRAM() {
 	void *nvMem = NULL;
 
 	if (sramSize > 0) {
-		saveSize = sizeof(cartSRAM);
+		saveSize = 0x8000;
 		nvMem = cartSRAM;
 	}
 	else if (eepromSize > 0) {
@@ -198,7 +185,7 @@ void saveNVRAM() {
 	void *nvMem = NULL;
 
 	if (sramSize > 0) {
-		saveSize = sizeof(cartSRAM);
+		saveSize = 0x8000;
 		nvMem = cartSRAM;
 	}
 	else if (eepromSize > 0) {
@@ -237,6 +224,18 @@ static void initIntEepromWSC(IntEEPROM *intProm) {
 	intProm->splashData.consoleFlags = 3;
 }
 
+static void initIntEepromSC(IntEEPROM *intProm) {
+	initIntEepromWSC(intProm);
+	WSBootSplash *splashData = &intProm->splashData;
+	splashData->crystalLCD70 = 0xd0;
+	splashData->crystalLCD71 = 0x77;
+	splashData->crystalLCD72 = 0xf7;
+	splashData->crystalLCD73 = 0x06;
+	splashData->crystalLCD74 = 0xe2;
+	splashData->crystalLCD75 = 0x0a;
+	splashData->crystalLCD76 = 0xea;
+	splashData->crystalLCD77 = 0xee;
+}
 
 static void clearIntEepromWS() {
 	memset(wsEepromMem, 0, sizeof(wsEepromMem));
@@ -248,7 +247,7 @@ static void clearIntEepromWSC() {
 }
 static void clearIntEepromSC() {
 	memset(scEepromMem, 0, sizeof(scEepromMem));
-	initIntEepromWSC((IntEEPROM *)scEepromMem);
+	initIntEepromSC((IntEEPROM *)scEepromMem);
 }
 
 int loadIntEeproms() {

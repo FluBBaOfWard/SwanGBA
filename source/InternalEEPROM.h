@@ -9,7 +9,7 @@ extern "C" {
 
 // Font order = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZhn+-?." h=heart, n=note.
 // Values are 0x00-0x2A
-// Starts at 0x60
+// Starts at 0x60, size 0x20.
 typedef struct {
 	u8 name[16];
 	u8 birthYear[2];	// BCD encoded BIG endian
@@ -31,7 +31,7 @@ typedef struct {
 	u8 padding[3];
 	u8 consoleFlags;	// Bit 0 & 1 = Volume, bit 6 = High Contrast (WSC), bit 7 = Custom Boot.
 	u8 consoleNameColor;
-	u8 padding2;
+	u8 padding2;		// Must be 0
 	u8 size;
 	u8 startFrame;
 	u8 endFrame;
@@ -57,6 +57,7 @@ typedef struct {
 	u16 soundChannelDataOffset[5];
 	u8 crystalLCD70;	// 0xD0
 	u8 crystalLCD71;	// 0x77
+	// 0xB0
 	u8 crystalLCD72;	// 0xF7
 	u8 crystalLCD73;	// 0x06
 	u8 crystalLCD74;	// 0xE2
@@ -66,7 +67,7 @@ typedef struct {
 } WSBootSplash;
 
 typedef struct {
-	u8 memBank0[0x60];
+	u8 programData[0x60];
 	WSUserData userData;
 	WSBootSplash splashData;
 	u8 memBank1[];

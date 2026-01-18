@@ -7,6 +7,10 @@ extern "C" {
 
 #define BWSID 0x1A535742		// "BWS",0x1A - Bandai WonderSwan
 
+#define HALF_CPU_SPEED		(1<<16)
+#define ALLOW_SPEED_HACKS	(1<<17)
+#define ENABLE_HEADPHONES	(1<<18)
+
 typedef struct {
 	const u32 identifier;		// BWSID
 	const u32 filesize;
@@ -30,7 +34,7 @@ typedef struct {				//(config struct)
 	u8 birthDay;				// BCD encoded
 	u8 sex;						// 1 = male, 2 = female
 	u8 bloodType;				// 1 = A, 2 = B, 3 = O, 4 = AB
-	u8 language;
+	u8 machine;
 	u8 palette;
 	char currentPath[256];
 	char monoBiosPath[256];

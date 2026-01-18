@@ -2,6 +2,9 @@
 
 #include "ARMV30MZ/ARMV30MZmac.h"
 
+// Also in EmuBase.h
+#define ALLOW_SPEED_HACKS	(1<<17)
+
 	.global hacksInit
 
 ;@----------------------------------------------------------------------------
@@ -29,7 +32,7 @@ origLoop:
 
 	ldr r0,=emuSettings
 	ldr r0,[r0]					;@ Speed hacks enabled?
-	tst r0,#0x20000
+	tst r0,#ALLOW_SPEED_HACKS
 	beq noHacks
 
 	ldr r4,=gGameID

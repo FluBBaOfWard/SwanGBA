@@ -144,21 +144,22 @@ silenceLoop:
 
 	bx lr
 ;@----------------------------------------------------------------------------
-soundCopyBuffInt:			;@ Internal speaker, 8bit mono
+soundCopyBuffInt:			;@ Internal speaker, 8bit mono. r2=source
 ;@----------------------------------------------------------------------------
+	stmfd sp!,{r5,lr}
+	ldr lr,=0x80008000
+	ldr r5,=0xFF00FF00
 sndCpyIntLoop:
 	subs r0,r0,#1
-	ldrpl r2,[r3,r4,lsr#SHIFTVAL-2]
-	add r2,r2,r2,lsr#16
-	and r2,r2,#0xFF00
-mix8Vol:
-	mov r2,r2,lsr#0				;@ Volume button shift
-	eor r2,r2,#0x8000
-	orr r2,r2,r2,lsl#16
-	strpl r2,[r1],#4
+	ldrpl r3,[r2,r4,lsr#SHIFTVAL-2]
 	add r4,r4,#1<<SHIFTVAL
+	add r3,r3,r3,ror#16
+	and r3,r3,r5
+//mix8Vol:
+	eor r3,lr,r3,lsr#0			;@ Volume button shift, updated by wsaSetTotalVolume
+	strpl r3,[r1],#4
 	bhi sndCpyIntLoop
-	bx lr
+	ldmfd sp!,{r5,pc}
 
 ;@----------------------------------------------------------------------------
 pcmPtr0:	.long WAVBUFFER
@@ -172,11 +173,13 @@ muteSoundChip:
 	.space 2
 soundMode:
 	.byte 0
-soundLatch:
-	.byte 0
-	.space 2
+	.space 3
 
+#ifdef GBA
 	.section .sbss				;@ This is EWRAM on GBA with devkitARM
+#else
+	.section .bss
+#endif
 	.align 2
 //FREQTBL:
 //	.space 1024*2

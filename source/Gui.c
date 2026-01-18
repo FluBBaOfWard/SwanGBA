@@ -16,7 +16,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.7.6 2026-01-12"
+#define EMUVERSION "V0.7.6 2026-01-18"
 
 void hacksInit(void);
 
@@ -91,12 +91,12 @@ const MItem displayItems[] = {
 };
 const MItem machineItems[] = {
 	{"Machine: ", machineSet, getMachineText},
-	{"Change Batteries", batteryChange},
-	{"Clear Internal EEPROM", clearIntEeproms},
 	{"Headphones: ", headphonesSet, getHeadphonesText},
 	{"Cpu Speed Hacks: ", speedHackSet, getSpeedHackText},
 	{"Half Cpu Speed: ", cpuHalfSet, getCPUHalfText},
 	{"Sound: ", soundSet, getSoundEnableText},
+	{"Change Batteries", batteryChange},
+	{"Clear Internal EEPROM", clearIntEeproms},
 	//{"Language", languageSet},
 };
 const MItem setItems[] = {
@@ -156,6 +156,10 @@ void setupGUI() {
 
 /// This is called when going from emu to ui.
 void enterGUI() {
+	if ((emuSettings & AUTOSAVE_SETTINGS) && updateSettingsFromWS()) {
+		saveSettings();
+		settingsChanged = false;
+	}
 }
 
 /// This is called going from ui to emu.
