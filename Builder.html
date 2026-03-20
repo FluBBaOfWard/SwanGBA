@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SwanGBA Builder</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 20px;
+			background-color: #f5f5f5;
+		}
+		.container {
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+		}
+		h1 {
+			color: #333;
+			text-align: center;
+		}
+		.upload-section {
+			margin-bottom: 20px;
+			padding: 5px;
+			border: 2px dashed #ccc;
+			border-radius: 5px;
+			text-align: center;
+		}
+		input[type=file]::file-selector-button {
+			border: 2px solid #b1bcc6;
+			padding: 5px;
+			border-radius: 3px;
+			background-color: #e7f3ff;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		input[type=file]::file-selector-button:hover {
+			background-color: #ced8e4;
+			border: 2px solid #51555a;
+		}
+		.file-input {
+			margin: 10px 0;
+		}
+		.file-list {
+			margin: 20px 0;
+			max-height: 300px;
+			overflow-y: auto;
+		}
+		.file-item {
+			padding: 10px;
+			margin: 5px 0;
+			background-color: #f9f9f9;
+			border-radius: 3px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.file-name {
+			flex-grow: 1;
+			word-break: break-all;
+		}
+		.remove-btn {
+			background-color: #ff4444;
+			color: white;
+			border: none;
+			padding: 5px 10px;
+			border-radius: 3px;
+			cursor: pointer;
+		}
+		.remove-btn:hover {
+			background-color: #cc0000;
+		}
+		.action-buttons {
+			display: flex;
+			gap: 10px;
+			justify-content: center;
+			margin-top: 20px;
+		}
+		button {
+			padding: 10px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: bold;
+		}
+		#concatBtn {
+			background-color: #4CAF50;
+			color: white;
+		}
+		#concatBtn:hover {
+			background-color: #45a049;
+		}
+		#concatBtn:disabled {
+			background-color: #878f84;
+			color: #E2E2E2;
+			cursor: not-allowed;
+		}
+		#clearBtn {
+			background-color: #f44336;
+			color: white;
+		}
+		#clearBtn:hover {
+			background-color: #da190b;
+		}
+		.status {
+			margin-top: 20px;
+			padding: 10px;
+			border-radius: 4px;
+			text-align: center;
+		}
+		.success {
+			background-color: #d4edda;
+			color: #155724;
+			border: 1px solid #c3e6cb;
+		}
+		.error {
+			background-color: #f8d7da;
+			color: #721c24;
+			border: 1px solid #f5c6cb;
+		}
+		.instructions {
+			background-color: #e7f3ff;
+			padding: 15px;
+			border-radius: 5px;
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>SwanGBA Builder</h1>
+
+		<div class="instructions">
+			<p><strong>How to use:</strong></p>
+			<ol>
+				<li>Select the GBA emulator file</li>
+				<li>Optionally add a splash screen (240x160 pixels or 3:2 ratio).</li>
+				<li>Add WonderSwan ROM files</li>
+				<li>Click "Build ROM" to create the output</li>
+			</ol>
+		</div>
+
+		<div class="upload-section">
+			<h3>Select GBA emulator File</h3>
+			<input type="file" id="mainFile" class="file-input" accept=".gba">
+		</div>
+
+		<div class="upload-section">
+			<h3>Select Splash Screen</h3>
+			<input type="file" id="splashFile" class="file-input" accept=".png,.jpg,.gif,.bmp,.raw,.bin">
+		</div>
+
+		<div class="upload-section">
+			<h3>Select WonderSwan Files</h3>
+			<input type="file" id="additionalFiles" class="file-input" multiple accept=".ws,.wsc,.pc2">
+		</div>
+
+		<div class="file-list" id="fileList">
+			<p>No files selected yet</p>
+		</div>
+
+		<div class="action-buttons">
+			<button id="concatBtn">Build ROM</button>
+			<button id="clearBtn">Clear All Files</button>
+		</div>
+
+		<div id="status" class="status" style="display: none;"></div>
+	</div>
+
+	<script>
+		// DOM elements
+		const mainFileInput = document.getElementById('mainFile');
+		const splashFileInput = document.getElementById('splashFile');
+		const additionalFilesInput = document.getElementById('additionalFiles');
+		const fileListContainer = document.getElementById('fileList');
+		const concatBtn = document.getElementById('concatBtn');
+		const clearBtn = document.getElementById('clearBtn');
+		const statusDiv = document.getElementById('status');
+
+		// Store selected files
+		let selectedFiles = [];
+
+		// Format bytes to readable string
+		function formatBytes(bytes) {
+			if (bytes === 0) return '0 Bytes';
+			const k = 1024;
+			const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+			const i = Math.floor(Math.log(bytes) / Math.log(k));
+			return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+		}
+
+		// Display selected files
+		function displayFileList() {
+			fileListContainer.innerHTML = '';
+			concatBtn.disabled = true;
+
+			if (mainFileInput.files.length === 0) {
+				fileListContainer.innerHTML = '<p>No emulator file selected yet</p>';
+				return;
+			}
+
+			if (selectedFiles.length === 0) {
+				fileListContainer.innerHTML = '<p>No ROM files selected yet</p>';
+				return;
+			}
+			concatBtn.disabled = false;
+
+			selectedFiles.forEach((file, index) => {
+				const fileItem = document.createElement('div');
+				fileItem.className = 'file-item';
+
+				const fileNameSpan = document.createElement('span');
+				fileNameSpan.className = 'file-name';
+				fileNameSpan.textContent = `${'File: '}${file.name}`;
+
+				const fileSizeSpan = document.createElement('span');
+				fileSizeSpan.textContent = formatBytes(file.size);
+
+				const removeBtn = document.createElement('button');
+				removeBtn.className = 'remove-btn';
+				removeBtn.textContent = 'Remove';
+				removeBtn.onclick = () => {
+					selectedFiles.splice(index, 1);
+					displayFileList();
+				};
+
+				fileItem.appendChild(fileNameSpan);
+				fileItem.appendChild(fileSizeSpan);
+				fileItem.appendChild(removeBtn);
+
+				fileListContainer.appendChild(fileItem);
+			});
+		}
+
+		// Handle ROM file selection
+		function handleFileSelection(event) {
+			const files = event.target.files;
+
+			for (const file of files) {
+				if (file.name.toUpperCase().includes( "BIOS")
+						&& (file.size === 0x1000 || file.size === 0x2000)) {
+					file.bios = true;
+				}
+				selectedFiles.push(file);
+			}
+
+			displayFileList();
+		}
+
+		// Update file list when files are selected
+		mainFileInput.addEventListener('change', displayFileList);
+		additionalFilesInput.addEventListener('change', handleFileSelection);
+
+		// Clear all files
+		clearBtn.addEventListener('click', () => {
+			selectedFiles = [];
+			additionalFilesInput.value = '';
+			displayFileList();
+			statusDiv.style.display = 'none';
+		});
+
+		// Create ROM header structure
+		function createRomHeader(identifier, fileSize, flags, spritefollow, bios, name) {
+			// Create a buffer for the header (64 bytes total)
+			const headerBuffer = new ArrayBuffer(64);
+			const headerView = new DataView(headerBuffer);
+
+			// Set fields according to the structure
+			let offset = 0;
+
+			// identifier (u32)
+			headerView.setUint32(offset, identifier, true);
+			offset += 4;
+
+			// filesize (u32)
+			headerView.setUint32(offset, fileSize, true);
+			offset += 4;
+
+			// flags (u32)
+			headerView.setUint32(offset, flags, true);
+			offset += 4;
+
+			// spritefollow (u32)
+			headerView.setUint32(offset, spritefollow, true);
+			offset += 4;
+
+			// bios (u8)
+			headerView.setUint8(offset, bios);
+			offset += 1;
+
+			// reserved[15] - set to zero
+			for (let i = 0; i < 15; i++) {
+				headerView.setUint8(offset, 0);
+				offset += 1;
+			}
+
+			// name[32] - string with null padding
+			const nameBuffer = new TextEncoder().encode(name);
+			for (let i = 0; i < 32; i++) {
+				if (i < nameBuffer.length) {
+					headerView.setUint8(offset + i, nameBuffer[i]);
+				}
+				else {
+					headerView.setUint8(offset + i, 0); // null terminate
+				}
+			}
+
+			return headerBuffer;
+		}
+
+		// Get pixels from image file
+		function processImage(imageFile, destArray) {
+			return new Promise(function (resolve) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+
+					const img = new Image();
+					img.onload = function() {
+						// Create a canvas to decode the image
+						const canvas = new OffscreenCanvas(240, 160);
+						const ctx = canvas.getContext('2d');
+
+						// Draw the image to the canvas
+						ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+
+						// Get image data (RGB format)
+						const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+						const totalPixels = canvas.width * canvas.height;
+
+						const rgbBytes = new Uint8Array(totalPixels*2);
+						for (let i = 0; i < totalPixels; i++) {
+							const pixelIndex = i * 4; // RGBA has 4 components per pixel
+
+							// Extract RGB values
+							let r = imageData.data[pixelIndex];
+							let g = imageData.data[pixelIndex + 1];
+							let b = imageData.data[pixelIndex + 2];
+							const a = imageData.data[pixelIndex + 3];
+							r = ((r * a) / 255) + 255 - a;
+							g = ((g * a) / 255) + 255 - a;
+							b = ((b * a) / 255) + 255 - a;
+
+							// Convert to 15-bits BGR for the GBA
+							let bgrWord = ((b & 0xF8) << 7) | ((g & 0xF8)<<2) | (r>>3);
+							rgbBytes[i*2] = bgrWord ;
+							rgbBytes[i*2 + 1] = bgrWord >> 8;
+						}
+						destArray.push(rgbBytes);
+						resolve();
+					};
+					img.src = reader.result;
+				}
+				reader.readAsDataURL(imageFile);
+			})
+		}
+
+		// Concatenate files with headers
+		async function concatenateFiles() {
+			if (mainFileInput.files.length === 0) {
+				showStatus('Please select the emulator file', 'error');
+				return;
+			}
+			if (selectedFiles.length === 0) {
+				showStatus('Please select at least one file', 'error');
+				return;
+			}
+
+			try {
+				showStatus('Processing files...', 'success');
+
+				// Create a new array to hold the final data
+				const finalArray = [];
+				const fileBuf = await mainFileInput.files[0].arrayBuffer();
+				finalArray.push(new Uint8Array(fileBuf));
+
+				// Handle splash screen
+				if (splashFileInput.files.length != 0) {
+					const imgFile = splashFileInput.files[0];
+					if (imgFile.type.startsWith("image/")) {
+						await processImage(imgFile, finalArray);
+					}
+					else {
+						const imageBuf = await imgFile.arrayBuffer();
+						finalArray.push(new Uint8Array(imageBuf));
+					}
+				}
+
+				// Process each file with appropriate header
+				for (const file of selectedFiles) {
+
+					// Read file as array buffer
+					const fileBuffer = await file.arrayBuffer();
+					const fileView = new DataView(fileBuffer);
+
+					// Create header for all ROM files
+					const header = createRomHeader(
+						0x1A535742, // "BWS",0x1A
+						fileBuffer.byteLength, // File size in bytes
+						fileView.getUint8(0x23) === 0x10 ? 0x04 : 0x00, // Flags - set bit 2 for color
+						0x00, // spritefollow
+						file.bios ? 0x01 : 0x00, // bios - set bit 0 for bios files
+						file.name.substring(0, 32) // Name truncated to 32 chars
+					);
+
+					// Add header to the array
+					finalArray.push(new Uint8Array(header));
+
+					// Add file content to the array
+					finalArray.push(new Uint8Array(fileBuffer));
+				}
+
+				// Create final concatenated array
+				const totalSize = finalArray.reduce((sum, arr) => sum + arr.length, 0);
+				const finalBuffer = new Uint8Array(totalSize);
+				let offset = 0;
+
+				for (const arr of finalArray) {
+					finalBuffer.set(arr, offset);
+					offset += arr.length;
+				}
+
+				// Create blob and download
+				const blob = new Blob([finalBuffer], { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(blob);
+
+				// Create download link
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = 'SwanGBA_output.gba';
+				document.body.appendChild(a);
+				a.click();
+
+				// Clean up
+				setTimeout(() => {
+					document.body.removeChild(a);
+					URL.revokeObjectURL(url);
+				}, 100);
+
+				showStatus('Files concatenated successfully!', 'success');
+			}
+			catch (error) {
+				console.error('Error concatenating files:', error);
+				showStatus('Error concatenating files: ' + error.message, 'error');
+			}
+		}
+
+		// Show status message
+		function showStatus(message, type) {
+			statusDiv.textContent = message;
+			statusDiv.className = 'status ' + type;
+			statusDiv.style.display = 'block';
+		}
+
+		// Add event listener to concatenate button
+		concatBtn.addEventListener('click', concatenateFiles);
+		concatBtn.disabled = true;
+
+		// Initialize file list display
+		displayFileList();
+	</script>
+</body>
+</html>
