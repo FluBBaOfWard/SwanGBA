@@ -1,3 +1,10 @@
+//
+//  cpu.s
+//  SwanGBA
+//
+//  Created by Fredrik Ahlström on 2006-07-23.
+//  Copyright © 2006-2026 Fredrik Ahlström. All rights reserved.
+//
 #ifdef __arm__
 
 #include "ARMV30MZ/ARMV30MZ.i"
@@ -18,6 +25,33 @@
 	.syntax unified
 	.arm
 
+#ifdef NDS
+	.section .itcm, "ax", %progbits		;@ For the NDS ARM9
+#elif GBA
+	.section .iwram, "ax", %progbits	;@ For the GBA
+#else
+	.section .text						;@ For everything else
+#endif
+	.align 2
+;@----------------------------------------------------------------------------
+wsFrameRun:
+;@----------------------------------------------------------------------------
+	stmfd sp!,{lr}
+wsFrameLoop:
+	mov r0,#CYCLE_PSL
+	bl V30RunXCycles
+	ldr spxptr,=sphinx0
+	bl wsvDoScanline
+	ldr r1,scanLineCountGBA
+	cmp r0,#0
+	cmpeq r1,#2
+	subnes r1,r1,#1
+	moveq r1,#200				;@ (159 * 75.47) / 60 = 199.9955
+	str r1,scanLineCountGBA
+	bne wsFrameLoop
+	ldmfd sp!,{pc}
+scanLineCountGBA:	.long 200
+;@----------------------------------------------------------------------------
 #ifdef GBA
 	.section .ewram, "ax", %progbits	;@ For the GBA
 #else
@@ -44,20 +78,7 @@ runStart:
 
 	add r1,v30ptr,#v30Flags
 	ldmia r1,{v30f-v30cyc}		;@ Restore V30MZ state
-;@----------------------------------------------------------------------------
-wsFrameLoop:
-;@----------------------------------------------------------------------------
-	mov r0,#CYCLE_PSL
-	bl V30RunXCycles
-	ldr spxptr,=sphinx0
-	bl wsvDoScanline
-	ldr r1,scanLineCountGBA
-	cmp r0,#0
-	cmpeq r1,#2
-	subnes r1,r1,#1
-	moveq r1,#200				;@ (159 * 75.47) / 60 = 199.9955
-	str r1,scanLineCountGBA
-	bne wsFrameLoop
+	bl wsFrameRun
 ;@----------------------------------------------------------------------------
 wsFrameLoopEnd:
 	add r0,v30ptr,#v30Flags
@@ -73,7 +94,6 @@ wsFrameLoopEnd:
 
 ;@----------------------------------------------------------------------------
 v30MZCyclesPerScanline:	.long 0
-scanLineCountGBA:	.long 200
 joyClick:			.long 0
 waitCountIn:		.byte 0
 waitMaskIn:			.byte 0
@@ -148,4 +168,4 @@ cpuReset:					;@ Called by loadCart/resetGame, r0 = type
 	bx lr
 ;@----------------------------------------------------------------------------
 	.end
-#endif // #ifdef __arm__
+#endif // __arm__

@@ -6,15 +6,15 @@
 //#define EMBEDDED_ROM
 
 	.global biosBase
-	.global biosSpace
-	.global biosSpaceColor
-	.global biosSpaceCrystal
+	.global wsRAM
+	.global wscRAM
+	.global SCRATCH_BUFF
 	.global g_BIOSBASE_BNW
 	.global g_BIOSBASE_COLOR
 	.global g_BIOSBASE_CRYSTAL
-	.global wsRAM
 	.global DIRTYTILES
 	.global maxRomSize
+	.global emuFlags
 	.global gMachineSet
 	.global gMachine
 	.global gSOC
@@ -101,12 +101,23 @@ machineInit: 				;@ Called from C
 
 #ifdef EMBEDDED_ROM
 	ldr r0,=romSize
-	mov r1,#ROM_SpaceEnd-ROM_Space
-	str r1,[r0]
+	mov r2,#ROM_SpaceEnd-ROM_Space
+	str r2,[r0]
 	ldr r0,=romSpacePtr
 	ldr r1,=ROM_Space
 	str r1,[r0]
-#endif
+
+	sub r2,r2,#9
+	ldrb r2,[r1,r2]			;@ Color
+	ldrb r5,gMachineSet
+	cmp r5,#HW_AUTO
+	bne noHWCheck
+	tst r2,#1					;@ Color from header
+	moveq r5,#HW_WONDERSWAN
+	movne r5,#HW_WONDERSWANCOLOR
+noHWCheck:
+	strb r5,gMachine
+#endif // EMBEDDED_ROM
 
 	bl gfxInit
 //	bl ioInit
@@ -123,24 +134,13 @@ loadCart: 					;@ Called from C:
 	.type   loadCart STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r11,lr}
+	str r0,emuFlags
 
 	bl wsCartReset
 
 	ldr v30ptr,=V30OpTable
-	ldr r2,[v30ptr,#v30MemTblInv-0x10*4]	;@ MemMap
 
-	ldr r4,=0xFFFF0				;@ Header offset
-	add r4,r2,r4
-	ldrb r2,[r4,#0x7]			;@ Color
-
-	ldrb r5,gMachineSet
-	cmp r5,#HW_AUTO
-	bne noHWCheck
-	tst r2,#1					;@ Color from header
-	moveq r5,#HW_WONDERSWAN
-	movne r5,#HW_WONDERSWANCOLOR
-noHWCheck:
-	strb r5,gMachine
+	ldrb r5,gMachine
 	cmp r5,#HW_WONDERSWAN
 	cmpne r5,#HW_POCKETCHALLENGEV2
 	moveq r0,#1					;@ Set boot rom overlay (size small)
@@ -161,10 +161,10 @@ noHWCheck:
 	str r1,biosBase
 	bl setBootRomOverlay
 
-	ldr r0,=wsRAM				;@ Clear RAM
+	ldr r0,=wsRAM
 	str r0,[v30ptr,#v30MemTblInv-0x1*4]		;@ 0 RAM
 	mov r1,#0x10000/4
-	bl memclr_
+	bl memclr_					;@ Clear RAM
 	bl clearDirtyTiles
 	cmp r4,#SOC_ASWAN
 	ldreq r0,=wsRAM+0x4000		;@ Clear mem outside of RAM
@@ -229,15 +229,12 @@ biosBase:
 #endif
 	.align 4					;@ Align to 16 bytes, required for sound mixer.
 wsRAM:
+wscRAM:
 	.space 0x10000
 DIRTYTILES:
 	.space 0x800
-biosSpace:
-	.space 0x1000
-biosSpaceColor:
-	.space 0x2000
-biosSpaceCrystal:
-	.space 0x2000
+SCRATCH_BUFF:
+	.space 0x18000
 ;@----------------------------------------------------------------------------
 	.end
-#endif // #ifdef __arm__
+#endif // __arm__

@@ -19,12 +19,12 @@ typedef struct {
 	const u8 bios;				// Bit 0 = Bios,
 	const u8 reserved[15];
 	const char name[32];
+	const u8 romData[];
 } RomHeader;
 
-typedef struct {				//(config struct)
-	char magic[4];				//="CFG",0
-	int emuSettings;
-	int sleepTime;				// autoSleepTime in frames
+typedef struct {				// (config struct)
+	int emuSettings;			// Misc standard settings
+	int unused;					// unused
 	u8 gammaValue;				// from gfx.s
 	u8 config;					// from cart.s
 	u8 controller;				// from io.s
@@ -36,14 +36,10 @@ typedef struct {				//(config struct)
 	u8 bloodType;				// 1 = A, 2 = B, 3 = O, 4 = AB
 	u8 machine;
 	u8 palette;
-	char currentPath[256];
-	char monoBiosPath[256];
-	char colorBiosPath[256];
-	char crystalBiosPath[256];
 } ConfigData;
 
 #ifdef __cplusplus
 } // extern "C"
 #endif
 
-#endif // EMUBASE
+#endif // !EMUBASE

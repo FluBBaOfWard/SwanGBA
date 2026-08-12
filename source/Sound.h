@@ -8,12 +8,12 @@ extern "C" {
 extern u8 soundMode;
 
 void soundInit(void);
-void setMuteSoundGUI(void);
-void vblSound1(void);
-void vblSound2(void);
+void soundSetMuteGUI(void);
+void soundSwapBuffers(void);
+void soundRender(void);
 
 #ifdef __cplusplus
 } // extern "C"
 #endif
 
-#endif // SOUND_HEADER
+#endif // !SOUND_HEADER

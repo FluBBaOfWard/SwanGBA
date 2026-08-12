@@ -3,6 +3,7 @@
 #include "ARMV30MZ/ARMV30MZ.i"
 #include "Sphinx/Sphinx.i"
 #include "WSEEPROM/WSEEPROM.i"
+#include "Shared/EmuMenu.i"
 
 	.global joyCfg
 	.global EMUinput
@@ -14,6 +15,7 @@
 
 	.global ioReset
 	.global refreshEMUjoypads
+	.global convertInput
 	.global ioSaveState
 	.global ioLoadState
 	.global ioGetStateSize
@@ -75,6 +77,14 @@ ioGetStateSize:				;@ Out r0=state size.
 	.type   ioGetStateSize STT_FUNC
 ;@----------------------------------------------------------------------------
 	mov r0,#0x100
+	bx lr
+;@----------------------------------------------------------------------------
+convertInput:			;@ Convert from device keys to target r0=input/output
+	.type convertInput STT_FUNC
+;@----------------------------------------------------------------------------
+	mvn r1,r0
+	tst r1,#KEY_L|KEY_R				;@ Keys to open menu
+	orreq r0,r0,#ACT_OPEN_MENU
 	bx lr
 ;@----------------------------------------------------------------------------
 refreshEMUjoypads:			;@ Call every frame
@@ -304,4 +314,4 @@ scEepromMem:
 ;@----------------------------------------------------------------------------
 
 	.end
-#endif // #ifdef __arm__
+#endif // __arm__

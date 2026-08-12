@@ -1,3 +1,10 @@
+//
+//  cpu.h
+//  SwanGBA
+//
+//  Created by Fredrik Ahlström on 2006-07-23.
+//  Copyright © 2006-2026 Fredrik Ahlström. All rights reserved.
+//
 #ifndef CPU_HEADER
 #define CPU_HEADER
 
@@ -17,4 +24,4 @@ void cpuReset(int type);
 } // extern "C"
 #endif
 
-#endif // CPU_HEADER
+#endif // !CPU_HEADER

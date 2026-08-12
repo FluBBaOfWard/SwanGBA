@@ -59,19 +59,26 @@ int main(int argc, char **argv) {
 	setupGUI();
 	getInput();
 	initSettings();
-	bool fsOk = initFileHelper(BWSID);
 	loadSettings();
+	if (initFileHelper(BWSID)) {
+		loadBioses();
+	}
 	machineInit();
-	loadCart();
 	setupEmuBackground();
 	loadIntEeproms();
-	if (fsOk) {
-		loadBioses();
+	if (romsAvailable > 0) {
 		const RomHeader *rh = findRom(0);
 		loadGame(rh);
 	}
 	else {
-		infoOutput("No roms found.");
+		const PogoFile *pogoFile = getPogoFile();
+		if (pogoFile != NULL) {
+			loadROM(pogoFile->romPtr, pogoFile->size, 0);
+		}
+		else {
+			infoOutput("No roms found.");
+			loadCart(0);
+		}
 	}
 
 	while (1) {

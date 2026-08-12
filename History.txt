@@ -1,6 +1,11 @@
 SwanGBA revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
+V0.7.7 - 2026-08-12 (FluBBa)
+	Added a HTML builder.
+	Added saving/loading of config/NVRAM/States.
+	Fixed exit from emulator.
+
 V0.7.6 - 2026-01-18 (FluBBa)
 	Fixed register 0x14 initialization in built-in BIOS.
 	Fixed sound pitch.

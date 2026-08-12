@@ -9,39 +9,58 @@
 #include "Cart.h"
 #include "Gfx.h"
 #include "ARMV30MZ/ARMV30MZ.h"
+#include "Sphinx/Sphinx.h"
 #include "WSCart/WSCart.h"
 
 
 int packState(void *statePtr) {
 	int size = 0;
-	memcpy(statePtr+size, wsRAM, sizeof(wsRAM));
-	size += sizeof(wsRAM);
+	if (gMachine == HW_WONDERSWAN || gMachine == HW_POCKETCHALLENGEV2) {
+		memcpy(statePtr+size, wsRAM, sizeof(wsRAM));
+		size += sizeof(wsRAM);
+	}
+	else {
+		memcpy(statePtr+size, wscRAM, sizeof(wscRAM));
+		size += sizeof(wscRAM);
+	}
 	size += sphinxSaveState(statePtr+size, &sphinx0);
 	size += V30SaveState(statePtr+size, &V30OpTable);
-	memcpy(statePtr+size, cartSRAM, sizeof(cartSRAM));
-	size += sizeof(cartSRAM);
-	size += wsEepromSaveState(statePtr+size, &cartEeprom);
+	if (eepromSize > 0) {
+		size += wsEepromSaveState(statePtr+size, &cartEeprom);
+	}
 	return size;
 }
 
 void unpackState(const void *statePtr) {
 	int size = 0;
-	memcpy(wsRAM, statePtr+size, sizeof(wsRAM));
-	size += sizeof(wsRAM);
+	if (gMachine == HW_WONDERSWAN || gMachine == HW_POCKETCHALLENGEV2) {
+		memcpy(wsRAM, statePtr+size, sizeof(wsRAM));
+		size += sizeof(wsRAM);
+	}
+	else {
+		memcpy(wscRAM, statePtr+size, sizeof(wscRAM));
+		size += sizeof(wscRAM);
+	}
 	size += sphinxLoadState(&sphinx0, statePtr+size);
 	size += V30LoadState(&V30OpTable, statePtr+size);
-	memcpy(cartSRAM, statePtr+size, sizeof(cartSRAM));
-	size += sizeof(cartSRAM);
-	size += wsEepromLoadState(&cartEeprom, statePtr+size);
+	if (eepromSize > 0) {
+		size += wsEepromLoadState(&cartEeprom, statePtr+size);
+	}
 }
 
 int getStateSize() {
 	int size = 0;
-	size += sizeof(wsRAM);
+	if (gMachine == HW_WONDERSWAN || gMachine == HW_POCKETCHALLENGEV2) {
+		size += sizeof(wsRAM);
+	}
+	else {
+		size += sizeof(wscRAM);
+	}
 	size += sphinxGetStateSize();
 	size += V30GetStateSize();
-	size += sizeof(cartSRAM);
-	size += wsEepromGetStateSize();
+	if (eepromSize > 0) {
+		size += wsEepromGetStateSize();
+	}
 	return size;
 }
 

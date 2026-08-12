@@ -534,7 +534,7 @@ vblIrqHandler:
 	.type vblIrqHandler STT_FUNC
 ;@----------------------------------------------------------------------------
 	stmfd sp!,{r4-r6,lr}
-	bl vblSound1
+	bl soundSwapBuffers
 	bl calculateFPS
 
 	mov r6,#REG_BASE
@@ -587,7 +587,7 @@ vblIrqHandler:
 nothingNew:
 
 	bl scanKeys
-	bl vblSound2
+	bl soundRender
 	ldmfd sp!,{r4-r6,lr}
 	bx lr
 
@@ -825,4 +825,4 @@ EMUPALBUFF:
 
 ;@----------------------------------------------------------------------------
 	.end
-#endif // #ifdef __arm__
+#endif // __arm__

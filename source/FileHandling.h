@@ -18,21 +18,25 @@ bool updateSettingsFromWS(void);
 int loadSettings(void);
 /// Save user settings and internal eeprom.
 void saveSettings(void);
+bool loadROM(const u8 *rom, int size, int emuflags);
 bool loadGame(const RomHeader *rh);
-void checkMachine(const RomHeader *rh);
+void checkMachine(int emuflags);
 /// Load SRAM, EEPROM and/or Flash if they exist.
-void loadNVRAM(void);
+int loadNVRAM(void);
 /// Save SRAM, EEPROM and/or Flash if they exist.
-void saveNVRAM(void);
+int saveNVRAM(void);
 void loadState(void);
 void saveState(void);
 void selectGame(void);
 void loadBioses(void);
+void viewNVRAM(void);
+void viewSStates(void);
 int loadIntEeproms(void);
+int saveIntEeproms(void);
 void clearIntEeproms(void);
 
 #ifdef __cplusplus
 } // extern "C"
 #endif
 
-#endif // FILEHANDLING_HEADER
+#endif // !FILEHANDLING_HEADER

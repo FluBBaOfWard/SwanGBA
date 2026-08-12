@@ -16,6 +16,13 @@ extern u8 scEepromMem[0x800];
 extern WSEEPROM intEeprom;
 
 /**
+ * Convert device input keys to target keys.
+ * @param input NDS/GBA keys
+ * @return The converted input.
+ */
+int convertInput(int input);
+
+/**
  * Saves the state of io to the destination.
  * @param  *destination: Where to save the state.
  * @return The size of the state.
@@ -39,4 +46,4 @@ int ioGetStateSize(void);
 } // extern "C"
 #endif
 
-#endif	// IO_HEADER
+#endif // !IO_HEADER

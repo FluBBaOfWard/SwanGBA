@@ -17,10 +17,8 @@ void nullUIDebug(int key);
 void resetGame(void);
 
 void uiNullNormal(void);
-void uiMainMenu(void);
-void uiFile(void);
-void uiAbout(void);
-void uiLoadGame(void);
+void ui12(void);
+void ui13(void);
 
 void debugIOUnmappedR(u16 port);
 void debugIOUnmappedW(u8 val, u16 port);
@@ -35,4 +33,4 @@ void debugCrashInstruction(void);
 } // extern "C"
 #endif
 
-#endif // GUI_HEADER
+#endif // !GUI_HEADER

@@ -23,4 +23,4 @@ void setupEmuBorderPalette(void);
 } // extern "C"
 #endif
 
-#endif // WONDERSWAN_HEADER
+#endif // !WONDERSWAN_HEADER

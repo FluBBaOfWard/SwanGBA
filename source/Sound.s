@@ -3,23 +3,23 @@
 #include "Shared/gba_asm.h"
 #include "Sphinx/Sphinx.i"
 
-	.global soundInit
-	.global soundReset
-	.global vblSound1
-	.global vblSound2
-	.global setMuteSoundGUI
-	.global setMuteSoundChip
-	.global mix8Vol
-
-	.global soundMode
-
-	.extern pauseEmulation
-
 /// Low res
 #define MIX_LEN (304)
 /// High res
 //#define MIX_LEN (528)
 #define SHIFTVAL (21)
+
+	.global soundMode
+
+	.global soundInit
+	.global soundReset
+	.global soundSwapBuffers
+	.global soundRender
+	.global soundSetMuteGUI
+	.global soundSetMuteChip
+	.global mix8Vol
+
+	.extern pauseEmulation
 
 	.syntax unified
 	.arm
@@ -84,21 +84,21 @@ soundReset:
 	bx lr
 
 ;@----------------------------------------------------------------------------
-setMuteSoundGUI:
-	.type   setMuteSoundGUI STT_FUNC
+soundSetMuteGUI:
+	.type   soundSetMuteGUI STT_FUNC
 ;@----------------------------------------------------------------------------
 	ldr r1,=pauseEmulation		;@ Output silence when emulation paused.
 	ldrb r0,[r1]
 	strb r0,muteSoundGUI
 	bx lr
 ;@----------------------------------------------------------------------------
-setMuteSoundChip:
+soundSetMuteChip:
 ;@----------------------------------------------------------------------------
 	strb r0,muteSoundChip
 	bx lr
 ;@----------------------------------------------------------------------------
-vblSound1:
-	.type   vblSound1 STT_FUNC
+soundSwapBuffers:
+	.type   soundSwapBuffers STT_FUNC
 ;@----------------------------------------------------------------------------
 	ldrb r0,soundMode			;@ if r0=0, no sound.
 	cmp r0,#0
@@ -117,8 +117,8 @@ vblSound1:
 
 	bx lr
 ;@----------------------------------------------------------------------------
-vblSound2:
-	.type   vblSound2 STT_FUNC
+soundRender:
+	.type   soundRender STT_FUNC
 ;@----------------------------------------------------------------------------
 	;@ update DMA buffer for PCM
 	ldrb r0,soundMode			;@ if r0=0, no sound.
@@ -187,4 +187,4 @@ WAVBUFFER:
 	.space MIX_LEN*2
 ;@----------------------------------------------------------------------------
 	.end
-#endif // #ifdef __arm__
+#endif // __arm__

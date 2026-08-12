@@ -7,6 +7,7 @@
 #include "Shared/EmuMenu.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/FileHelper.h"
+#include "Shared/SRAMHandler.h"
 #include "Shared/AsmExtra.h"
 #include "Gui.h"
 #include "Cart.h"
@@ -16,9 +17,12 @@
 #include "InternalEEPROM.h"
 #include "WSCart/WSCart.h"
 
-/// Used for emulators or flashcarts to choose save type.
-const char *const sramTag = "SRAM_Vnnn";
+/// Used for GBA emulators or flash-carts to choose save type.
+const char *const SRAM_TAG = "SRAM_Vnnn";
 
+static const char *const wsEepromName = "wsinternal.eeprom";
+static const char *const wscEepromName = "wscinternal.eeprom";
+static const char *const scEepromName = "scinternal.eeprom";
 static const char *const swanGBAName = "@ SwanGBA @";
 
 char translateDSChar(u16 char16);
@@ -34,35 +38,33 @@ void applyConfigData(void) {
 	gGammaValue   = cfg.gammaValue & 0xF;
 	gContrastValue = (cfg.gammaValue >> 4) & 0xF;
 	soundMode     = (emuSettings & SOUND_ENABLE) >> 10;
-	sleepTime     = cfg.sleepTime;
 	joyCfg        = (joyCfg & ~0x400) | ((cfg.controller & 1) << 10);
 	gMachineSet   = (cfg.machine >> 1) & 0x7;
+	setSleepValue(emuSettings & AUTOSLEEP_MASK);
 }
 
 void updateConfigData(void) {
-	strcpy(cfg.magic, "cfg");
 	cfg.emuSettings = emuSettings & ~EMUSPEED_MASK; // Clear speed setting.
 	cfg.config      = (gBorderEnable & 1) ^ 1;
 	cfg.palette     = gPaletteBank;
 	cfg.gammaValue  = (gGammaValue & 0xF) | (gContrastValue<<4);
-	cfg.sleepTime   = sleepTime;
 	cfg.controller  = (joyCfg >> 10) & 1;
 	cfg.machine     = (gMachineSet & 7) << 1;
 }
 
 void initSettings() {
-	memset(&cfg, 0, sizeof(ConfigData));
-	cfg.emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM | ALLOW_SPEED_HACKS;
+	memset(&cfg, 0, sizeof(cfg));
+	cfg.emuSettings = AUTOPAUSE_EMULATION | AUTOLOAD_NVRAM | AUTOSLEEP_OFF | ALLOW_SPEED_HACKS;
 	cfg.gammaValue  = 0x20;
-	cfg.sleepTime   = 60*60*5;
 	cfg.birthYear[0] = 0x19;
 	cfg.birthYear[1] = 0x99;
 //	cfg.birthMonth = bin2BCD(PersonalData->birthMonth);
 //	cfg.birthDay = bin2BCD(PersonalData->birthDay);
+	settingsChanged = true;
 
 	int i;
 	for (i = 0; i < 11; i++) {
-		s16 char16 = swanGBAName[i];
+		u16 char16 = swanGBAName[i];
 		cfg.name[i] = translateDSChar(char16);
 	}
 	cfg.name[i] = 0;
@@ -142,26 +144,32 @@ bool updateSettingsFromWS() {
 }
 
 int loadSettings() {
-	bytecopy_((u8 *)&cfg, (u8 *)SRAM+0x10000-sizeof(ConfigData), sizeof(ConfigData));
-	if (strstr(cfg.magic, "cfg")) {
+	if (readFile((u8 *)&cfg, sizeof(cfg), BWSID)) {
 		applyConfigData();
+		settingsChanged = false;
 		infoOutput("Settings loaded.");
 		return 0;
 	}
 	else {
 		updateConfigData();
-		infoOutput("Error in settings file.");
+		infoOutput("No settings file found.");
 	}
 	return 1;
 }
 void saveSettings() {
 	updateConfigData();
 
-	bytecopy_((u8 *)SRAM+0x10000-sizeof(ConfigData), (u8 *)&cfg, sizeof(ConfigData));
-	infoOutput("Settings saved.");
+	if (writeFile((u8 *)&cfg, sizeof(cfg), BWSID, "Config")) {
+		settingsChanged = false;
+		infoOutput("Settings saved.");
+	}
+	else {
+		infoOutput("Could not save settings file.");
+	}
+	saveIntEeproms();
 }
 
-void loadNVRAM() {
+int loadNVRAM() {
 	int saveSize = 0;
 	void *nvMem = NULL;
 
@@ -174,13 +182,16 @@ void loadNVRAM() {
 		nvMem = cartEepromMem;
 	}
 	else {
-		return;
+		return 0;
 	}
-	bytecopy_(nvMem, (u8 *)SRAM, saveSize);
-	infoOutput("Loaded NVRAM.");
+	if (loadEmuSram(nvMem, saveSize)) {
+		infoOutput("Loaded NVRAM.");
+		return 1;
+	}
+	return 0;
 }
 
-void saveNVRAM() {
+int saveNVRAM() {
 	int saveSize = 0;
 	void *nvMem = NULL;
 
@@ -193,22 +204,60 @@ void saveNVRAM() {
 		nvMem = cartEepromMem;
 	}
 	else {
-		return;
+		return 0;
 	}
-	bytecopy_((u8 *)SRAM, nvMem, saveSize);
-	infoOutput("Saved NVRAM.");
+	if (saveEmuSram(nvMem, saveSize)) {
+		infoOutput("Saved NVRAM.");
+		return 1;
+	}
+	return 0;
+}
+
+int loadStateChk() {
+	if (getStateSize() < 0x10000
+		&& quickLoad()) {
+		infoOutput("Loaded State.");
+		return loadNVRAM();
+	}
+	return 0;
+}
+int saveStateChk() {
+	if (getStateSize() < 0x10000
+		&& quickSave()) {
+		infoOutput("Saved State.");
+		return saveNVRAM();
+	}
+	return 0;
 }
 
 void loadState(void) {
-//	unpackState(testState);
-	infoOutput("Loaded state.");
+	loadStateChk();
 }
 void saveState(void) {
-//	packState(testState);
-	infoOutput("Saved state.");
+	saveStateChk();
 }
 
 //---------------------------------------------------------------------------------
+int loadIntEeprom(const char *name, u8 *dest, int size, int id) {
+	if (readFile(dest, size, id)) {
+		infoOutput("Internal EEPROM loaded.");
+		return 1;
+	}
+
+	infoOutput("Couldn't load EEPROM");
+	return 0;
+}
+
+int saveIntEeprom(const char *name, const u8 *source, int size, int id) {
+	if (writeFile(source, size, id, name)) {
+		infoOutput("Internal EEPROM saved.");
+		return 1;
+	}
+
+	infoOutput("Couldn't save EEPROM");
+	return 0;
+}
+
 static void initIntEepromWS(IntEEPROM *intProm) {
 	WSUserData *userData = &intProm->userData;
 	memcpy(userData->name, cfg.name, 16);
@@ -251,15 +300,29 @@ static void clearIntEepromSC() {
 }
 
 int loadIntEeproms() {
-	int status = 0;
 	clearIntEepromWS();
 	clearIntEepromWSC();
 	clearIntEepromSC();
-//	if (!findFolder(folderName)) {
-//		status = loadIntEeprom(wsEepromName, wsEepromMem, sizeof(wsEepromMem));
-//		status |= loadIntEeprom(wscEepromName, wscEepromMem, sizeof(wscEepromMem));
-//		status |= loadIntEeprom(scEepromName, scEepromMem, sizeof(scEepromMem));
-//	}
+	int status;
+	status = loadIntEeprom(wsEepromName, wsEepromMem, sizeof(wsEepromMem), 12);
+	status |= loadIntEeprom(wscEepromName, wscEepromMem, sizeof(wscEepromMem), 13);
+	status |= loadIntEeprom(scEepromName, scEepromMem, sizeof(scEepromMem), 14);
+	return status;
+}
+
+int saveIntEeproms() {
+	int status = 0;
+	switch (gSOC) {
+		case SOC_ASWAN:
+			status = saveIntEeprom(wsEepromName, wsEepromMem, sizeof(wsEepromMem), 12);
+			break;
+		case SOC_SPHINX:
+			status = saveIntEeprom(wscEepromName, wscEepromMem, sizeof(wscEepromMem), 13);
+			break;
+		case SOC_SPHINX2:
+			status = saveIntEeprom(scEepromName, scEepromMem, sizeof(scEepromMem), 14);
+			break;
+		}
 	return status;
 }
 
@@ -286,37 +349,43 @@ void loadBioses(void) {
 	g_BIOSBASE_BNW = NULL;
 	while ((bh = findBios(n++))) {
 		if (bh->flags & 0x4) {
-			g_BIOSBASE_COLOR = (const u8 *)bh + sizeof(RomHeader);
+			g_BIOSBASE_COLOR = bh->romData;
 		}
 		else if (bh->flags & 0x8) {
-			g_BIOSBASE_CRYSTAL = (const u8 *)bh + sizeof(RomHeader);
+			g_BIOSBASE_CRYSTAL = bh->romData;
 		}
 		else if ((bh->flags & 0xC) == 0) {
-			g_BIOSBASE_BNW = (const u8 *)bh + sizeof(RomHeader);
+			g_BIOSBASE_BNW = bh->romData;
 		}
 	}
 }
 
 bool loadGame(const RomHeader *rh) {
 	if (rh) {
-		gRomSize = rh->filesize;
-		romSpacePtr = (const u8 *)rh + sizeof(RomHeader);
-		selectedGame = selected;
-		checkMachine(rh);
-		setEmuSpeed(0);
-		loadCart();
-		gameInserted = true;
-		if (emuSettings & AUTOLOAD_NVRAM) {
-			loadNVRAM();
-		}
-		if (emuSettings & AUTOLOAD_STATE) {
-			loadState();
-		}
-		powerIsOn = true;
-		closeMenu();
-		return false;
+		return loadROM(rh->romData, rh->filesize, rh->flags);
 	}
 	return true;
+}
+
+bool loadROM(const u8 *rom, int size, int emuflags) {
+	selectedGame = selected;
+	gRomSize = size;
+	romSpacePtr = rom;
+	checkMachine(emuflags);
+	setEmuSpeed(0);
+	loadCart(emuflags);
+	gameInserted = true;
+	int loadedSRAM = 0;
+	if (emuSettings & AUTOLOAD_STATE) {
+		loadedSRAM = loadStateChk();
+	}
+	if ((emuSettings & AUTOLOAD_NVRAM)
+		&& loadedSRAM == 0) {
+		loadNVRAM();
+	}
+	powerIsOn = true;
+	closeMenu();
+	return false;
 }
 
 void selectGame() {
@@ -328,15 +397,31 @@ void selectGame() {
 	}
 }
 
-void checkMachine(const RomHeader *rh) {
+void viewNVRAM() {
+	pauseEmulation = true;
+	ui12();
+	skipScroll();
+	manageNVRAM();
+	backOutOfMenu();
+}
+
+void viewSStates() {
+	pauseEmulation = true;
+	ui13();
+	skipScroll();
+	loadStateMenu();
+	backOutOfMenu();
+}
+
+void checkMachine(int emuFlags) {
 	if (gMachineSet == HW_AUTO) {
-		if (romSpacePtr[gRomSize - 9] != 0 || rh->flags & 0xC) {
+		if (romSpacePtr[gRomSize - 9] != 0 || emuFlags & 0xC) {
 			gMachine = HW_WONDERSWANCOLOR;
-			if (rh->flags & 0x4) {
+			if (emuFlags & 0x8) {
 				gMachine = HW_SWANCRYSTAL;
 			}
 		}
-		else if (rh->flags & 2) {
+		else if (emuFlags & 2) {
 			gMachine = HW_POCKETCHALLENGEV2;
 		}
 		else {

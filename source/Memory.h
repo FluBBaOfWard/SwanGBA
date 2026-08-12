@@ -14,4 +14,4 @@ u8 cpuReadByte(u32 addr);
 } // extern "C"
 #endif
 
-#endif	// MEMORY_HEADER
+#endif // !MEMORY_HEADER

@@ -1,4 +1,4 @@
-# SwanGBA V0.7.6
+# SwanGBA V0.7.7
 
 <img align="right" width="220" src="./logo.png" alt="The WonderSwan logo"/>
 
@@ -6,6 +6,7 @@ This is a Bandai WonderSwan (Color/Crystal) & Benesse PocketChallenge V2 emulato
 
 ## How to use
 
+Use the [HTML Builder](https://flubbaofward.github.io/SwanGBA/Builder.html) to add roms and bioses, always add the bios files before any normal roms.
 When the emulator starts, you press L+R to open up the menu.
 Now you can use the cross to navigate the menus, A to select an option,
 B to go back a step.
@@ -15,10 +16,13 @@ B to go back a step.
 ### File
 
 * Load Game: Select a game to load.
-* Load NVRAM: Load non volatile ram (EEPROM/SRAM) for the currently running game.
+* Load State: Load state for the currently running game.
+* Save State: Save state for the currently running game (only mono yet).
 * Save NVRAM: Save non volatile ram (EEPROM/SRAM) for the currently running game.
+* Manage NVRAM: Delete unwanted NVRAM files.
+* Manage States: Delete unwanted state files.
 * Save Settings: Save the current settings (and internal EEPROM).
-* Reset Game: Reset the currently running game.
+* Reset Console: Reset the console.
 
 ### Controller
 
@@ -30,6 +34,7 @@ B to go back a step.
 * Gamma: Lets you change the gamma ("brightness").
 * Contrast: Lets you change the contrast.
 * B&W Palette: Here you can select the palette for B & W games.
+* Border: Lets you change between black & WS frame.
 
 ### Machine
 
@@ -48,15 +53,17 @@ B to go back a step.
   * 200%: Game can run up to double speed.
   * Max: Games can run up to 4 times normal speed.
   * 50%: Game runs at half speed.
-* Autoload State: Toggle Savestate autoloading. Automagically load the
+* Autoload State: Toggle Savestate autoloading. Automatically load the
  savestate associated with the selected game.
-* Autoload NVRAM: Toggle EEPROM/SRAM autoloading. Automagically load the
- EEPROM/SRAM associated with the selected game.
+* Autoload NVRAM: Toggle EEPROM/SRAM autoloading. Automatically load the
+ NVRAM associated with the selected game.
+* Autosave NVRAM: Toggle NVRAM autosaving. Automatically save the
+ NVRAM when entering the menu.
 * Autosave Settings: This will save settings when leaving menu if any changes are made.
 * Autopause Game: Toggle if the game should pause when opening the menu.
-* Overclock EWRAM: Changes the waitstates on EWRAM between 2 and 1, might
- damage your GBA and uses more power, around 10% speedgain. Doesn't work on
- Gameboy Micro. Use at your own risk!
+* EWRAM Overclock: Changes the waitstates on EWRAM between 2 and 1, uses more
+ power, around 10% speedgain. Doesn't work on Gameboy Micro, might damage your
+ GBA. Use at your own risk!
 * Autosleep: Change the autosleep time, also see Sleep.
 
 ### Debug

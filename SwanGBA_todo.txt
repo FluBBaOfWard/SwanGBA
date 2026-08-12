@@ -1,5 +1,7 @@
 SwanGBA Todo
 
+	Added PogoShell support, (make MB build).
+	Add Select & Start as A & B in vertical mode.
 	Make better WS border, can use 128 colors.
 	Fix identification of BnW/Color roms.
 	Fix better sound!

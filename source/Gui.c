@@ -16,7 +16,7 @@
 #include "ARMV30MZ/Version.h"
 #include "Sphinx/Version.h"
 
-#define EMUVERSION "V0.7.6 2026-01-18"
+#define EMUVERSION "V0.7.7 2026-08-12"
 
 void hacksInit(void);
 
@@ -52,6 +52,8 @@ static const char *getSprLayerText(void);
 static void winLayerSet(void);
 static const char *getWinLayerText(void);
 
+static void uiAbout(void);
+
 static void updateGameId(char *buffer);
 static void updateCartInfo(char *buffer);
 static void updateMapperInfo(char *buffer);
@@ -73,10 +75,13 @@ const MItem mainItems[] = {
 };
 const MItem fileItems[] = {
 	{"Load Game->", selectGame},
-	{"Load NVRAM", loadNVRAM},
-	{"Save NVRAM", saveNVRAM},
+	{"Load State", loadState},
+	{"Save State", saveState},
+	{"Save NVRAM", (void(*)(void))saveNVRAM},
+	{"Manage NVRAM->", viewNVRAM},
+	{"Manage States->", viewSStates},
 	{"Save Settings", saveSettings},
-	{"Reset Game", resetGame},
+	{"Reset Console", resetGame},
 };
 const MItem ctrlItems[] = {
 	{"B Autofire: ", autoBSet, getAutoBText},
@@ -102,17 +107,19 @@ const MItem machineItems[] = {
 const MItem setItems[] = {
 	{"Speed: ", speedSet, getSpeedText},
 	{"Autoload State: ", autoStateSet, getAutoStateText},
+	{"Autoload NVRAM: ", autoNVRAMSet, getAutoNVRAMText},
+	{"Autosave NVRAM: ", saveNVRAMSet, getSaveNVRAMText},
 	{"Autosave Settings: ", autoSettingsSet, getAutoSettingsText},
 	{"Autopause Game: ", autoPauseGameSet, getAutoPauseGameText},
 	{"EWRAM Overclock: ", ewramSet, getEWRAMText},
 	{"Autosleep: ", sleepSet, getSleepText},
 };
 const MItem debugItems[] = {
-	{"Debug Output:", debugTextSet, getDebugText},
-	{"Disable Foreground:", fgrLayerSet, getFgrLayerText},
-	{"Disable Background:", bgrLayerSet, getBgrLayerText},
-	{"Disable Sprites:", sprLayerSet, getSprLayerText},
-	{"Disable Windows:", winLayerSet, getWinLayerText},
+	{"Debug Output: ", debugTextSet, getDebugText},
+	{"Disable Foreground: ", fgrLayerSet, getFgrLayerText},
+	{"Disable Background: ", bgrLayerSet, getBgrLayerText},
+	{"Disable Sprites: ", sprLayerSet, getSprLayerText},
+	{"Disable Windows: ", winLayerSet, getWinLayerText},
 	{"Step Frame", stepFrameUI},
 };
 const MItem fnList9[] = {
@@ -132,10 +139,12 @@ const Menu menu5 = MENU_M("Machine Settings", uiAuto, machineItems);
 const Menu menu6 = MENU_M("Other Settings", uiAuto, setItems);
 const Menu menu7 = MENU_M("Debug", uiAuto, debugItems);
 const Menu menu8 = MENU_M("About", uiAbout, dummyItems);
-const Menu menu9 = MENU_M("Load game", uiLoadGame, fnList9);
+const Menu menu9 = MENU_M("Load Game", setupSubMenuText, fnList9);
 const Menu menu10 = MENU_M("Quit Emulator?", uiAuto, quitItems);
+const Menu menu12 = MENU_M("Delete NVRAM", setupSubMenuText, dummyItems);
+const Menu menu13 = MENU_M("Delete States", setupSubMenuText, dummyItems);
 
-const Menu *const menus[] = {&menu0, &menu1, &menu2, &menu3, &menu4, &menu5, &menu6, &menu7, &menu8, &menu9, &menu10 };
+const Menu *const menus[] = {&menu0, &menu1, &menu2, &menu3, &menu4, &menu5, &menu6, &menu7, &menu8, &menu9, &menu10, &menu12, &menu12, &menu13 };
 
 u8 gContrastValue = 3;
 u8 gBorderEnable = 1;
@@ -149,7 +158,7 @@ const char *const langTxt[]  = {"Japanese", "English"};
 
 /// This is called at the start of the emulator
 void setupGUI() {
-//	keysSetRepeat(25, 4);	// Delay, repeat.
+	setRepeat(25, 4);	// Delay, repeat.
 	menu1.itemCount = ARRSIZE(mainItems) - (enableExit?0:1);
 	closeMenu();
 }
@@ -158,7 +167,6 @@ void setupGUI() {
 void enterGUI() {
 	if ((emuSettings & AUTOSAVE_SETTINGS) && updateSettingsFromWS()) {
 		saveSettings();
-		settingsChanged = false;
 	}
 }
 
@@ -200,8 +208,12 @@ void uiAbout() {
 	drawText("ARMV30MZ   " ARMV30MZVERSION, 19);
 }
 
-void uiLoadGame() {
-	setupSubMenuText();
+void ui12() {
+	enterMenu(12);
+}
+
+void ui13() {
+	enterMenu(13);
 }
 
 void nullUINormal(int key) {
@@ -211,7 +223,8 @@ void nullUIDebug(int key) {
 }
 
 void resetGame() {
-	loadCart();
+	checkMachine(emuFlags);
+	loadCart(emuFlags);
 	setupEmuBackground();
 	setupMenuPalette();
 	powerIsOn = true;
